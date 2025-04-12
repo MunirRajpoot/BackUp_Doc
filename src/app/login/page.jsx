@@ -7,9 +7,9 @@ const Page = () => {
     return (
         <div className="page-container">
             <div className="login-box">
-                <Image src="/icons/logo.png" alt="logo" width={100} height={100} className="logo" />
-                <h3>Welcome <span style={{ color: "#0067FF" }}>Back</span></h3>
-                <p>Enter your details to Sign in</p>
+                <Image src="/icons/backupdoc-logo.png" alt="logo" width={150} height={150} className="logo" />
+                <h3 className='well-back'>Welcome Back</h3>
+                
                 <button className='google-btn'><Image src="/icons/google.png" height={50} width={50} alt='google-logo' /></button>
                 <div className="divider">
                     <span>Or</span>
