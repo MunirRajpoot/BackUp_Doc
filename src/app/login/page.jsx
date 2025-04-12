@@ -9,7 +9,7 @@ const Page = () => {
             <div className="login-box">
                 <Image src="/icons/logo.png" alt="logo" width={100} height={100} className="logo" />
                 <h3>Welcome <span style={{ color: "#0067FF" }}>Back</span></h3>
-                <p>Enter your details to Sign in</p>
+              
                 <button className='google-btn'><Image src="/icons/google.png" height={50} width={50} alt='google-logo' /></button>
                 <div className="divider">
                     <span>Or</span>
