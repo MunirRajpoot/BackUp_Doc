@@ -25,7 +25,7 @@ const Page = () => {
                 href="/login"
                 className="font-semibold underline hover:text-[#4b75a5] transition-colors"
               >
-                Sign In
+                Register
               </Link>
             </div>
           </div>
