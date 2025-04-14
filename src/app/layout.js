@@ -1,5 +1,5 @@
 
-import StyledComponentsRegistry from "@/lib/registry";
+
 import Navbar from "./components/Navbar/Navbar";
 import "./globals.css";
 
@@ -15,11 +15,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>
-          {/* <Navbar /> */}
+       
+          <Navbar />
 
           {children}
-        </StyledComponentsRegistry>
+      
       </body>
     </html>
   );

@@ -1,119 +1,89 @@
 "use client";
 
-import styled from "styled-components";
-import Text from "./components/Text/Text.jsx";
-import Button from "./components/Button/Button.jsx";
 import { CiPlay1 } from "react-icons/ci";
-import Image from "next/image.js";
+import Image from "next/image";
+import "./main.css";
 
 export default function Home() {
   return (
-    <HomePage className="container">
-      <ContentWrapper>
-        <TextBox>
-          <Text size="3rem" color="#FFFFFF" weight="bold" align="center">
-            Get precise results
-            <Break />
-            effortlessly with
-          </Text>
-          <Text size="3rem" gradient="linear-gradient(to right, #0067FF, #A5C9FF)" weight="bold" align="center">
-            Dentovate
-          </Text>
-          <TextDescription>
-            <Text align="center" size="1rem" color="#FFFFFF">
-              Empowering dentists to provide trustworthy care, enhance patient understanding, and increase retention through AI-supported diagnostics.
-            </Text>
-          </TextDescription>
-          <ButtonWrapper>
-            <Button text="Get Started" width="8rem" gradient="45deg, #0067FF, #003E99" />
-            <Button text="See Demo" width="8rem" gradient="45deg, #0067FF, #003E99" icon={<CiPlay1 />} />
-          </ButtonWrapper>
-        </TextBox>
-        <AppointmentBox className="row">
-          <ImageBox className="col-lg-6">
-            <Image src="/images/app_img.png" alt="app-img" height={400} width={300} />
-          </ImageBox>
-          <AppointmentText className="col-lg-6">
-            <Text color="#FFFFFF">Appointment</Text>
-            <Text color="#0067FF" size="2rem" weight="bold" padding="20px 0px 10px 0px">Meet Our Specialist
-              This Doctor Meeting</Text>
-            <Text color="#FFFFFF" padding="5px 0px">We are privileged to work with hundreds of future-thinking medial, including many of the world’s top hardware, software, and brands, feel safe and comfortable in establishing.</Text>
+    <div className="container">
+      <div className="content-wrapper">
+        {/* Header Section */}
+        <div className="text-box">
+          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight">
+            Get precise results <br />
+            <span className="block mt-1">effortlessly with</span>
+          </h1>
+          <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-[#0067FF] to-[#A5C9FF] text-transparent bg-clip-text mt-2">
+            BackUpDoc
+          </h1>
 
-            <Button text="Book Now" bgColor="#0067FF" margin="20px 0px" width="7rem" />
-          </AppointmentText>
+          <div className="text-description">
+            <p className="text-white text-sm md:text-base">
+              Empowering dentists to provide trustworthy care, enhance patient
+              understanding, and increase retention through AI-supported
+              diagnostics.
+            </p>
+          </div>
 
-        </AppointmentBox>
+          <div className="button-wrapper">
+            <button className="custom-button">Get Started</button>
+            <button className="custom-button flex items-center gap-2">
+              <CiPlay1 className="text-lg" /> See Demo
+            </button>
+          </div>
+        </div>
 
-        {/* Cards */}
-        <CardsBox>
-<Cardswrapper></Cardswrapper>
-        </CardsBox>
-      </ContentWrapper>
-    </HomePage>
+        {/* Appointment Section */}
+        <div className="appointment-box flex flex-col md:flex-row justify-center items-center w-full px-10 py-20 gap-10">
+          {/* Image and overlapping card */}
+          <div className="relative w-full md:w-1/2 flex justify-center">
+            <Image
+              src="/images/app_img.png"
+              alt="Appointment"
+              width={400}
+              height={400}
+              priority
+              className="rounded-xl"
+            />
+
+            {/* Overlapping card */}
+            <div className="absolute -bottom-10 right-10 bg-white rounded-xl shadow-lg p-5 w-90">
+              <h3 className="font-bold text-lg text-black">Lorem Ipsum</h3>
+              <p className="text-sm text-black mt-2">
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+              </p>
+            </div>
+          </div>
+
+          {/* Text section */}
+          <div className="w-full md:w-1/2 text-white mb-auto text-left">
+            <p className="text-lg font-semibold">Appointment</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] py-5">
+              Meet Our Specialist This 
+              <span className="block">Doctor Meeting</span>
+            </h2>
+            <p className="pb-5 text-1xl text-gray-200 max-w-90">
+              We are privileged to work with hundreds of future-thinking medical
+              professionals, including many of the world’s top hardware and software brands.
+              Feel safe and comfortable establishing care with us.
+            </p>
+            <button className="bg-[#0067FF] text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700 transition mt-4">
+              Book Now
+            </button>
+          </div>
+        </div>
+
+
+
+        {/* Cards Section Placeholder */}
+        <div className="cards-box mt-20 w-full">
+          <div className="cards-wrapper">{/* Cards go here */}
+            
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
-
-const HomePage = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  text-align: center;
-`;
-
-const TextBox = styled.div`
-  margin-top: 30px;
-`;
-
-const TextDescription = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40%;
-  margin: auto;
-  padding: 15px 20px;
-`;
-
-const ButtonWrapper = styled.div`
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-`;
-
-const AppointmentBox = styled.div`
-  margin-top: 50px;
-
-`;
-
-const ImageBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
- 
-`;
-const AppointmentText = styled.div`
-    padding: 10px 80px;
-`;
-const Break = styled.br`
-
-`;
-
-const CardsBox = styled.div`
-
-`;
-const Cardswrapper = styled.div`
-
-`;

@@ -1,73 +1,66 @@
-"use client"
+"use client";
 
-import React from 'react'
-import styled from 'styled-components';
-import Link from 'next/link';
-import Button from '../Button/Button.jsx';
-import Text from '../Text/Text.jsx';
+import React, { useState } from "react";
+import Link from "next/link";
+import { Menu, X } from "lucide-react"; // You can also use Heroicons if preferred
+import Image from "next/image";
+
 const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <Header className='container'>
-      <Text size="30px" weight="bolder" color="#FFFFFF">
-        Dentovate
-      </Text>
+    <header className="text-white w-full">
+      <div className="flex justify-between items-center py-6 px-6 md:px-12 max-w-[1300px] mx-auto w-full">
+        {/* Logo */}
+        <Image src="/icons/logo.png" alt="nav-logo" height={50} width={70}/>
 
-      <StyledNavbar>
-        <NavItem href="/">Home</NavItem>
-        <NavItem href="/doctor">Doctor</NavItem>
-        <NavItem href="/about">About</NavItem>
-        <NavItem href="/contact">Contact us</NavItem>
-        <NavItem href="/started"><Button bgColor="#0067FF" borderRadius="60px" color="white" text="Get started" width="7rem" /></NavItem>
-      </StyledNavbar>
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center justify-center bg-gray-700 rounded-full gap-8 py-2 px-6">
+          <Link href="/" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Home</Link>
+          <Link href="/doctor" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
+          <Link href="/about" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">About</Link>
+          <Link href="/contact" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Contact us</Link>
+          <Link href="/started">
+            <button className="bg-[#0067FF] text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform w-28 cursor-pointer">
+              Get Started
+            </button>
+          </Link>
+        </nav>
 
-      <ButtonWrapper>
-        <Button bgColor="transparent" color="white" text="SignIn" hoverBgColor="#0067FF" />
-        <Button bgColor="#0067FF" text="SignUp" />
-      </ButtonWrapper>
-    </Header>
-  )
-}
+        {/* Desktop Auth Buttons */}
+        <div className="hidden md:flex gap-3">
+          <button className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition cursor-pointer">Sign In</button>
+          <button className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform cursor-pointer">Sign Up</button>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Drawer */}
+      {menuOpen && (
+        <div className="md:hidden bg-gray-800 px-6 py-4 flex flex-col gap-4 animate-slideDown">
+          <Link href="/" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Home</Link>
+          <Link href="/doctor" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
+          <Link href="/about" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">About</Link>
+          <Link href="/contact" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Contact us</Link>
+          <Link href="/started">
+            <button className="bg-[#0067FF] text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform w-full">
+              Get Started
+            </button>
+          </Link>
+          <div className="flex flex-col gap-2 mt-4">
+            <button className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition">Sign In</button>
+            <button className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform">Sign Up</button>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+};
 
 export default Navbar;
-
-const Header = styled.header`
-
-     display: flex;
-    justify-content: center;
-    align-items: center;
-    /* padding-top: 15px; */
-    padding: 30px 30px;
-    margin: auto;
-`
-  ;
-const StyledNavbar = styled.nav`
-display: flex;
-justify-content: center;
-align-items: center;
-text-align: center;
-border-radius: 50px;
-gap: 30px;
-padding: 5px 10px 5px 20px;
-/* height: 50px; */
-
-background-color: gray;
-margin: auto;
-`
-  ;
-const NavItem = styled(Link)`
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  color: white;
-  transition: color 0.3s;
-
-  &:hover {
-    color: #0067FF;
-  }
-  `
-  ;
-const ButtonWrapper = styled.div`
-  display: flex;
-  gap: 10px;
-`
-  ;
