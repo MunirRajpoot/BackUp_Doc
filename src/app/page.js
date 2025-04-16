@@ -5,6 +5,12 @@ import Image from "next/image";
 import "./main.css";
 
 export default function Home() {
+  const testimonialImages = [
+    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_1,
+    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_2,
+    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_3,
+    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_4,
+  ];
   return (
     <div className="container">
       <div className="content-wrapper">
@@ -102,23 +108,25 @@ export default function Home() {
         {/* Choose Us */}
 
         <section className="text-white py-16 px-4 md:px-12 lg:px-20">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-stretch">
             {/* Text Section */}
-            <div>
-              <h4 className="text-lg font-semibold mb-5 text-start">Chose Us</h4>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] mb-5 text-start">Why Choose Us?</h2>
-              <p className="text-1xl text-gray-200 mb-10 text-start">
-                We are privileged to work with hundreds of future-thinking medial,
-                including many of the world’s top hardware, software, and brands, feel
-                safe and comfortable in establishing.
-              </p>
+            <div className="flex flex-col justify-between h-full">
+              <div>
+                <h4 className="text-lg font-semibold mb-5 text-start">Chose Us</h4>
+                <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] mb-5 text-start">Why Choose Us?</h2>
+                <p className="text-1xl text-gray-200 mb-10 text-start">
+                  We are privileged to work with hundreds of future-thinking medical,
+                  including many of the world’s top hardware, software, and brands. Feel
+                  safe and comfortable in establishing.
+                </p>
+              </div>
 
               {/* Info Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[1, 2, 3, 4].map((_, idx) => (
                   <div
                     key={idx}
-                    className="h-40 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                    className="h-35 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
                   >
                     Feature {idx + 1}
                   </div>
@@ -127,19 +135,87 @@ export default function Home() {
             </div>
 
             {/* Image Section */}
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center h-full mt-4">
               <Image
                 src="/images/image 6.png"
                 alt="Doctors Group"
                 className="max-w-full h-auto object-contain"
                 width={500}
-                height={500}
+                height={550}
                 priority
               />
             </div>
           </div>
         </section>
 
+
+        <div className="text-center px-4 py-12">
+          <p className="text-3xl font-bold mb-8">Get precise results effortlessly with</p>
+
+          <div className="flex justify-center items-center">
+            {/* Left image with right-positioned arrow */}
+            <div className="relative">
+              <Image
+                className="object-contain"
+                src="/images/image 8.png"
+                height={350}
+                width={400}
+                alt="black-xray"
+              />
+              <Image
+                className="absolute top-1/2 right-[-10px] transform -translate-y-1/2 z-10"
+                src="/icons/arrow-narrow-left.svg"
+                alt="left-arrow"
+                height={20}
+                width={50}
+              />
+            </div>
+
+            {/* Right image with left-positioned arrow */}
+            <div className="relative">
+              <Image
+                className="object-contain"
+                src="/images/image 7.png"
+                height={350}
+                width={400}
+                alt="color-xray"
+              />
+              <Image
+                className="absolute top-1/2 left-[-8px] transform -translate-y-1/2 z-10"
+                src="/icons/arrow-narrow-right.svg"
+                alt="right-arrow"
+                height={20}
+                width={50}
+              />
+            </div>
+          </div>
+
+
+
+        </div>
+
+        {/* Testimonial Section */}
+        <section className="text-white py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-12">Testimonial</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 justify-center">
+              {testimonialImages.map((src, idx) => (
+                <div
+                  key={idx}
+                  className="bg-gray-700 rounded-xl overflow-hidden shadow-md hover:scale-105 transition-transform duration-300 aspect-[4/3]"
+                >
+                  {src && (
+                    <img
+                      src={src}
+                      alt={`Testimonial ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
       </div>
     </div>
