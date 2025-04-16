@@ -61,7 +61,7 @@ export default function Home() {
           <div className="w-full md:w-1/2 text-white mb-auto text-left">
             <p className="text-lg font-semibold">Appointment</p>
             <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] py-5">
-              Meet Our Specialist This 
+              Meet Our Specialist This
               <span className="block">Doctor Meeting</span>
             </h2>
             <p className="pb-5 text-1xl text-gray-200 max-w-90">
@@ -78,11 +78,69 @@ export default function Home() {
 
 
         {/* Cards Section Placeholder */}
-        <div className="cards-box mt-20 w-full">
-          <div className="cards-wrapper">{/* Cards go here */}
-            
+        <div className="w-full py-16 px-4 flex justify-center items-center">
+          <div className="bg-[#383B3F] rounded-2xl p-8 w-full max-w-6xl h-70">
+            <div className="flex flex-wrap justify-between items-center gap-6">
+              {[
+                "/icons/image 2.svg",
+                "/icons/image 3.svg",
+                "/icons/image 4.svg",
+                "/icons/image 5.svg",
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-full h-16 w-16 flex justify-center items-center shadow-md mx-auto"
+                >
+                  <Image src={src} height={40} width={40} alt={`icon-${index}`} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+
+
+        {/* Choose Us */}
+
+        <section className="text-white py-16 px-4 md:px-12 lg:px-20">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            {/* Text Section */}
+            <div>
+              <h4 className="text-lg font-semibold mb-5 text-start">Chose Us</h4>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] mb-5 text-start">Why Choose Us?</h2>
+              <p className="text-1xl text-gray-200 mb-10 text-start">
+                We are privileged to work with hundreds of future-thinking medial,
+                including many of the world’s top hardware, software, and brands, feel
+                safe and comfortable in establishing.
+              </p>
+
+              {/* Info Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="h-40 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                  >
+                    Feature {idx + 1}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center">
+              <Image
+                src="/images/image 6.png"
+                alt="Doctors Group"
+                className="max-w-full h-auto object-contain"
+                width={500}
+                height={500}
+                priority
+              />
+            </div>
+          </div>
+        </section>
+
+
       </div>
     </div>
   );

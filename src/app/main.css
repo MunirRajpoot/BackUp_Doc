@@ -71,3 +71,14 @@
 /* .appointment-text {
     padding: 10px 40px;
 } */
+
+.cards-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: gray;
+    height: 250px;
+
+
+}
+
