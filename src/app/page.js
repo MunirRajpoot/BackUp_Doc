@@ -4,6 +4,7 @@ import { CiPlay1 } from "react-icons/ci";
 import Image from "next/image";
 import "./main.css";
 import ImageSlider from "@/component/ImageSlider/ImageSlider";
+import ImageComparisonSlider from "@/component/ImageComparisonSlider/ImageComparisonSlider";
 
 export default function Home() {
   const testimonialImages = [
@@ -154,19 +155,7 @@ export default function Home() {
         <div className="text-center px-4 py-12">
           <p className="text-3xl font-bold mb-8">Get precise results effortlessly with</p>
 
-          <figure className="diff aspect-16/9" tabIndex={0}>
-            <div className="diff-item-1" role="img" tabIndex={0}>
-              <Image alt="daisy" src="https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58ac90a.webp" height={300} width={300} />
-            </div>
-            <div className="diff-item-2" role="img">
-              <Image
-                alt="daisy"
-                src="https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58ac90a-blur.webp"
-                height={300} width={300} />
-            </div>
-            <div className="diff-resizer"></div>
-          </figure>
-
+          <ImageComparisonSlider/>
 
 
         </div>
