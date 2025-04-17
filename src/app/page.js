@@ -3,6 +3,7 @@
 import { CiPlay1 } from "react-icons/ci";
 import Image from "next/image";
 import "./main.css";
+import ImageSlider from "@/component/ImageSlider/ImageSlider";
 
 export default function Home() {
   const testimonialImages = [
@@ -11,6 +12,7 @@ export default function Home() {
     process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_3,
     process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_4,
   ];
+
   return (
     <div className="container">
       <div className="content-wrapper">
@@ -152,43 +154,18 @@ export default function Home() {
         <div className="text-center px-4 py-12">
           <p className="text-3xl font-bold mb-8">Get precise results effortlessly with</p>
 
-          <div className="flex justify-center items-center">
-            {/* Left image with right-positioned arrow */}
-            <div className="relative">
-              <Image
-                className="object-contain"
-                src="/images/image 8.png"
-                height={350}
-                width={400}
-                alt="black-xray"
-              />
-              <Image
-                className="absolute top-1/2 right-[-10px] transform -translate-y-1/2 z-10"
-                src="/icons/arrow-narrow-left.svg"
-                alt="left-arrow"
-                height={20}
-                width={50}
-              />
+          <figure className="diff aspect-16/9" tabIndex={0}>
+            <div className="diff-item-1" role="img" tabIndex={0}>
+              <Image alt="daisy" src="https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58ac90a.webp" height={300} width={300} />
             </div>
-
-            {/* Right image with left-positioned arrow */}
-            <div className="relative">
+            <div className="diff-item-2" role="img">
               <Image
-                className="object-contain"
-                src="/images/image 7.png"
-                height={350}
-                width={400}
-                alt="color-xray"
-              />
-              <Image
-                className="absolute top-1/2 left-[-8px] transform -translate-y-1/2 z-10"
-                src="/icons/arrow-narrow-right.svg"
-                alt="right-arrow"
-                height={20}
-                width={50}
-              />
+                alt="daisy"
+                src="https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58ac90a-blur.webp"
+                height={300} width={300} />
             </div>
-          </div>
+            <div className="diff-resizer"></div>
+          </figure>
 
 
 
