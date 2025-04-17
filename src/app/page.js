@@ -3,16 +3,11 @@
 import { CiPlay1 } from "react-icons/ci";
 import Image from "next/image";
 import "./main.css";
-import ImageSlider from "@/component/ImageSlider/ImageSlider";
+
 import ImageComparisonSlider from "@/component/ImageComparisonSlider/ImageComparisonSlider";
+import TestimonialSection from "@/component/TestimonialSection/TestimonialSection";
 
 export default function Home() {
-  const testimonialImages = [
-    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_1,
-    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_2,
-    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_3,
-    process.env.NEXT_PUBLIC_TESTIMONIAL_IMAGE_4,
-  ];
 
   return (
     <div className="container">
@@ -155,33 +150,11 @@ export default function Home() {
         <div className="text-center px-4 py-12">
           <p className="text-3xl font-bold mb-8">Get precise results effortlessly with</p>
 
-          <ImageComparisonSlider/>
-
-
+          <ImageComparisonSlider />
         </div>
 
         {/* Testimonial Section */}
-        <section className="text-white py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Testimonial</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 justify-center">
-              {testimonialImages.map((src, idx) => (
-                <div
-                  key={idx}
-                  className="bg-gray-700 rounded-xl overflow-hidden shadow-md hover:scale-105 transition-transform duration-300 aspect-[4/3]"
-                >
-                  {src && (
-                    <img
-                      src={src}
-                      alt={`Testimonial ${idx + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <TestimonialSection/>
 
       </div>
     </div>
