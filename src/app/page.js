@@ -39,27 +39,48 @@ export default function Home() {
         </div>
 
         {/* Appointment Section */}
-        <div className="appointment-box flex flex-col md:flex-row justify-center items-center w-full px-10 py-20 gap-10">
+        <div className="appointment-box flex flex-col md:flex-row justify-center items-center w-full px-10 py-20 gap-10 mb-10">
           {/* Image and overlapping card */}
-          <div className="relative w-full md:w-1/2 flex justify-center">
+          <div className="relative w-full md:w-1/2 flex justify-center z-40">
+
+            {/* Half Circle Shape Behind */}
+            <div className="absolute top-7 left-0 w-[150px] h-[300px] overflow-hidden z-10">
+              <div className="w-[300px] h-[300px]">
+                <Image
+                  src="/images/Ellipse 1.png"
+                  alt="half-circle-shape"
+                  width={200}
+                  height={200}
+                />
+              </div>
+            </div>
+
+            {/* Doctor Image (in front of the half-circle) */}
             <Image
               src="/images/app_img.png"
               alt="Appointment"
               width={400}
               height={400}
               priority
-              className="rounded-xl"
+              className="rounded-xl z-30 relative"
             />
 
-            {/* Overlapping card */}
-            <div className="absolute -bottom-10 right-10 bg-white rounded-xl shadow-lg p-5 w-90">
+            {/* Overlapping Card (on top) */}
+            <div className="absolute -bottom-30 -right-10 bg-white rounded-xl shadow-lg p-5 w-80 z-40">
               <h3 className="font-bold text-lg text-black">Lorem Ipsum</h3>
               <p className="text-sm text-black mt-2">
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                 Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
               </p>
             </div>
+
+            {/* Pyramid Shape */}
+            <div className="absolute -bottom-35 left-10 w-30 h-30 rounded-full transform z-20">
+              <Image src="/images/pyramid.png" alt="pyramid-shape" height={300} width={300} />
+            </div>
+
           </div>
+
 
           {/* Text section */}
           <div className="w-full md:w-1/2 text-white mb-auto text-left">
@@ -82,7 +103,7 @@ export default function Home() {
 
 
         {/* Cards Section Placeholder */}
-        <div className="w-full py-16 px-4 flex justify-center items-center">
+        <div className="w-full py-16 px-4 flex justify-center items-center mt-10">
           <div className="bg-[#383B3F] rounded-2xl p-8 w-full max-w-6xl h-70">
             <div className="flex flex-wrap justify-between items-center gap-6">
               {[
@@ -124,7 +145,7 @@ export default function Home() {
                 {[1, 2, 3, 4].map((_, idx) => (
                   <div
                     key={idx}
-                    className="h-35 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                    className="h-35 rounded-xl bg-white/10 flex items-center justify-center text-gray-300 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
                   >
                     Feature {idx + 1}
                   </div>
@@ -154,7 +175,7 @@ export default function Home() {
         </div>
 
         {/* Testimonial Section */}
-        <TestimonialSection/>
+        <TestimonialSection />
 
       </div>
     </div>

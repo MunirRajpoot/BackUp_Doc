@@ -31,12 +31,12 @@ const Page = () => {
           </div>
 
           {/* Right: Sign Up Form Section */}
-          <div className="bg-[whitesmoke] p-8 lg:p-12 lg:w-7/12 text-dark rounded-b-2xl lg:rounded-bl-none lg:rounded-r-2xl">
+          <div className="bg-white/10 p-8 lg:p-12 lg:w-7/12 text-dark rounded-b-2xl lg:rounded-bl-none lg:rounded-r-2xl">
             <div className="mb-6">
               <Image
-                src="/icons/logo.png"
+                src="/icons/backupdoc-logo.png"
                 alt="Nakiese Logo"
-                width={100}
+                width={120}
                 height={80}
                 className="mb-6"
               />

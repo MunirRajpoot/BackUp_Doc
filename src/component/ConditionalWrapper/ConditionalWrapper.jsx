@@ -24,14 +24,16 @@ export default function ConditionalWrapper({ children }) {
 
   return (
     <>
-      {showNavbar && <Navbar />}
+      <div className="flex flex-col min-h-screen">
+        {showNavbar && <Navbar />}
 
-      <main>
-        {children}
-        {/* {showNavbar && showFooter && <CookieTooltip />} */}
-      </main>
+        <main className="flex-grow">
+          {children}
+          {/* {showNavbar && showFooter && <CookieTooltip />} */}
+        </main>
 
-      {showFooter && <Footer />}
+        {showFooter && <Footer />}
+      </div>
 
     </>
   );
