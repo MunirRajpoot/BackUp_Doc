@@ -18,13 +18,13 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-start p-2">
+        <div className="min-h-screen flex justify-center items-start p-2 pt-[90px]">
             <div className="w-full max-w-lg rounded-xl shadow-md p-6 bg-white">
-                <h2 className="text-gray-800 text-2xl font-semibold text-center mb-6">
+                <h2 className="text-gray-800 text-2xl font-semibold text-center mb-4">
                     Profile Settings
                 </h2>
 
-                <div className="flex flex-col items-center mb-6 relative">
+                <div className="flex flex-col items-center mb-4 relative">
                     <div className="w-20 h-20 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-xl font-bold">
                         {profileImage ? (
                             <img src={profileImage} alt="Profile" className="w-full h-full object-cover object-center" />
