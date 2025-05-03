@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }) {
                                 </span>
                             </Link>
                         </li>
-                        
+
                         <li>
                             <Link
                                 href="/dashboard/activity"

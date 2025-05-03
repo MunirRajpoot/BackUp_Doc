@@ -1,79 +1,117 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
+  const router = useRouter();
+
+  // Form state
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+     
+        },
+        body: JSON.stringify({ email, password }),
+        
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMsg(data.detail || 'Login failed. Please try again.');
+      } else {
+        // Successful login
+        router.push('/'); // Redirect to your app’s dashboard
+      }
+    } catch (error) {
+      setErrorMsg('Something went wrong. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex justify-center items-start min-h-screen pt-8 overflow-y-auto bg-gray-100">
-      <div className="flex flex-col items-center bg-white text-black w-full max-w-sm p-8 rounded-xl shadow-md">
-        <Image src="/icons/logo.png" alt="logo" width={100} height={100} />
-        <h3 className="text-2xl font-semibold mt-4">
-          Welcome <span className="text-blue-600">Back</span>
+    <div className="flex justify-center items-center min-h-screen pt-8 z-20 overflow-y-auto bg-[#24282E]">
+      <div className="flex flex-col items-center bg-white text-black w-[95%] max-w-sm p-6 sm:p-8 rounded-xl shadow-md">
+        <Image src="/icons/backupdoc-logo.png" alt="logo" width={120} height={120} />
+        <h3 className="text-2xl font-semibold mt-4 text-[#0067FF]">
+          Welcome Back
         </h3>
 
-        <button className="w-full flex justify-center items-center mt-6 p-2 border border-gray-400 bg-blue-50 rounded-md hover:bg-blue-100 transition">
-          <Image src="/icons/google.png" height={30} width={30} alt="google-logo" />
-        </button>
-
-        <div className="flex items-center w-full my-4">
-          <div className="flex-1 h-px bg-black mr-3" />
-          <span className="text-sm font-medium text-gray-600">Or</span>
-          <div className="flex-1 h-px bg-black ml-3" />
-        </div>
-
-        <form className="w-full">
+        <form className="w-full mt-8" onSubmit={handleLogin}>
           <div className="mb-4">
-            <label htmlFor="email" className="block mb-1 font-medium">
+            <label htmlFor="email" className="block mb-1 font-medium text-black">
               Email address
             </label>
             <input
               type="email"
               id="email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500"
               placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
           <div className="mb-4">
-            <label htmlFor="password" className="block mb-1 font-medium">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-1">
+              <label htmlFor="password" className="font-medium text-black">
+                Password
+              </label>
+              <Link href="/forgot-password" className="text-[#0067FF] hover:underline text-sm">
+                Forgot Password?
+              </Link>
+            </div>
             <input
               type="password"
               id="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
 
-          <div className="flex items-center justify-between mb-4 text-sm">
-            <label htmlFor="remember" className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                id="remember"
-                className="form-checkbox text-blue-600"
-              />
-              Remember me
-            </label>
-            <Link href="/forgot-password" className="text-blue-600 hover:underline">
-              Forgot Password?
-            </Link>
+          {errorMsg && (
+            <p className="text-red-600 text-sm mb-4">{errorMsg}</p>
+          )}
+
+          <div className="flex justify-between items-center mt-4">
+            <p className="text-sm text-black">
+              Don't have an account?{' '}
+              <Link href="/register" className="text-[#0067FF] hover:underline">
+                Sign Up
+              </Link>
+            </p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer flex items-center gap-2"
+            >
+              {loading ? 'Signing In...' : (
+                <>
+                  <Image src="/icons/angle-right.svg" alt="arrow" width={10} height={10} />
+                  Sign In
+                </>
+              )}
+            </button>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Sign In
-          </button>
-
-          <p className="text-center text-sm mt-4">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Register
-            </Link>
-          </p>
         </form>
       </div>
     </div>

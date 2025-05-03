@@ -4,7 +4,11 @@ import { CiPlay1 } from "react-icons/ci";
 import Image from "next/image";
 import "./main.css";
 
+import ImageComparisonSlider from "@/component/ImageComparisonSlider/ImageComparisonSlider";
+import TestimonialSection from "@/component/TestimonialSection/TestimonialSection";
+
 export default function Home() {
+
   return (
     <div className="container">
       <div className="content-wrapper">
@@ -35,33 +39,54 @@ export default function Home() {
         </div>
 
         {/* Appointment Section */}
-        <div className="appointment-box flex flex-col md:flex-row justify-center items-center w-full px-10 py-20 gap-10">
+        <div className="appointment-box flex flex-col md:flex-row justify-center items-center w-full px-10 py-20 gap-10 mb-10">
           {/* Image and overlapping card */}
-          <div className="relative w-full md:w-1/2 flex justify-center">
+          <div className="relative w-full md:w-1/2 flex justify-center z-40">
+
+            {/* Half Circle Shape Behind */}
+            <div className="absolute top-7 left-0 w-[150px] h-[300px] overflow-hidden z-10">
+              <div className="w-[300px] h-[300px]">
+                <Image
+                  src="/images/Ellipse 1.png"
+                  alt="half-circle-shape"
+                  width={200}
+                  height={200}
+                />
+              </div>
+            </div>
+
+            {/* Doctor Image (in front of the half-circle) */}
             <Image
               src="/images/app_img.png"
               alt="Appointment"
               width={400}
               height={400}
               priority
-              className="rounded-xl"
+              className="rounded-xl z-30 relative"
             />
 
-            {/* Overlapping card */}
-            <div className="absolute -bottom-10 right-10 bg-white rounded-xl shadow-lg p-5 w-90">
+            {/* Overlapping Card (on top) */}
+            <div className="absolute -bottom-30 -right-10 bg-white rounded-xl shadow-lg p-5 w-80 z-40">
               <h3 className="font-bold text-lg text-black">Lorem Ipsum</h3>
               <p className="text-sm text-black mt-2">
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                 Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
               </p>
             </div>
+
+            {/* Pyramid Shape */}
+            <div className="absolute -bottom-35 left-10 w-30 h-30 rounded-full transform z-20">
+              <Image src="/images/pyramid.png" alt="pyramid-shape" height={300} width={300} />
+            </div>
+
           </div>
+
 
           {/* Text section */}
           <div className="w-full md:w-1/2 text-white mb-auto text-left">
             <p className="text-lg font-semibold">Appointment</p>
             <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] py-5">
-              Meet Our Specialist This 
+              Meet Our Specialist This
               <span className="block">Doctor Meeting</span>
             </h2>
             <p className="pb-5 text-1xl text-gray-200 max-w-90">
@@ -78,11 +103,80 @@ export default function Home() {
 
 
         {/* Cards Section Placeholder */}
-        <div className="cards-box mt-20 w-full">
-          <div className="cards-wrapper">{/* Cards go here */}
-            
+        <div className="w-full py-16 px-4 flex justify-center items-center mt-10">
+          <div className="bg-[#383B3F] rounded-2xl p-8 w-full max-w-6xl h-70">
+            <div className="flex flex-wrap justify-between items-center gap-6">
+              {[
+                "/icons/image 2.svg",
+                "/icons/image 3.svg",
+                "/icons/image 4.svg",
+                "/icons/image 5.svg",
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-full h-16 w-16 flex justify-center items-center shadow-md mx-auto"
+                >
+                  <Image src={src} height={40} width={40} alt={`icon-${index}`} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+
+
+        {/* Choose Us */}
+
+        <section className="text-white py-16 px-4 md:px-12 lg:px-20">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-stretch">
+            {/* Text Section */}
+            <div className="flex flex-col justify-between h-full">
+              <div>
+                <h4 className="text-lg font-semibold mb-5 text-start">Chose Us</h4>
+                <h2 className="text-2xl md:text-3xl font-bold text-[#0067FF] mb-5 text-start">Why Choose Us?</h2>
+                <p className="text-1xl text-gray-200 mb-10 text-start">
+                  We are privileged to work with hundreds of future-thinking medical,
+                  including many of the world’s top hardware, software, and brands. Feel
+                  safe and comfortable in establishing.
+                </p>
+              </div>
+
+              {/* Info Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="h-35 rounded-xl bg-white/10 flex items-center justify-center text-gray-300 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                  >
+                    Feature {idx + 1}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center items-center h-full mt-4">
+              <Image
+                src="/images/image 6.png"
+                alt="Doctors Group"
+                className="max-w-full h-auto object-contain"
+                width={500}
+                height={550}
+                priority
+              />
+            </div>
+          </div>
+        </section>
+
+
+        <div className="text-center px-4 py-12">
+          <p className="text-3xl font-bold mb-8">Get precise results effortlessly with</p>
+
+          <ImageComparisonSlider />
+        </div>
+
+        {/* Testimonial Section */}
+        <TestimonialSection />
+
       </div>
     </div>
   );

@@ -6,6 +6,9 @@ const nextConfig = {
             displayName: true, // Helps with debugging in development mode
         },
     },
+    images: {
+        domains: ['img.daisyui.com'],
+    },
     experimental: {
         appDir: true, // Required for Next.js 15 App Router
     },

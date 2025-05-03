@@ -9,13 +9,13 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="text-white w-full">
+    <header className="text-white  w-full">
       <div className="flex justify-between items-center py-6 px-6 md:px-12 max-w-[1300px] mx-auto w-full">
         {/* Logo */}
-        <Image src="/icons/logo.png" alt="nav-logo" height={50} width={70}/>
+        <Image src="/icons/logo.png" alt="nav-logo" height={50} width={70} />
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center justify-center bg-gray-700 rounded-full gap-8 py-2 px-6">
+        <nav className="hidden md:flex items-center justify-center bg-white/10 rounded-full gap-8 py-2 px-6">
           <Link href="/" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Home</Link>
           <Link href="/doctor" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
           <Link href="/about" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">About</Link>
@@ -29,8 +29,16 @@ const Navbar = () => {
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex gap-3">
-          <button className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition cursor-pointer">Sign In</button>
-          <button className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform cursor-pointer">Sign Up</button>
+          <Link href="/login">
+            <button className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition cursor-pointer">
+              Sign In
+            </button>
+          </Link>
+          <Link href="/register">
+            <button className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform cursor-pointer">
+              Sign Up
+            </button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
