@@ -134,7 +134,7 @@ export default function DoctorListPage() {
             {/* Modal */}
             {isModalOpen && selectedDoctor && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
-                    <div className="bg-white/10 w-full max-w-md rounded-xl shadow-2xl p-6 relative animate-fade-in">
+                    <div className="bg-white w-full max-w-md rounded-xl shadow-2xl p-6 relative animate-fade-in">
                         <button
                             onClick={closeModal}
                             className="absolute top-2 right-3 text-gray-500 text-2xl hover:text-black"
@@ -142,41 +142,41 @@ export default function DoctorListPage() {
                             &times;
                         </button>
                         <h2 className="text-2xl font-bold mb-1 text-center text-blue-700">Book Appointment</h2>
-                        <p className="text-center text-sm text-gray-500 mb-6">
+                        <p className="text-center text-sm text-black mb-6">
                             with <strong>{selectedDoctor.name}</strong> ({selectedDoctor.specialty})
                         </p>
 
                         <form className="space-y-4">
                             <div>
-                                <label className="block text-sm text-white mb-1">Full Name</label>
+                                <label className="block text-sm text-black mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     placeholder="Enter your name"
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm text-white mb-1">Email</label>
+                                <label className="block text-sm text-black mb-1">Email</label>
                                 <input
                                     type="email"
                                     placeholder="Enter your email"
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm text-white mb-1">Appointment Date</label>
+                                <label className="block text-sm text-black mb-1">Appointment Date</label>
                                 <input
                                     type="date"
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm text-white mb-1">Time Slot</label>
+                                <label className="block text-sm text-black mb-1">Time Slot</label>
                                 <select
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-white"
+                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
                                     required
                                 >
                                     <option className="text-black" value="">Select Time</option>
