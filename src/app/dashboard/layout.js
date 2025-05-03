@@ -25,93 +25,68 @@ export default function DashboardLayout({ children }) {
     return (
         <div className="flex h-screen">
             {/* Sidebar */}
-            <div className="md:w-[11vw] bg-dark w-0 shadow-xl md:block hidden z-50">
-                <div className="h-[8vw] max-h-24 flex items-center">
+            <div className="group md:w-[4rem] hover:md:w-[11vw] bg-dark w-0 shadow-xl md:block hidden z-50 transition-all duration-300 ease-in-out overflow-hidden">
+                <div className="h-[8vw] max-h-24 flex items-center justify-center">
+
                     <Link href="/" style={{ display: "contents" }}>
                         <Image
                             src="/icons/logo.png"
                             alt="Logo"
-                            width={140}
+                            width={160}
                             height={80}
-                            className="m-auto 
-                                        w-12 h-8
-                                        md:w-16 md:h-10
-                                        lg:w-18 lg:h-10
-                                        xl:w-20 xl:h-12
-                                        2xl:w-24 2xl:h-14"
+                            className="w-16 h-10"
                         />
+
                     </Link>
                 </div>
 
-
                 <nav className="text-dark lg:!p-2 !p-1">
                     <ul className="text-[#1976D2] p-0">
-                        <li>
-                            <Link
-                                href="/dashboard"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <LayoutDashboard
-                                    className={`${pathname === "/dashboard"
-                                        ? "text-white"
-                                        : "text-[#1976D2]"
-                                        } 
-                  2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4`}
-                                />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Dashboard
-                                </span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/dashboard/courses"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard/courses"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <LibraryBig className="2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4" />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Analyze
-                                </span>
-                            </Link>
-                        </li>
+                        {[
+                            {
+                                href: "/dashboard",
+                                icon: LayoutDashboard,
+                                label: "Dashboard",
+                            },
+                            {
+                                href: "/dashboard/courses",
+                                icon: LibraryBig,
+                                label: "Analyze",
+                            },
+                            {
+                                href: "/dashboard/activity",
+                                icon: Waypoints,
+                                label: "Activity",
+                            },
+                            {
+                                href: "/dashboard/profile",
+                                icon: UserRound,
+                                label: "Profile",
+                            },
+                        ].map(({ href, icon: Icon, label }) => (
+                            <li key={href}>
+                                <Link
+                                    href={href}
+                                    className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold transition-all duration-300 ease-in-out
+                            ${pathname === href ? "rounded text-white" : ""}`}
+                                >
+                                    <Icon
+                                        className={`flex-shrink-0 mx-auto 
+                                        ${pathname === href ? "text-white" : "text-[#1976D2]"} 
+                                        w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8`}
+                                    />
 
-                        <li>
-                            <Link
-                                href="/dashboard/activity"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard/activity"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <Waypoints className="2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4" />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Activity
-                                </span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/dashboard/profile"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard/profile"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <UserRound className="2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4" />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Profile
-                                </span>
-                            </Link>
-                        </li>
+                                    <span
+                                        className="transition-all duration-300 ease-in-out overflow-hidden max-w-0 group-hover:max-w-[8vw] opacity-0 group-hover:opacity-100 whitespace-nowrap 
+                            2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px]"
+                                    >
+                                        {label}
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                 </nav>
-
             </div>
 
             {/* Mobile Sidebar */}
@@ -176,8 +151,8 @@ export default function DashboardLayout({ children }) {
             </AnimatePresence>
 
             {/* Main Content */}
-            <main className="flex-1 bg-gray-100 overflow-y-auto md:w-[89vw] w-full" style={{ color: "black" }}>
-                <nav className="fixed top-0 right-0 md:w-[89vw] w-full flex items-center justify-between !h-[6vw] max-h-24 shadow-md md:p-4 px-2 py-4 z-40" style={{ backgroundColor: "black" }}>
+            <main className="flex-1 bg-dark overflow-y-auto md:w-[89vw] w-full" style={{ color: "black" }}>
+                <nav className="fixed top-0 right-0  w-full flex items-center justify-between !h-[6vw] max-h-24 shadow-md md:p-4 px-2 py-4 z-40" style={{ backgroundColor: "#24282e" }}>
                     <div>
                         <Image
                             src="/Images/logo.svg"
@@ -212,8 +187,8 @@ export default function DashboardLayout({ children }) {
                     </div>
                 </nav>
                 <div
-                    style={{ marginTop: "min(10vw, 140px)" }}
-                    className="xl:px-4 px-3 overflow-y-auto md:!pt-0 sm:!pt-6 !pt-10"
+                // style={{ paddingTop: "min(10vw, 77px)" }}
+                // className="xl:px-4 px-3 overflow-y-auto md:!pt-0 sm:!pt-6 !pt-10"
                 >
                     {children}
 

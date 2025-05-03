@@ -16,15 +16,11 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center justify-center bg-white/10 rounded-full gap-8 py-2 px-6">
-          <Link href="/" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Home</Link>
-          <Link href="/doctor" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
-          <Link href="/about" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">About</Link>
-          <Link href="/contact" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Contact us</Link>
-          <Link href="/started">
-            <button className="bg-[#0067FF] text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform w-28 cursor-pointer">
-              Get Started
-            </button>
-          </Link>
+
+          <Link href="/" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">Home</Link>
+          <Link href="/doctor" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
+          <Link href="/about" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">About</Link>
+          <Link href="/contact" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">Contact us</Link>
         </nav>
 
         {/* Desktop Auth Buttons */}

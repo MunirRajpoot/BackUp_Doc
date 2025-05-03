@@ -237,7 +237,11 @@ export default function RegisterPage() {
 
                     <button
                         type="submit"
+<<<<<<< HEAD
                         className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
+=======
+                        className="cursor-pointer w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
+>>>>>>> df43490 (Doctor Dashboard Updates)
                     >
                         Sign Up
                     </button>
