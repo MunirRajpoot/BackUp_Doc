@@ -1,13 +1,27 @@
 'use client';
 import React, { useState } from 'react'
 import PatientModal from '@/component/PatientModel/PatientModel';
-
+import Link from "next/link";
+import Image from "next/image";
 const PatientSidebar = () => {
     const [showModal, setShowModal] = useState(false);
     return (
         <div
-            className="bg-[#1E1E2F] h-screen text-white p-3 pt-[77px] w-full md:w-[18rem]"
+            className="bg-[#1E1E2F] h-screen text-white p-3 pt-6 w-full md:w-[18rem]"
         >
+            <div className="flex items-center justify-center gap-3 mb-5">
+                <Link href="/" className="flex items-center">
+                    <Image
+                        src="/icons/logo.png"
+                        alt="Logo"
+                        width={160}
+                        height={80}
+                        className="w-16 h-10"
+                    />
+                </Link>
+                <p className="text-white text-lg font-semibold">BACKUPDOC</p>
+            </div>
+
             {/* Search Input */}
             <div className="flex items-center bg-gray-800 border mt-4 border-white/20 rounded-md px-3 py-2 w-full mb-4">
                 <svg
