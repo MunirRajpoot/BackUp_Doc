@@ -2,21 +2,20 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react"; // You can also use Heroicons if preferred
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="text-white  w-full">
-      <div className="flex justify-between items-center py-6 px-6 md:px-12 max-w-[1300px] mx-auto w-full">
+    <header className="text-white w-full flex justify-center bg-transparent">
+      <div className="max-w-[1300px] w-full flex justify-between items-center py-6 px-6 md:px-12">
         {/* Logo */}
         <Image src="/icons/logo.png" alt="nav-logo" height={50} width={70} />
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center justify-center bg-white/10 rounded-full gap-8 py-2 px-6">
-
           <Link href="/" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">Home</Link>
           <Link href="/doctor" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
           <Link href="/about" className="text-white text-md font-medium hover:text-[#0067FF] transition-colors">About</Link>
@@ -47,7 +46,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Drawer */}
       {menuOpen && (
-        <div className="md:hidden bg-gray-800 px-6 py-4 flex flex-col gap-4 animate-slideDown">
+        <div className="md:hidden w-full bg-gray-800 px-6 py-4 flex flex-col gap-4 animate-slideDown">
           <Link href="/" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Home</Link>
           <Link href="/doctor" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">Doctor</Link>
           <Link href="/about" className="text-white text-sm font-medium hover:text-[#0067FF] transition-colors">About</Link>
