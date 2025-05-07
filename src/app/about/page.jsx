@@ -2,26 +2,47 @@ import React from 'react';
 import { MdKeyboardDoubleArrowDown } from 'react-icons/md';
 import Link from 'next/link';
 import teamData from '../staticData.js'; // Assuming you have a teamData.js file with the team member data
+import Image from 'next/image';
 
 
 const AboutPage = () => {
     return (
         <div className="container mx-auto px-4 py-20">
+            {/* <div className="h-auto lg:h-[250px] mt-[50px] bg-gradient-to-r from-[#0067FF] to-black rounded-2xl text-white mb-[30px]">
+                <div className="flex flex-col justify-center h-full p-10  max-w-5xl  text-left">
+                    <h1 className="text-2xl lg:text-2xl font-bold mb-4">About Us</h1>
+                    <p className="text-base lg:text-md mb-6 leading-relaxed text-white">
+                        We are a passionate team dedicated to building innovative solutions that solve real-world problems.
+                        Our mission is to deliver top-notch experiences through design, technology, and creativity.
+                        With a focus on user-centric development and a love for innovation, we strive to make a lasting impact.
+                    </p>
+                    <button className="w-fit cursor-pointer bg-white  text-black font-semibold py-3 px-6 rounded-lg shadow transition duration-300 flex items-center gap-2">
+                        Learn more
+                        <MdKeyboardDoubleArrowDown className="text-xl" />
+                    </button>
+                </div>
+            </div> */}
+
             {/* Header Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-6xl mx-auto mb-25">
+            <div className="grid grid-cols-1 mt-5 md:grid-cols-2 gap-10 items-center max-w-6xl mx-auto mb-25">
                 <div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+                    <Image
+                        src={'/images/image 6.png'}
+                        alt="About Us"
+                        height={500}
+                        width={500}
+                    />
+                </div>
+                <div className='mt-10'>
+                    <h1 className="text-4xl md:text-5xl mb-5 font-bold text-white leading-tight">
                         Join The Future of <br />
                         <span className="text-[#0067FF]">Dental Diagnostics</span>
                     </h1>
-                </div>
-                <div>
                     <p className="text-lg text-white mb-6">
                         Backupdoc AI meets Dentistry to streamline the process of second opinions for dental radiographs.
                     </p>
-                    <button className="bg-[#0067FF] hover:bg-[#003E99] text-white font-semibold py-3 px-6 rounded-lg shadow transition duration-300 flex gap-1 cursor-pointer">
-                        Learn more
-                        <MdKeyboardDoubleArrowDown className='mt-1' />
+                    <button className="w-fit cursor-pointer bg-white  text-black font-semibold py-3 px-6 rounded-lg shadow transition duration-300 flex items-center gap-2">
+                        Sign Up
                     </button>
                 </div>
             </div>
