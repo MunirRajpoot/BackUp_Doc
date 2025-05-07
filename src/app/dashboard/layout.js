@@ -11,22 +11,28 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
+import {  Activity, FileBarChart2,HomeIcon, User, Brain } from "lucide-react";
+
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
+  
+
   const navItems = [
-    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/dashboard/analyze", icon: LibraryBig, label: "Analyze" },
-    { href: "/dashboard/activity", icon: Waypoints, label: "Activity" },
-    { href: "/dashboard/profile", icon: UserRound, label: "Profile" },
+    { href: "/", icon: HomeIcon, label: "home" },           // Dashboard icon
+    { href: "/dashboard", icon: LayoutDashboard, label: "Patients Management" },           // Dashboard icon
+    { href: "/dashboard/analyze", icon: Brain, label: "Analyze" },               // Brain icon for analysis
+    { href: "/dashboard/activity", icon: Activity, label: "Activity" },          // Activity icon
+    { href: "/dashboard/profile", icon: User, label: "Profile" },                // User profile icon
   ];
+  
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Sidebar */}
-      <div className="group flex flex-col bg-[#1e2227] text-white transition-all duration-300 ease-in-out w-16 hover:w-48 z-10">
+      <div className="group flex flex-col bg-[#1e2227] text-white transition-all duration-300 ease-in-out w-16 hover:w-54 z-10">
         <nav className="flex flex-col mt-4 space-y-2 px-2">
           {navItems.map(({ href, icon: Icon, label }) => {
             const isActive = pathname === href;
