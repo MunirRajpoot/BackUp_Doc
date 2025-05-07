@@ -89,7 +89,7 @@ export default function HomePage() {
             <span className="block">Doctor Meeting</span>
           </h2>
           <p className="pb-4 text-sm sm:text-base text-gray-200 max-w-[95%] sm:max-w-[90%]">
-            Book your appointment today with one of our experienced medical specialists. Whether it's routine care or a specific concern, we’re here to help with professional, compassionate service.
+            Book your appointment today with one of our experienced medical specialists. Whether it routine care or a specific concern, we’re here to help with professional, compassionate service.
           </p>
           <button className="bg-[#0067FF] text-white px-5 py-2 rounded-md font-medium hover:bg-blue-700 transition mt-3 sm:mt-4">
             Book Now
