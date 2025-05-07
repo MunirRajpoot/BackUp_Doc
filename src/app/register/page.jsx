@@ -125,11 +125,7 @@ const Page = () => {
             <button
               onClick={handleSubmit}
               disabled={isSubmit}
-<<<<<<< HEAD
-              className={`w-full ${isSubmit ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0067FF] hover:bg-[#003E99]'
-=======
               className={`w-full cursor-pointer ${isSubmit ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0067FF] hover:bg-[#003E99]'
->>>>>>> df43490 (Doctor Dashboard Updates)
                 } text-white text-base font-medium py-3 rounded-md transition-colors`}
             >
               Sign Up

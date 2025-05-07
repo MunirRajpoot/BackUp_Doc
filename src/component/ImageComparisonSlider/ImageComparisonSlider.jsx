@@ -28,13 +28,12 @@ export default function ImageComparisonSlider() {
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
     >
-      {/* Right Image (after) */}
+
       <Image
-        src="/images/image 8.png"
-        alt="After Image"
+        src="/images/image 7.png"
+        alt="Before Image"
         layout="fill"
         objectFit="cover"
-        className="absolute inset-0"
       />
 
       {/* Left Image (before) with clipping */}
@@ -42,11 +41,13 @@ export default function ImageComparisonSlider() {
         className="absolute inset-0 overflow-hidden"
         style={{ width: `${sliderPosition}%` }}
       >
+        {/* Right Image (after) */}
         <Image
-          src="/images/image 7.png"
-          alt="Before Image"
+          src="/images/image 8.png"
+          alt="After Image"
           layout="fill"
           objectFit="cover"
+          className="absolute inset-0"
         />
       </div>
 
