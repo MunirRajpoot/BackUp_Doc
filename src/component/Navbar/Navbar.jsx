@@ -18,7 +18,7 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center bg-white/10 backdrop-blur-md rounded-full gap-8 py-2 px-6">
-          {["Home", "Doctor", "About", "Contact us"].map((item, idx) => (
+          {["Home", "Doctor", "About", "Contact"].map((item, idx) => (
             <Link
               key={idx}
               href={`/${item === "Home" ? "" : item.toLowerCase().replace(" ", "")}`}
