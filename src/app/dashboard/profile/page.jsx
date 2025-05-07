@@ -18,8 +18,8 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-start p-2 pt-[90px]">
-            <div className="w-full max-w-lg rounded-xl shadow-md p-6 bg-white">
+        <div className="h-screen overflow-y-auto flex justify-center items-start p-2 pt-[60px]">
+            <div className="w-full max-w-lg rounded-xl shadow-md p-6 bg-white mb-6">
                 <h2 className="text-gray-800 text-2xl font-semibold text-center mb-4">
                     Profile Settings
                 </h2>
