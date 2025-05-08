@@ -35,10 +35,10 @@ export default function HomePage() {
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-4">
-              <button className="bg-[#0067FF] text-white px-6 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform">
+              <button className="cursor-pointer bg-[#0067FF] text-white px-6 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform">
                 Get Started
               </button>
-              <button className="border border-white text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition">
+              <button className="cursor-pointer border border-white text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition">
                 Sign In
               </button>
             </div>

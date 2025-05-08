@@ -4,9 +4,20 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "@/redux/slice/userSlice";
+import { persistor } from "@/redux/store";
+import { useRouter } from "next/navigation";
+
+
 
 const Navbar = () => {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const userState = useSelector((state) => state.user) || {};
+  const { isAuthenticated } = userState;
+  const dispatch = useDispatch();
+
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-transparent">
@@ -31,16 +42,38 @@ const Navbar = () => {
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex gap-3">
-          <Link href="/login">
-            <button className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition">
-              Sign In
-            </button>
-          </Link>
-          <Link href="/register">
-            <button className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform">
-              Sign Up
-            </button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link href="#" onClick={() => {
+                dispatch(logout());
+                delAuthToken("auth_token");
+                persistor.purge(); // <- this clears persisted Redux state
+                router.push("/"); 
+              }}>
+                <button className="cursor-pointer border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition">
+                  Logout
+                </button>
+              </Link>
+             
+                <button onClick={()=>router.push('/dashboard')} className="cursor-pointer bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform">
+                  Dashboard
+                </button>
+          
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <button className="cursor-pointer border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition">
+                  Sign In
+                </button>
+              </Link>
+              <Link href="/register">
+                <button className="cursor-pointer bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform">
+                  Sign Up
+                </button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
