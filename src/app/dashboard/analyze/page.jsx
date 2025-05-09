@@ -1,125 +1,115 @@
 "use client";
 
 import PatientSidebar from '@/component/PatientSidebar/PatientSidebar';
-import UploadXrayModal from '@/component/UploadXrayModel/UploadXrayModel';
-import React, { useRef, useState } from 'react';
-import { IoCloudUpload } from "react-icons/io5";
+import XrayGrid from '@/component/XrayGrid/XrayGrid';
+import React, { useRef, useState, useEffect } from 'react';
+import { useSelector } from "react-redux";
 
-const xrayImages = [
-    // Replace with your actual image URLs or objects
-    ...Array(20).fill("/images/image 8.png"), // example placeholders
-];
+import { Image } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 const Page = () => {
-    const [openModal, setOpenModal] = useState(false);
+    const router = useRouter();
+    const userState = useSelector((state) => state.user) || {};
+    const { user_type } = userState;
 
-
-    const fileInputRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const fileInputRef = useRef(null);
 
     const handleClick = () => {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setPreviewUrl(e.target.result);
-            };
-            reader.readAsDataURL(file);
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
         }
     };
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const xraysPerPage = 15;
-    const totalPages = Math.ceil(xrayImages.length / xraysPerPage);
+    const handlePaste = (e) => {
+        const items = e.clipboardData.items;
+        for (let item of items) {
+            if (item.type.indexOf("image") !== -1) {
+                const file = item.getAsFile();
+                const url = URL.createObjectURL(file);
+                setPreviewUrl(url);
+                break;
+            }
+        }
+    };
 
-    const currentXrays = xrayImages.slice(
-        (currentPage - 1) * xraysPerPage,
-        currentPage * xraysPerPage
+    useEffect(() => {
+        document.addEventListener("paste", handlePaste);
+        return () => {
+            document.removeEventListener("paste", handlePaste);
+        };
+    }, []);
+
+    const renderDoctorView = () => (
+        <div className="flex text-white h-screen bg-[#0f172a]">
+            <PatientSidebar />
+            <div className='overflow-y-auto h-full'>
+                <XrayGrid />
+            </div>
+        </div>
     );
 
-    return (
-        <div className="flex text-white h-screen bg-[#0f172a] overflow-hidden">
-            <PatientSidebar />
+    const renderPatientView = () => (
+        <div className="p-6 flex flex-col md:flex-row gap-6 pt-[100px]">
+            {/* Left: Upload Section */}
+            <div className="flex-1 bg-white/10  rounded-2xl min-h-[400px] shadow-sm flex items-center justify-center p-6">
+                <div className="text-center">
+                    {previewUrl ? (
+                        <img src={previewUrl} alt="Uploaded" className="max-h-90 mx-auto rounded-lg" />
+                    ) : (
+                        <>
+                            <div
+                                className="text-5xl mb-4 flex justify-center items-center text-blue-600 cursor-pointer"
+                                onClick={handleClick}
+                            >
+                                <Image className='w-20 h-20'/>
+                            </div>
+                            <p className="text-sm mb-2">
+                                You can select multiple images or single image from your {' '}
+                                <span
+                                    className="text-blue-600 font-semibold cursor-pointer"
+                                    onClick={()=>router.push('/dashboard')}
+                                >
+                                    upload space
+                                </span>
+                            </p>
+                           
+                        </>
+                    )}
+                </div>
+            </div>
 
-            <div className="flex-1 bg-[#0B0F19] text-white px-6 py-8 overflow-y-auto">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#111827] p-6 rounded-2xl shadow-lg mb-6">
+            {/* Right: Sidebar */}
+            <div className="w-full md:w-[350px] rounded-lg flex flex-col justify-between">
+                <div className='bg-white/10 rounded-2xl p-6 min-h-[50px] border shadow-sm'>
+                    <h2 className="text-lg font-semibold mb-4">
+                        Hi! <span className="font-bold">Usman Tahir</span>
+                    </h2>
                     <div>
-                        <h1 className="text-2xl font-bold">Usman Ali</h1>
-                        <p className="text-sm text-gray-400 mt-1">
-                            13 years • male • 18728977554
-                        </p>
+                        <p className="text-sm text-white mb-2">Analyze X-Ray</p>
+                        <button className="bg-blue-600 text-white font-medium py-2 rounded-lg w-full hover:bg-blue-500 transition cursor-pointer">
+                            Start Process
+                        </button>
                     </div>
-                    <div className="flex items-center space-x-4 mt-4 md:mt-0">
-                        <button
-                            onClick={() => setOpenModal(true)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer"
-                        >
-                            Upload X-Ray
+                    <div className='my-9'>
+                        
+                        <button className="bg-blue-600 text-white font-medium py-2 rounded-lg w-full hover:bg-blue-500 transition cursor-pointer">
+                            Consult Dentist
                         </button>
                     </div>
                 </div>
-
-                {/* Main Content (X-ray display area) */}
-                <div className="bg-[#111827] rounded-2xl h-[60vh] md:h-[70vh] w-full mb-6">
-
-                    {/* Grid of X-rays */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {currentXrays.map((img, idx) => (
-                            <div
-                                key={idx}
-                                className="relative bg-[#1F2937] rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow"
-                            >
-                                {/* Checkbox */}
-                                <input
-                                    type="checkbox"
-                                    className="absolute top-2 left-2 w-5 h-5 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                                    value={idx}
-                                // onChange={...} // Optional: Add selection logic
-                                />
-
-                                {/* X-ray Image */}
-                                <img
-                                    src={img}
-                                    alt={`X-ray ${idx + 1}`}
-                                    className="w-full h-32 object-cover"
-                                />
-                            </div>
-                        ))}
-                    </div>
-
-                </div>
-
-                {/* Footer: Pagination + Analyze Button */}
-
-                <div className="flex justify-end items-center space-x-4">
-                    <div className="flex justify-end  space-x-2">
-                        {[...Array(totalPages)].map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrentPage(i + 1)}
-                                className={`px-3 py-1 rounded-md ${currentPage === i + 1
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-[#1F2937] text-gray-300 hover:bg-[#374151]"
-                                    }`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                    </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold">
-                        Analyze
-                    </button>
-                </div>
-
             </div>
-            <UploadXrayModal isOpen={openModal} onClose={() => setOpenModal(false)} />
         </div>
-
     );
+
+    return user_type === "patient" ? renderPatientView() : renderDoctorView();
 };
 
 export default Page;
