@@ -76,14 +76,14 @@ const UploadXrayModal = ({ isOpen, onClose }) => {
             Click or drag file to upload
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Supports DICOM, JPG, JPEG, PNG
+            Supports JPG, JPEG, PNG
           </p>
           <input
             ref={fileInputRef}
             type="file"
             onChange={handleFileChange}
             className="hidden"
-            accept=".dcm, .jpg, .jpeg, .png"
+            accept=".jpg, .jpeg, .png"
           />
         </div>
 

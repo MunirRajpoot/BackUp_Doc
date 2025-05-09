@@ -6,19 +6,21 @@ import {
   Waypoints,
   UserRound,
   Clipboard,
+  FileBarChart2Icon,
+  UploadCloud,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import {  Activity, FileBarChart2,HomeIcon, User, Brain } from "lucide-react";
-
+import { Activity, FileBarChart2, HomeIcon, User, Brain } from "lucide-react";
+import { useSelector } from "react-redux";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-
-  
+  const userState = useSelector((state) => state.user) || {};
+  const { user_type } = userState;
 
   const navItems = [
     { href: "/", icon: HomeIcon, label: "home" },           // Dashboard icon
@@ -27,7 +29,7 @@ export default function DashboardLayout({ children }) {
     { href: "/dashboard/activity", icon: Activity, label: "Activity" },          // Activity icon
     { href: "/dashboard/profile", icon: User, label: "Profile" },                // User profile icon
   ];
-  
+
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
@@ -35,27 +37,33 @@ export default function DashboardLayout({ children }) {
       <div className="group flex flex-col bg-[#1e2227] text-white transition-all duration-300 ease-in-out w-16 hover:w-54 z-10">
         <nav className="flex flex-col mt-4 space-y-2 px-2">
           {navItems.map(({ href, icon: Icon, label }) => {
+            // Skip "Patient Management" for patients
+            if (user_type === "patient" && label === "Patients Management") {
+              label = "Upload X-Ray";
+              Icon = UploadCloud;
+            }
+
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 p-2 rounded-md transition-all duration-300 ease-in-out ${
-                  isActive
-                    ? "bg-[#1976D2] text-white"
-                    : "text-[#1976D2] hover:bg-[#2b3139]"
-                }`}
+                className={`flex items-center gap-3 p-2 rounded-md transition-all duration-300 ease-in-out ${isActive
+                  ? "bg-[#1976D2] text-white"
+                  : "text-[#1976D2] hover:bg-[#2b3139]"
+                  }`}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
                 <span
                   className="whitespace-nowrap opacity-0 translate-x-[-8px] group-hover:opacity-100 group-hover:translate-x-0 
-                  transition-all duration-300 ease-in-out"
+        transition-all duration-300 ease-in-out"
                 >
                   {label}
                 </span>
               </Link>
             );
           })}
+
         </nav>
       </div>
 
@@ -106,11 +114,10 @@ export default function DashboardLayout({ children }) {
                   <li key={ind}>
                     <Link
                       href={href}
-                      className={`flex items-center gap-3 !p-2.5 rounded-lg font-bold ${
-                        pathname === href
-                          ? "bg-[#1976D2] text-white"
-                          : "text-[#1976D2]"
-                      }`}
+                      className={`flex items-center gap-3 !p-2.5 rounded-lg font-bold ${pathname === href
+                        ? "bg-[#1976D2] text-white"
+                        : "text-[#1976D2]"
+                        }`}
                       onClick={() => setIsOpen(false)}
                     >
                       <Icon className="w-5 h-5" />
