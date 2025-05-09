@@ -6,9 +6,12 @@ import UploadXrayModal from '../UploadXrayModel/UploadXrayModel';
 import { useSelector } from "react-redux";
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 // The XrayGrid component displays paginated X-ray images with the ability to upload new ones
 const XrayGrid = () => {
+
+    const router = useRouter();
     const [openModal, setOpenModal] = useState(false); // Controls the upload modal
     const [data, setData] = useState([]); // Stores X-ray image data
     const [selectedImages, setSelectedImages] = useState([]);
