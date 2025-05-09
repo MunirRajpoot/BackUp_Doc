@@ -201,3 +201,19 @@
         <TestimonialSection />
 
       </div>
+
+
+<div
+                                className="text-5xl mb-4 flex justify-center items-center text-blue-600 cursor-pointer"
+                            >
+                                <Image className='w-20 h-20' />
+                            </div>
+                            <p className="text-sm mb-2">
+                                You can select multiple images or single image from your {' '}
+                                <span
+                                    className="text-blue-600 font-semibold cursor-pointer"
+                                    onClick={() => router.push('/dashboard')}
+                                >
+                                    upload space
+                                </span>
+                            </p>

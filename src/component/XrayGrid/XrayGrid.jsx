@@ -90,7 +90,7 @@ const XrayGrid = () => {
             );
 
             if (response.status === 200) {
-                router.push(`/dashboard/analyze/?process=${response.data?.task_id}`); // Redirect to the annotation page
+                router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
             }
         } catch (error) {
             console.error("Error sending selected image IDs:", error);
