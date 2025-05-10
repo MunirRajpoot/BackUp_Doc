@@ -271,6 +271,7 @@ export default function DoctorListPage() {
                                         Book
                                     </button>
                                     <button className="flex items-center justify-center w-10 h-10 border border-blue-600 text-white rounded-full hover:bg-blue-500 transition cursor-pointer">
+                                        
                                         <FaComments />
                                     </button>
                                 </div>

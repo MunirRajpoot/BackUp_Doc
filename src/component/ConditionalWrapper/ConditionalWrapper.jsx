@@ -15,6 +15,7 @@ export default function ConditionalWrapper({ children }) {
     "reset-password",
     "dashboard",
     "thankyou",
+    "chat-system"
   ];
 
   const hideFooterRoutes = [...hideNavbarRoutes];

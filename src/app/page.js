@@ -47,56 +47,50 @@ export default function HomePage() {
         </div>
       </div>
       {/* Appointment Section */}
-      <div className="appointment-box flex flex-col lg:flex-row justify-center items-center w-full px-4 sm:px-6 lg:px-10 py-10 md:py-20  mb-10">
-        {/* Image and overlapping card */}
-        <div className="relative w-full lg:w-1/2 flex justify-center z-10">
+      <div className="appointment-box w-full px-4 sm:px-6 lg:px-10 py-10 md:py-20 mb-10 flex flex-col lg:flex-row items-center justify-between gap-10">
+  {/* Left Side: Image */}
+  <div className="relative w-full lg:w-1/2 flex justify-center items-center">
+    {/* Main Image */}
+    <Image
+      src="/images/app_img.png"
+      alt="Doctor Team"
+      width={400}
+      height={400}
+      priority
+      className="rounded-xl w-[80%] sm:w-[70%] md:w-[400px] h-auto z-20"
+    />
 
-          {/* Doctor Image */}
-          <Image
-            src="/images/app_img.png"
-            alt="Doctor Team"
-            width={400}
-            height={400}
-            priority
-            className="rounded-xl z-20 relative w-[80%] sm:w-[60%] md:w-[400px] h-auto"
-          />
+    {/* Pyramid Shape */}
+    <div className="hidden md:block absolute -bottom-16 left-6 w-20 sm:w-24 lg:w-28">
+      <Image
+        src="/images/pyramid.png"
+        alt="Decorative Pyramid"
+        width={300}
+        height={300}
+        className="w-full h-auto object-contain"
+      />
+    </div>
+  </div>
 
-          {/* Overlapping Card */}
-          {/* <div className="absolute -bottom-12 right-2 sm:right-6 md:-right-10 bg-white rounded-xl shadow-lg p-4 sm:p-5 w-[90%] sm:w-72 md:w-80 z-30">
-            <h3 className="font-bold text-base sm:text-lg text-black">Expert Medical Care</h3>
-            <p className="text-xs sm:text-sm text-black mt-2">
-              Our dedicated team of healthcare professionals is committed to delivering top-tier care with compassion, innovation, and expertise. Trust us for personalized attention and modern medical solutions.
-            </p>
-          </div> */}
+  {/* Right Side: Text Section */}
+  <div className="w-full lg:w-1/2 px-2 sm:px-4 text-white mt-10 lg:mt-0">
+    <p className="text-sm sm:text-base font-medium">Appointment</p>
 
-          {/* Pyramid Shape – Hidden on small screens */}
-          <div className="hidden md:block absolute -bottom-20 left-2 sm:left-6 w-16 sm:w-20 md:w-24 lg:w-28 h-auto z-10">
-            <Image
-              src="/images/pyramid.png"
-              alt="Decorative Pyramid"
-              width={300}
-              height={300}
-              className="w-full h-auto object-contain"
-            />
-          </div>
-        </div>
+    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0067FF] py-3 sm:py-5 leading-tight">
+      Meet Our Specialist
+      <span className="block">This Doctor Meeting</span>
+    </h2>
 
-        {/* Text section */}
-        <div className="w-full lg:w-1/2 text-white text-left px-4 sm:px-0 mt-[100px]">
+    <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-[90%] mb-5">
+      Book your appointment today with one of our experienced medical specialists. Whether it’s routine care or a specific concern, we’re here to help with professional, compassionate service.
+    </p>
 
-          <p className="text-base sm:text-lg font-semibold">Appointment</p>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0067FF] py-3 sm:py-5">
-            Meet Our Specialist This
-            <span className="block">Doctor Meeting</span>
-          </h2>
-          <p className="pb-4 text-sm sm:text-base text-gray-200 max-w-[95%] sm:max-w-[90%]">
-            Book your appointment today with one of our experienced medical specialists. Whether it routine care or a specific concern, we’re here to help with professional, compassionate service.
-          </p>
-          <button className="bg-[#0067FF] text-white px-5 py-2 rounded-md font-medium hover:bg-blue-700 transition mt-3 sm:mt-4">
-            Book Now
-          </button>
-        </div>
-      </div>
+    <button className="bg-[#0067FF] hover:bg-blue-700 transition-colors duration-300 text-white px-6 py-2.5 rounded-md font-medium">
+      Book Now
+    </button>
+  </div>
+</div>
+
 
       <section className="text-white py-16 px-4 md:px-12 lg:px-20">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-stretch">
@@ -116,7 +110,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {[
                 { label: 'Teeth X-Ray Analysis', icon: <ScanLine className="w-6 h-6 me-2" /> },
-                { label: 'Book Appointment with Doctor', icon: <CalendarCheck className="w-6 h-6 me-2" /> },
+                { label: 'Book Appointment', icon: <CalendarCheck className="w-6 h-6 me-2" /> },
                 { label: 'Chat with Live Doctors', icon: <MessagesSquare className="w-6 h-6 me-2" /> },
                 { label: 'See Demo', icon: <PlayCircle className="w-6 h-6 me-2" /> },
               ].map((feature, idx) => (
@@ -152,7 +146,12 @@ export default function HomePage() {
       </div>
       {/* Testimonial Section */}
       <TestimonialSection />
-      <ChatModal/>
+      <ChatModal />
     </>
   );
 }
+
+
+
+
+
