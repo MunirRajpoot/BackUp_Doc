@@ -16,6 +16,7 @@ import React, { useState } from "react";
 import { Activity, FileBarChart2, HomeIcon, User, Brain } from "lucide-react";
 import { useSelector } from "react-redux";
 
+
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);

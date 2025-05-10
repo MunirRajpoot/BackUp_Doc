@@ -2,7 +2,7 @@
 import Cookies from 'js-cookie';
 import { useEffect, useRef, useState } from 'react';
 
-export default function useOnlineDoctors(user) {
+export default function useOnlineDoctors() {
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const socketRef = useRef(null);
 
@@ -23,8 +23,10 @@ export default function useOnlineDoctors(user) {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === 'online_users') {
-        setOnlineDoctors(data.users);
+      if (data.type === 'online_doctors') {
+
+        console.log('[WebSocket] Online users:', data.data);
+        setOnlineDoctors(data.data);
       }
     };
 
@@ -35,7 +37,7 @@ export default function useOnlineDoctors(user) {
     return () => {
       socket.close();
     };
-  }, [user]);
+  },[]);
 
   return { onlineDoctors };
 }

@@ -6,6 +6,7 @@ import { FaComments } from "react-icons/fa";
 import { FaMapMarkerAlt, FaSearch, FaStar } from 'react-icons/fa';
 import { Pencil, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from "next/image";
+import OnlineDoctors from "@/component/OnlineDoctors/OnlineDoctors";
 
 const doctors = [
     {
@@ -228,28 +229,7 @@ export default function DoctorListPage() {
             </div>
 
 
-            <div className="py-10 px-4 md:px-16 mb-8">
-                <h2 className="text-white text-xl md:text-2xl font-semibold mb-8">
-                    Online Dentist Consultation
-                </h2>
-
-                <div className="flex flex-wrap justify-start gap-20">
-                    {onlineDoctors.map((doctor) => (
-                        <div key={doctor.id} className="relative w-24 h-24 md:w-28 md:h-28">
-                            <img
-                                src={doctor.image}
-                                alt={doctor.name}
-                                className="rounded-full w-full h-full object-cover border-2 border-white"
-                            />
-                            {/* Status dot */}
-                            <span
-                                className={`absolute top-0 right-0 w-4 h-4 rounded-full border-2 border-white 
-                ${doctor.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}
-                            ></span>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <OnlineDoctors/>
 
             <div className="py-10 px-4 md:px-16 mb-8 max-w-screen-xl mx-auto">
                 <h1 className="text-3xl font-bold text-start text-white mb-10">
