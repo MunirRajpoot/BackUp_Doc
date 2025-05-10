@@ -69,56 +69,56 @@ const Page = () => {
     );
 
     const renderPatientView = () => (
-    <div className="p-6 flex flex-col md:flex-row gap-6 pt-[100px]">
-        {/* Left: Results / Upload Section */}
-        <div className="flex-1 bg-white/10 rounded-2xl p-5 shadow-sm flex items-center justify-center">
-            {pending ? (
-                <p className="text-white text-center">Processing images... Please wait.</p>
-            ) : results.length === 1 ? (
-                <div className="w-full flex justify-center items-center h-96">
-                    <img
-                        src={`${process.env.NEXT_PUBLIC_SERVER_URL}${results[0].image_url}`}
-                        alt="Analyzed Result"
-                        className="max-w-100 h-auto rounded-xl object-contain shadow-lg"
-                    />
-                </div>
-            ) : (
-                <div className="flex overflow-x-auto gap-4 w-full h-96 pb-2">
-                    {results.map((result, index) => (
-                        <div
-                            key={index}
-                            className=" flex-shrink-0"
-                        >
-                            <img
-                                src={`${process.env.NEXT_PUBLIC_SERVER_URL}${result.image_url}`}
-                                alt={`Result ${index}`}
-                                className="h-auto rounded-xl object-contain shadow-md"
-                                width={400}
-                                height={400}
-                                loading='lazy'
-                            />
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+        <div className="p-6 flex flex-col md:flex-row gap-6 pt-[100px]">
+            {/* Left: Results / Upload Section */}
+            <div className="flex-1 bg-white/10 rounded-2xl p-5 shadow-sm flex items-center justify-center">
+                {pending ? (
+                    <p className="text-white text-center">Processing images... Please wait.</p>
+                ) : results.length === 1 ? (
+                    <div className="w-full flex justify-center items-center h-96">
+                        <img
+                            src={`${process.env.NEXT_PUBLIC_SERVER_URL}${results[0].image_url}`}
+                            alt="Analyzed Result"
+                            className="max-w-100 h-auto rounded-xl object-contain shadow-lg"
+                        />
+                    </div>
+                ) : (
+                    <div className="flex overflow-x-auto gap-4 w-full h-96 pb-2">
+                        {results.map((result, index) => (
+                            <div
+                                key={index}
+                                className=" flex-shrink-0"
+                            >
+                                <img
+                                    src={`${process.env.NEXT_PUBLIC_SERVER_URL}${result.image_url}`}
+                                    alt={`Result ${index}`}
+                                    className="h-auto rounded-xl object-contain shadow-md"
+                                    width={400}
+                                    height={400}
+                                    loading='lazy'
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-        {/* Right: Sidebar */}
-        <div className="w-full md:w-[350px] rounded-lg flex flex-col justify-between">
-            <div className='bg-white/10 rounded-2xl p-6 border shadow-sm'>
-                <h2 className="text-lg font-semibold mb-4 text-white">
-                    Hi! <span className="font-bold">Usman Tahir</span>
-                </h2>
-              
-                <div className='my-9'>
-                    <button className="bg-blue-600 text-white font-medium py-2 rounded-lg w-full hover:bg-blue-500 transition cursor-pointer">
-                        Consult Dentist
-                    </button>
+            {/* Right: Sidebar */}
+            <div className="w-full md:w-[350px] rounded-lg flex flex-col justify-between">
+                <div className='bg-white/10 rounded-2xl p-6 border shadow-sm'>
+                    <h2 className="text-lg font-semibold mb-4 text-white">
+                        Hi! <span className="font-bold">Usman Tahir</span>
+                    </h2>
+
+                    <div className='my-9'>
+                        <button className="bg-blue-600 text-white font-medium py-2 rounded-lg w-full hover:bg-blue-500 transition cursor-pointer">
+                            Consult Dentist
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
 
     return user_type === "patient" ? renderPatientView() : renderDoctorView();
 };
