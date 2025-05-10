@@ -11,6 +11,7 @@ import Image from 'next/image';
 import MeshNetworkBackground from '@/component/MeshNetworkBackground/MeshNetworkBackground';
 import ImageComparisonSlider from '@/component/ImageComparisonSlider/ImageComparisonSlider';
 import TestimonialSection from '@/component/TestimonialSection/TestimonialSection';
+import ChatModal from '@/component/ChatModal/ChatModal';
 
 export default function HomePage() {
   return (
@@ -151,6 +152,7 @@ export default function HomePage() {
       </div>
       {/* Testimonial Section */}
       <TestimonialSection />
+      <ChatModal/>
     </>
   );
 }

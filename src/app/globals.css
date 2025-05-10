@@ -2,6 +2,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @plugin "daisyui"; */
 :root {
   --background: #24282E; /* Pure black */
   --foreground: #ffffff; /* White text for contrast */
