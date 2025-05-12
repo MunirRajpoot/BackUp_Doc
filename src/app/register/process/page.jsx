@@ -72,7 +72,7 @@ export default function RegisterPage() {
     const onSubmit = async (data) => {
     
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/register`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

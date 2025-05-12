@@ -8,7 +8,6 @@ import Cookies from "js-cookie";
 import XrayGrid from "@/component/XrayGrid/XrayGrid";
 import { useRouter } from "next/navigation";
 
-
 /**
  * DashboardPage handles rendering of different dashboard views
  * based on the user_type from the Redux store.
@@ -16,6 +15,7 @@ import { useRouter } from "next/navigation";
 const DashboardPage = () => {
 
   const router = useRouter();
+  const [isOnline, setIsOnline] = useState(false);
 
   // Retrieve the user state from Redux store
   const userState = useSelector((state) => state.user) || {};
@@ -25,6 +25,7 @@ const DashboardPage = () => {
   const [uploadProgress, setUploadProgress] = useState({});
   const [isUploading, setIsUploading] = useState(false);
   const [data, setData] = useState([]);
+
 
   // Handle file selection
   const handleFileChange = (e) => {
@@ -203,8 +204,11 @@ const DashboardPage = () => {
    */
   const renderDefaultView = () => (
     <div className="flex text-white flex-col md:flex-row h-screen bg-[#0f172a]">
-      <PatientSidebar />
+
       <div className="flex flex-col items-center justify-center w-full h-screen bg-[#0f172a]">
+       <button onClick={toggleDoctorStatus}>
+        {doctorStatus === "online" ? "Set Offline" : "Set Online"}
+      </button>
         <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>
         <p className="text-sm text-gray-400">Select a patient to get started</p>
         {/* Add admin/doctor-specific components here */}

@@ -6,7 +6,8 @@ import { FaComments } from "react-icons/fa";
 import { FaMapMarkerAlt, FaSearch, FaStar } from 'react-icons/fa';
 import { Pencil, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from "next/image";
-import OnlineDoctors from "@/component/OnlineDoctors/OnlineDoctors";
+
+import CitySearch from "@/component/CitySearch/CitySearch";
 
 const doctors = [
     {
@@ -113,7 +114,8 @@ const steps = [
 export default function DoctorListPage() {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
- 
+    const [activeItemx, setActiveItem] = useState('Faisalabad');
+
 
     const scrollRef = useRef();
 
@@ -184,31 +186,16 @@ export default function DoctorListPage() {
         setIsModalOpen(false);
     };
 
+    const handleCityClick = (city) => {
+        setActiveItem(city);
+    }
+
     return (
         <div className="min-h-screen py-10 px-4 mt-[100px]">
 
             <div className="bg-gradient-to-r from-blue-500 to-blue-700 min-h-[300px] flex flex-col items-center justify-center px-4 py-10 space-y-8 rounded-xl shadow-lg">
 
-                {/* Compact Search Box */}
-                <div className="w-full max-w-md relative">
-                    {/* Location Button */}
-                    <button
-                        className="absolute inset-y-0 left-0 flex items-center text-white pl-3 pr-3  rounded-l-full transition duration-300 shadow"
-                    >
-                        <FaMapMarkerAlt />
-                    </button>
-
-                    <input
-                        type="text"
-                        placeholder="Enter your city name..."
-                        className="w-full pl-12 pr-10 py-3 rounded-2xl bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
-                    />
-
-                    {/* Search Button */}
-                    <button className="absolute inset-y-0 right-0 flex items-center pr-4 text-white hover:text-blue-300 transition duration-300">
-                        <FaSearch />
-                    </button>
-                </div>
+                <CitySearch onCitySelect={handleCityClick} />
 
                 {/* Popular Cities */}
                 <div className="text-white text-center">
@@ -217,23 +204,27 @@ export default function DoctorListPage() {
                         {['Lahore', 'Faisalabad', 'Multan', 'Karachi', 'Bahawalpur'].map((city, index) => (
                             <button
                                 key={index}
-                                className=" bg-white text-black cursor-pointer px-6 py-2 rounded-full font-semibold transition-all duration-700 transform 
-                  hover:scale-110 hover:-translate-y-1 hover:shadow-xl hover:bg-gradient-to-r from-blue-500 to-blue-700 hover:text-white"
+                                onClick={() => handleCityClick(city)}
+                                className={`px-6 py-2 rounded-full font-semibold transition-all duration-700 transform cursor-pointer
+            ${activeItemx === city
+                                        ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-xl scale-110'
+                                        : 'bg-white text-black hover:scale-110 hover:-translate-y-1 hover:shadow-xl hover:bg-gradient-to-r from-blue-500 to-blue-700 hover:text-white'
+                                    }`}
                             >
                                 {city}
                             </button>
                         ))}
                     </div>
+
                 </div>
 
             </div>
 
 
-            <OnlineDoctors/>
 
             <div className="py-10 px-4 md:px-16 mb-8 max-w-screen-xl mx-auto">
                 <h1 className="text-3xl font-bold text-start text-white mb-10">
-                    Meet Our Specialists from - City Name
+                    Meet Our Specialists from - {activeItemx}
                 </h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-25">
@@ -271,7 +262,7 @@ export default function DoctorListPage() {
                                         Book
                                     </button>
                                     <button className="flex items-center justify-center w-10 h-10 border border-blue-600 text-white rounded-full hover:bg-blue-500 transition cursor-pointer">
-                                        
+
                                         <FaComments />
                                     </button>
                                 </div>

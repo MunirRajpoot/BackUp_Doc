@@ -25,7 +25,7 @@ const Page = () => {
     setErrorMsg('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

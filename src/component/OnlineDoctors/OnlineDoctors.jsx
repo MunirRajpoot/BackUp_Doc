@@ -2,7 +2,6 @@ import useOnlineDoctors from '@/hooks/useOnlineDoctors';
 
 export default function OnlineDoctors() {
     const { onlineDoctors } = useOnlineDoctors();
-    console.log(onlineDoctors);
 
     return (
         <div className="py-10 px-4 md:px-16 mb-8">
