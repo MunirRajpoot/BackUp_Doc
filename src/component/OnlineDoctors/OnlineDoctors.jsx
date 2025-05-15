@@ -1,7 +1,7 @@
-import useOnlineDoctors from '@/hooks/useOnlineDoctors';
+import useOnlineDoctors from '@/hooks/chathook';
 
 export default function OnlineDoctors() {
-    const { onlineDoctors } = useOnlineDoctors();
+
 
     return (
         <div className="py-10 px-4 md:px-16 mb-8">

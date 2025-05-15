@@ -48,48 +48,48 @@ export default function HomePage() {
       </div>
       {/* Appointment Section */}
       <div className="appointment-box w-full px-4 sm:px-6 lg:px-10 py-10 md:py-20 mb-10 flex flex-col lg:flex-row items-center justify-between gap-10">
-  {/* Left Side: Image */}
-  <div className="relative w-full lg:w-1/2 flex justify-center items-center">
-    {/* Main Image */}
-    <Image
-      src="/images/app_img.png"
-      alt="Doctor Team"
-      width={400}
-      height={400}
-      priority
-      className="rounded-xl w-[80%] sm:w-[70%] md:w-[400px] h-auto z-20"
-    />
+        {/* Left Side: Image */}
+        <div className="relative w-full lg:w-1/2 flex justify-center items-center">
+          {/* Main Image */}
+          <Image
+            src="/images/app_img.png"
+            alt="Doctor Team"
+            width={400}
+            height={400}
+            priority
+            className="rounded-xl w-[80%] sm:w-[70%] md:w-[400px] h-auto z-20"
+          />
 
-    {/* Pyramid Shape */}
-    <div className="hidden md:block absolute -bottom-16 left-6 w-20 sm:w-24 lg:w-28">
-      <Image
-        src="/images/pyramid.png"
-        alt="Decorative Pyramid"
-        width={300}
-        height={300}
-        className="w-full h-auto object-contain"
-      />
-    </div>
-  </div>
+          {/* Pyramid Shape */}
+          <div className="hidden md:block absolute -bottom-16 left-6 w-20 sm:w-24 lg:w-28">
+            <Image
+              src="/images/pyramid.png"
+              alt="Decorative Pyramid"
+              width={300}
+              height={300}
+              className="w-full h-auto object-contain"
+            />
+          </div>
+        </div>
 
-  {/* Right Side: Text Section */}
-  <div className="w-full lg:w-1/2 px-2 sm:px-4 text-white mt-10 lg:mt-0">
-    <p className="text-sm sm:text-base font-medium">Appointment</p>
+        {/* Right Side: Text Section */}
+        <div className="w-full lg:w-1/2 px-2 sm:px-4 text-white mt-10 lg:mt-0">
+          <p className="text-sm sm:text-base font-medium">Appointment</p>
 
-    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0067FF] py-3 sm:py-5 leading-tight">
-      Meet Our Specialist
-      <span className="block">This Doctor Meeting</span>
-    </h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0067FF] py-3 sm:py-5 leading-tight">
+            Meet Our Specialist
+            <span className="block">This Doctor Meeting</span>
+          </h2>
 
-    <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-[90%] mb-5">
-      Book your appointment today with one of our experienced medical specialists. Whether it’s routine care or a specific concern, we’re here to help with professional, compassionate service.
-    </p>
+          <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-[90%] mb-5">
+            Book your appointment today with one of our experienced medical specialists. Whether it’s routine care or a specific concern, we’re here to help with professional, compassionate service.
+          </p>
 
-    <button className="bg-[#0067FF] hover:bg-blue-700 transition-colors duration-300 text-white px-6 py-2.5 rounded-md font-medium">
-      Book Now
-    </button>
-  </div>
-</div>
+          <button className="bg-[#0067FF] hover:bg-blue-700 transition-colors duration-300 text-white px-6 py-2.5 rounded-md font-medium">
+            Book Now
+          </button>
+        </div>
+      </div>
 
 
       <section className="text-white py-16 px-4 md:px-12 lg:px-20">
@@ -146,7 +146,7 @@ export default function HomePage() {
       </div>
       {/* Testimonial Section */}
       <TestimonialSection />
-      <ChatModal />
+
     </>
   );
 }

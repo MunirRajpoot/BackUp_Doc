@@ -8,6 +8,7 @@ import {
   Clipboard,
   FileBarChart2Icon,
   UploadCloud,
+  SendIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +29,7 @@ export default function DashboardLayout({ children }) {
     { href: "/dashboard", icon: LayoutDashboard, label: "Patients Management" },           // Dashboard icon
     { href: "/dashboard/analyze", icon: Brain, label: "Analyze" },               // Brain icon for analysis
     { href: "/dashboard/activity", icon: Activity, label: "Activity" },          // Activity icon
+    { href: "/dashboard/chat", icon: SendIcon, label: "Chat" },                // User profile icon
     { href: "/dashboard/profile", icon: User, label: "Profile" },                // User profile icon
   ];
 
@@ -42,6 +44,9 @@ export default function DashboardLayout({ children }) {
             if (user_type === "patient" && label === "Patients Management") {
               label = "Upload X-Ray";
               Icon = UploadCloud;
+            }
+            if (user_type === "patient" && label === "Chat") {
+              return null; // Skip "Chat" for patients
             }
 
             const isActive = pathname === href;

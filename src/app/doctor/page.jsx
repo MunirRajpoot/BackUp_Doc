@@ -8,6 +8,7 @@ import { Pencil, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-re
 import Image from "next/image";
 
 import CitySearch from "@/component/CitySearch/CitySearch";
+import ChatModal from "@/component/ChatModal/ChatModal";
 
 const doctors = [
     {
@@ -52,27 +53,7 @@ const doctors = [
         image: "/images/doc-img.png",
         online: true,
     },
-    // {
-    //     id: 7,
-    //     name: "Dr. John Smith",
-    //     specialty: "Orthopedic Surgeon",
-    //     image: "/images/doc-img.png",
-    //     online: true,
-    // },
-    // {
-    //     id: 8,
-    //     name: "Dr. John Smith",
-    //     specialty: "Orthopedic Surgeon",
-    //     image: "/images/doc-img.png",
-    //     online: true,
-    // },
-    // {
-    //     id: 9,
-    //     name: "Dr. John Smith",
-    //     specialty: "Orthopedic Surgeon",
-    //     image: "/images/doc-img.png",
-    //     online: true,
-    // },
+   
 ];
 
 const onlineDoctors = [
@@ -115,6 +96,8 @@ export default function DoctorListPage() {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeItemx, setActiveItem] = useState('Faisalabad');
+    const [chatOpen, setChatOpen] = useState(false);
+    const [roomName, setRoomName] = useState(null);
 
 
     const scrollRef = useRef();
@@ -261,8 +244,10 @@ export default function DoctorListPage() {
                                     >
                                         Book
                                     </button>
-                                    <button className="flex items-center justify-center w-10 h-10 border border-blue-600 text-white rounded-full hover:bg-blue-500 transition cursor-pointer">
-
+                                    <button
+                                        className="flex items-center justify-center w-10 h-10 border border-blue-600 text-white rounded-full hover:bg-blue-500 transition cursor-pointer"
+                                        onClick={() => {setChatOpen(true); setRoomName(doctor.id)}}
+                                    >
                                         <FaComments />
                                     </button>
                                 </div>
@@ -427,6 +412,7 @@ export default function DoctorListPage() {
                     </div>
                 </div>
             )}
+            <ChatModal isChatOpen={chatOpen} onClose={() => setChatOpen(false)} roomName={roomName} />
         </div>
     );
 }

@@ -206,9 +206,7 @@ const DashboardPage = () => {
     <div className="flex text-white flex-col md:flex-row h-screen bg-[#0f172a]">
 
       <div className="flex flex-col items-center justify-center w-full h-screen bg-[#0f172a]">
-       <button onClick={toggleDoctorStatus}>
-        {doctorStatus === "online" ? "Set Offline" : "Set Online"}
-      </button>
+      
         <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>
         <p className="text-sm text-gray-400">Select a patient to get started</p>
         {/* Add admin/doctor-specific components here */}
