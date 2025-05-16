@@ -9,6 +9,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from "react";
 import axios from "axios";
+import NotesEditor from "@/component/NotesEditor/NotesEditor";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const Page = () => {
     const router = useRouter();
@@ -24,6 +27,7 @@ const Page = () => {
     const [pending, setPending] = useState(true);
 
     const [rotation, setRotation] = useState(0);   // Rotation (in degrees)
+
 
 
     // Example image array - replace with real data
@@ -77,7 +81,26 @@ const Page = () => {
         }
     }, [data]);
 
+    const handleFeedback = async (analysis_id, correctionType) => {
+        try {
+            const authToken = Cookies.get("auth_token");
 
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/${analysis_id}/`,
+                { is_corrected: correctionType },
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+
+            toast.success('Your opinion has been submitted successfully');
+        } catch (err) {
+            console.error(err);
+            toast.error("Error submitting feedback");
+        }
+    };
 
 
     return (
@@ -256,22 +279,26 @@ const Page = () => {
                         <div className="mt-4 p-3 bg-gray-800 rounded-lg">
                             <p className="text-xs mb-2">Help Us Refine Our AI</p>
                             <div className="flex gap-2">
-                                <button className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700">
+                                <button
+                                    className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
+                                    onClick={() => handleFeedback(results[0]?.analysis_id, "no")}
+                                >
                                     Incorrect Detection
                                 </button>
-                                <button className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700">
+                                <button
+                                    className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
+                                    onClick={() => handleFeedback(results[0]?.analysis_id, "yes")}
+                                >
                                     Missing Detection
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
                 {/* Notes Section */}
-                <div className="mt-6 bg-[#1E293B] p-4 rounded-xl">
-                    <h4 className="text-sm font-semibold mb-1">Notes</h4>
-                    <p className="text-sm text-gray-400">No notes added yet</p>
-                </div>
+                <NotesEditor analysisId={results[0]?.analysis_id}/>
 
                 {/* Previous Analyses */}
                 {/* <div className="mt-4 bg-[#1E293B] p-4 rounded-xl text-sm text-gray-400">
