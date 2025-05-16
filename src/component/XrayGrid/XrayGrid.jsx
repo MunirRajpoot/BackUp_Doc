@@ -9,7 +9,8 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 // The XrayGrid component displays paginated X-ray images with the ability to upload new ones
-const XrayGrid = () => {
+const XrayGrid = ({ patient_id = null }) => {
+    const stablePatientId = patient_id || null;
 
     const router = useRouter();
     const [openModal, setOpenModal] = useState(false); // Controls the upload modal
@@ -23,11 +24,18 @@ const XrayGrid = () => {
     const [currentPage, setCurrentPage] = useState(1); // Tracks the current page
     const xraysPerPage = 12; // Number of X-rays per page
 
-    // Updated fetchPatientsXrays with page parameter
+
+
     const fetchPatientsXrays = async (page = 1) => {
         try {
             const authToken = Cookies.get("auth_token");
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/images/?page=${page}`, {
+
+            let url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/images/?page=${page}`;
+            if (user_type === "doctor" && stablePatientId) {
+                url += `&patient_id=${stablePatientId}`;
+            }
+
+            const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -39,13 +47,10 @@ const XrayGrid = () => {
         }
     };
 
-    // Fetch data when user_type is available and when currentPage changes
+    // useEffect with a stable dependency array
     useEffect(() => {
-        if (user_type === "patient") {
-            fetchPatientsXrays(currentPage);
-        }
-    }, [user_type, currentPage]);
-
+        fetchPatientsXrays(currentPage);
+    }, [user_type, currentPage, stablePatientId]);
 
     // Calculate total number of pages safely
     const totalPages = Math.ceil((data?.count || 0) / xraysPerPage);
@@ -90,7 +95,11 @@ const XrayGrid = () => {
             );
 
             if (response.status === 200) {
-                router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
+                if (user_type === "doctor") {
+                    router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
+                    
+                }
+                router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}`);
             }
         } catch (error) {
             console.error("Error sending selected image IDs:", error);
@@ -99,7 +108,7 @@ const XrayGrid = () => {
 
 
     return (
-        <div className="flex-1 bg-[#0B0F19] h-auto text-white px-6 py-8">
+        <div className="flex-1 bg-[#0B0F19] h-auto text-white px-6 py-8 w-full">
             {/* Header Section: User name and Upload button */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#111827] p-6 rounded-2xl shadow-lg mb-6">
                 {/* User Name */}
@@ -218,7 +227,7 @@ const XrayGrid = () => {
             </div>
 
             {/* Upload Modal Component */}
-            <UploadXrayModal isOpen={openModal} onClose={() => setOpenModal(false)} />
+            <UploadXrayModal isOpen={openModal} onClose={() => setOpenModal(false)} patient_id={patient_id} />
         </div>
     );
 };

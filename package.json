@@ -19,6 +19,7 @@
     "emoji-picker-react": "^4.12.2",
     "framer-motion": "^12.7.3",
     "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",
     "next": "15.2.2",
     "react": "^19.0.0",
@@ -31,6 +32,7 @@
     "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.15",
     "three": "^0.176.0",
+    "uuid": "^11.1.0",
     "vanta": "^0.5.24"
   },
   "devDependencies": {

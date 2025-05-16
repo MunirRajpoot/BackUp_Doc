@@ -57,30 +57,13 @@ const ChatPage = () => {
 
     useEffect(() => {
         if (data) {
-            console.log("Received data:", data);
-
-            let parsed = data;
-            console.log("Parsed data:", parsed);
-
-
-            if (typeof data === 'string') {
-                try {
-                    parsed = JSON.parse(data);
-                } catch (e) {
-                    console.warn("Invalid JSON string received:", data);
-                    return; // Exit early if parsing fails
-                }
-            }
-
-            if (parsed.text && parsed.sender) {
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                    {
-                        text: parsed.message,
-                        sender: parsed.sender,
-                    },
-                ]);
-            }
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                {
+                    text: data.message,
+                    sender: data.sender, // Save sender ID
+                },
+            ]);
         }
     }, [data]);
 

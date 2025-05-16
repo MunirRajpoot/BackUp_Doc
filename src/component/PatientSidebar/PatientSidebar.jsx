@@ -1,10 +1,74 @@
 'use client';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PatientModal from '@/component/PatientModel/PatientModel';
 import Link from "next/link";
 import Image from "next/image";
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+
+
 const PatientSidebar = () => {
+    const router = useRouter();
     const [showModal, setShowModal] = useState(false);
+    const [data, setData] = useState([]);
+
+
+    const fetchPatients = async () => {
+     
+        const authToken = Cookies.get("auth_token");
+        await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/patients/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,  // JWT or session token
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch patients");
+                return res.json();
+            })
+            .then(data => {
+                setData(data);
+            })
+            .catch(error => {
+                console.error("Error fetching patients:", error);
+            });
+    }
+    useEffect(() => {
+        fetchPatients();
+    }, []);
+
+    const handlePatientDelete = (patientId) => {
+        const authToken = Cookies.get("auth_token");
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/patients/${patientId}/`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to delete patient");
+
+                // If there's no content (204), don't try to parse JSON
+                if (res.status === 204) return;
+                return res.json();
+            })
+            .then(() => {
+                setData(data.filter(patient => patient.id !== patientId));
+                fetchPatients(); // Refresh the list after deletion
+            })
+            .catch(error => {
+                console.error("Error deleting patient:", error);
+            });
+    };
+
+
+    const handlePatientClick = (patientId) => {
+        // Redirect to the analyze page with the selected patient ID
+        router.push(`/dashboard/analyze?patient=${patientId}`);
+    }
+
     return (
         <div
             className="bg-[#1E1E2F] h-screen text-white p-3 pt-6 w-full md:w-[18rem]"
@@ -72,28 +136,21 @@ const PatientSidebar = () => {
     }
   `}</style>
 
-                {[
-                    { name: "John Doe", age: 45, gender: "Male" },
-                    { name: "Jane Smith", age: 38, gender: "Female" },
-                    { name: "Ali Khan", age: 52, gender: "Male" },
-                    { name: "Sara Malik", age: 29, gender: "Female" },
-                    { name: "Umer Riaz", age: 41, gender: "Male" },
-                    { name: "Umer Riaz", age: 41, gender: "Male" },
-                    { name: "Umer Riaz", age: 41, gender: "Male" },
-                    { name: "Umer Riaz", age: 41, gender: "Male" },
-                    { name: "Umer Riaz", age: 41, gender: "Male" },
-                ].map((patient, index) => (
+                {data.map((patient, index) => (
                     <div
                         key={index}
                         className="flex cursor-pointer items-center justify-between bg-gray-800 border border-white/10 rounded-md px-3 py-2"
+                        onClick={() => handlePatientClick(patient._id)}
                     >
                         <div className="flex flex-col">
-                            <span className="text-white text-sm font-medium">{patient.name}</span>
+                            <span className="text-white text-sm font-medium">{patient.first_name}{patient.last_name}</span>
                             <span className="text-white/70 text-xs">
                                 Age: {patient.age} | Gender: {patient.gender}
                             </span>
                         </div>
-                        <button className="text-red-400 hover:text-red-600 transition cursor-pointer">
+                        <button className="text-red-400 hover:text-red-600 transition cursor-pointer"
+                        onClick={() => handlePatientDelete(patient._id)}
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-5 w-5"
@@ -114,7 +171,7 @@ const PatientSidebar = () => {
             </div>
 
 
-            <PatientModal showModal={showModal} setShowModal={setShowModal} />
+            <PatientModal showModal={showModal} setShowModal={setShowModal} fetchPatients={fetchPatients} />
         </div>
     )
 }

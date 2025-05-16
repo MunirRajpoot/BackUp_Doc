@@ -15,13 +15,13 @@ const Page = () => {
     const userState = useSelector((state) => state.user) || {};
     const { user_type } = userState;
 
-    const fileInputRef = useRef(null);
-
-    const handleClick = () => {
-        fileInputRef.current?.click();
-    };
-
+   
     const taskIds = source.get('process')?.split(',') || [];
+    let patient = null;
+    if (user_type === "doctor") {
+         patient = source.get('patient') || null;
+    }
+
 
     const [pollingEnabled, setPollingEnabled] = useState(taskIds.length > 0);
     const [results, setResults] = useState([]);
@@ -62,8 +62,8 @@ const Page = () => {
     const renderDoctorView = () => (
         <div className="flex text-white h-screen bg-[#0f172a]">
             <PatientSidebar />
-            <div className='overflow-y-auto h-full'>
-                <XrayGrid />
+            <div className='overflow-y-auto h-full w-full'>
+                <XrayGrid patient_id={patient} />
             </div>
         </div>
     );

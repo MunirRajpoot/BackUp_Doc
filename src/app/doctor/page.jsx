@@ -53,6 +53,13 @@ const doctors = [
         image: "/images/doc-img.png",
         online: true,
     },
+    {
+        id: 7,
+        name: "Dr. John Smith",
+        specialty: "Orthopedic Surgeon",
+        image: "/images/doc-img.png",
+        online: true,
+    },
    
 ];
 

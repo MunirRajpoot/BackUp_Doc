@@ -3,14 +3,18 @@ import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
+const UploadXrayModal = ({ isOpen, onClose, patient_id = null }) => {
+  const userState = useSelector((state) => state.user) || {};
+  const { user_type } = userState;
 
-const UploadXrayModal = ({ isOpen, onClose }) => {
   const fileInputRef = useRef(null);
   const [showAnimation, setShowAnimation] = useState(false);
   const [files, setFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
+
 
   useEffect(() => {
     if (isOpen) {
@@ -44,15 +48,20 @@ const UploadXrayModal = ({ isOpen, onClose }) => {
     });
   };
 
-
-  // Upload all files
   const uploadFiles = async () => {
     setIsUploading(true);
     const progressData = {};
     const authToken = Cookies.get("auth_token");
+
+
     for (let i = 0; i < files.length; i++) {
       const formData = new FormData();
       formData.append('files', files[i]);
+
+      // Conditionally include patient_id
+      if (patient_id && user_type === 'doctor') {
+        formData.append('patient_id', patient_id);
+      }
 
       try {
         const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/upload/`, formData, {
@@ -79,6 +88,7 @@ const UploadXrayModal = ({ isOpen, onClose }) => {
     setFiles([]);
     setUploadProgress({});
   };
+
 
 
   const currentIndex = Object.keys(uploadProgress).length;

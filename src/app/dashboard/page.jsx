@@ -204,7 +204,7 @@ const DashboardPage = () => {
    */
   const renderDefaultView = () => (
     <div className="flex text-white flex-col md:flex-row h-screen bg-[#0f172a]">
-
+    <PatientSidebar/>
       <div className="flex flex-col items-center justify-center w-full h-screen bg-[#0f172a]">
       
         <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>

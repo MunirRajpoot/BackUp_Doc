@@ -39,7 +39,7 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
 
     useEffect(() => {
         if (isChatOpen) {
-            connectWebSocket(roomName);
+            connectWebSocket(7);
         } else {
             setMessages([]);
             disconnectWebSocket();

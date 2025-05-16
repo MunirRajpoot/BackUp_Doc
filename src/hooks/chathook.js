@@ -17,8 +17,8 @@ export default function userChat(autoConnect = false) {
         const socket = new WebSocket(socketUrl);
         socketRef.current = socket;
 
-        socket.onopen = () => {
-            console.log('[WebSocket] Connected');
+        socket.onopen = (event) => {
+            
         };
 
         socket.onmessage = (event) => {
