@@ -97,7 +97,6 @@ const Page = () => {
 
     useEffect(() => {
         if (!data) return;
-        console.log("Data fetched:", data);
 
         const allDone = data.every(r =>
             (r.status === 200 && r.data.image_url) || r.status === 500
@@ -136,24 +135,24 @@ const Page = () => {
     };
 
     const handleEmailSend = async (analysis_id) => {
-    try {
-        const authToken = Cookies.get("auth_token");
-        await axios.post(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/email/${analysis_id}/`,
-            {}, // empty body
-            {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            }
-        );
+        try {
+            const authToken = Cookies.get("auth_token");
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/email/${analysis_id}/`,
+                {}, // empty body
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
 
-        toast.success('Email submitted successfully');
-    } catch (err) {
-        console.error(err);
-        toast.error("Error submitting Email");
-    }
-};
+            toast.success('Email submitted successfully');
+        } catch (err) {
+            console.error(err);
+            toast.error("Error submitting Email");
+        }
+    };
 
 
     return (
