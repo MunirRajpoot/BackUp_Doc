@@ -88,7 +88,7 @@ const page = () => {
 
   return (
     <div className='flex-1 bg-[#0B0F19] h-screen text-white px-6 py-8 w-full overflow-y-auto'>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#111827] p-6 rounded-2xl shadow-lg mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#111827] border-blue-600 border-1 p-6 rounded-2xl shadow-lg mb-6">
         {/* User Name */}
         <div>
           <h1 className="text-2xl font-bold">
@@ -102,7 +102,7 @@ const page = () => {
           {/* Upload Button */}
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <select
-              className="block w-full bg-gray-800 text-white px-4 py-2 rounded-md border border-white/20 focus:outline-none"
+              className="block w-full bg-gray-800 text-white px-2 py-2 rounded-md border border-white/20 focus:outline-none"
               value={selectedFilter}
               onChange={(e) => fetchAnalyses(e.target.value)}
             >

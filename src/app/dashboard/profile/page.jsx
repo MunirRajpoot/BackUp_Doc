@@ -7,11 +7,10 @@ import { useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
 
 const ProfilePage = () => {
-    // Redux Dispatcher
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
     const userState = useSelector((state) => state.user) || {};
-    const { user_type, profile_url, first_name, last_name } = userState;
+    const { user_type } = userState;
     const [profileImage, setProfileImage] = useState(null);
     const [formData, setFormData] = useState({
         first_name: '',
@@ -44,18 +43,15 @@ const ProfilePage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const authToken = Cookies.get("auth_token");
         const form = new FormData();
 
-        // Append all fields
         Object.keys(formData).forEach((key) => {
             if (formData[key]) {
                 form.append(key, formData[key]);
             }
         });
 
-        // Append image file
         if (fileInputRef.current && fileInputRef.current.files[0]) {
             form.append('profile', fileInputRef.current.files[0]);
         }
@@ -66,12 +62,11 @@ const ProfilePage = () => {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
-                body: form, // Don't set Content-Type manually
+                body: form,
             });
 
             const result = await response.json();
             if (response.ok) {
-                // ✅ Update Redux state
                 dispatch(setUser({
                     user: result?.user,
                     user_type: result?.user_type || null,
@@ -87,13 +82,12 @@ const ProfilePage = () => {
                 });
                 toast.success("Profile Updated Successfully");
             } else {
-                toast.error("An Error occured while updating your profile.");
+                toast.error("An error occurred while updating your profile.");
             }
         } catch (error) {
             console.error("Network error:", error);
         }
     };
-
 
     return (
         <div className="h-screen overflow-y-auto flex justify-center items-start p-2 pt-[60px]">
@@ -104,7 +98,9 @@ const ProfilePage = () => {
 
                 <div className="flex flex-col items-center mb-6 relative">
                     <div className="w-20 h-20 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-xl font-bold">
-                        {userState.user.profile_url ? (
+                        {profileImage ? (
+                            <img src={profileImage} alt="Profile Preview" className="w-full h-full object-cover object-center" />
+                        ) : userState.user?.profile_url ? (
                             <img src={`${process.env.NEXT_PUBLIC_SERVER_URL}${userState.user.profile_url}`} alt="Profile" className="w-full h-full object-cover object-center" />
                         ) : (
                             'MR'
@@ -129,7 +125,6 @@ const ProfilePage = () => {
                 </div>
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                    {/* First Name and Last Name */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -138,7 +133,7 @@ const ProfilePage = () => {
                                 name="first_name"
                                 value={formData.first_name}
                                 onChange={handleChange}
-                                placeholder={userState.user.first_name ? userState.user.first_name : "Enter your First name"}
+                                placeholder={userState.user?.first_name || "Enter your First name"}
                                 className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
                             />
                         </div>
@@ -149,13 +144,12 @@ const ProfilePage = () => {
                                 name="last_name"
                                 value={formData.last_name}
                                 onChange={handleChange}
-                                placeholder={userState.user.last_name ? userState.user.last_name : "Enter your Last name"}
+                                placeholder={userState.user?.last_name || "Enter your Last name"}
                                 className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
                             />
                         </div>
                     </div>
 
-                    {/* Email */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                         <input
@@ -168,10 +162,8 @@ const ProfilePage = () => {
                         />
                     </div>
 
-                    {/* Conditional Fields for Doctor */}
                     {user_type === 'doctor' && (
                         <div className="space-y-4">
-
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
                                 <input
@@ -189,14 +181,12 @@ const ProfilePage = () => {
                                     name="city"
                                     value={formData.city}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-blue-400 focus:outline-none  text-gray-700"
+                                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-blue-400 focus:outline-none text-gray-700"
                                 >
                                     <option value="">Select City</option>
                                     {['Faisalabad', 'Lahore', 'Bahawalpur', 'Sindh', 'Multan'].map((item, index) => (
                                         <option key={index} value={item}>{item}</option>
                                     ))}
-
-
                                 </select>
                             </div>
                             <div>
@@ -224,10 +214,8 @@ const ProfilePage = () => {
                         </div>
                     )}
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
-
                         className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200 ease-in-out"
                     >
                         Save Changes
