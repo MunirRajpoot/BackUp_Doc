@@ -1,8 +1,7 @@
 'use client';
 import { useMemo, useState } from "react";
 import { Switch } from "@headlessui/react";
-import { RotateCcw, RotateCw, Minus, Plus, X } from "lucide-react";
-import PatientSidebar from '@/component/PatientSidebar/PatientSidebar'
+import { RotateCcw, RotateCw, Minus, Plus, X, Loader } from "lucide-react";
 import UploadXrayModal from "@/component/UploadXrayModel/UploadXrayModel";
 import { useSelector } from "react-redux";
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -12,6 +11,10 @@ import axios from "axios";
 import NotesEditor from "@/component/NotesEditor/NotesEditor";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { Navigation } from 'swiper/modules';
 
 const Page = () => {
     const router = useRouter();
@@ -28,11 +31,19 @@ const Page = () => {
 
     const [rotation, setRotation] = useState(0);   // Rotation (in degrees)
 
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const [imageStates, setImageStates] = useState([]);
+    useEffect(() => {
+        if (results.length > 0) {
+            setImageStates(results.map(() => ({ zoom: 100, rotation: 0 })));
+        }
+    }, [results]);
+
 
 
     // Example image array - replace with real data
     const images = [
-
         "/images/xray3.png",
     ];
     const taskIds = useMemo(() => {
@@ -41,6 +52,29 @@ const Page = () => {
     }, [source]);
 
     const [pollingEnabled, setPollingEnabled] = useState(false);
+
+    const updateImageState = (index, key, value) => {
+        setImageStates(prev => {
+            if (!prev[index]) return prev; // avoid crash
+            const updated = [...prev];
+            updated[index] = { ...updated[index], [key]: value };
+            return updated;
+        });
+    };
+
+
+    const resetCurrentImage = () => {
+        setImageStates(prev => {
+            const updated = [...prev];
+            if (!updated[activeIndex]) return prev;
+            updated[activeIndex] = { zoom: 100, rotation: 0 };
+            return updated;
+        });
+    };
+    const currentState = imageStates[activeIndex] || { zoom: 100, rotation: 0 };
+
+
+
 
     useEffect(() => {
         if (taskIds.length > 0) {
@@ -66,6 +100,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!data) return;
+        console.log("Data fetched:", data);
 
         const allDone = data.every(r =>
             (r.status === 200 && r.data.image_url) || r.status === 500
@@ -180,17 +215,27 @@ const Page = () => {
                         {/* Zoom Controls */}
                         <div className="flex items-center justify-center gap-4 mt-4">
                             <button
-                                onClick={() => setZoom(prev => Math.max(10, prev - 10))}
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'zoom',
+                                        Math.max(10, imageStates[activeIndex].zoom - 10)
+                                    )
+                                }
                                 className="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 transition"
-                                aria-label="Zoom Out"
                             >
                                 <Minus size={16} />
                             </button>
-                            <span className="text-white">{zoom}%</span>
+                            <span className="text-white">{currentState.zoom}%</span>
                             <button
-                                onClick={() => setZoom(prev => Math.min(300, prev + 10))}
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'zoom',
+                                        Math.min(300, imageStates[activeIndex].zoom + 10)
+                                    )
+                                }
                                 className="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 transition"
-                                aria-label="Zoom In"
                             >
                                 <Plus size={16} />
                             </button>
@@ -199,17 +244,28 @@ const Page = () => {
                         {/* Rotation Controls */}
                         <div className="flex items-center justify-center gap-4 mt-2">
                             <button
-                                onClick={() => setRotation(prev => (prev - 90) % 360)}
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'rotation',
+                                        (imageStates[activeIndex].rotation - 90) % 360
+                                    )
+                                }
                                 className="bg-gray-700 p-2 rounded hover:bg-gray-600 transition"
-                                aria-label="Rotate Counter-Clockwise"
                             >
                                 <RotateCcw size={16} />
                             </button>
-                            <span className="text-white">{rotation}°</span>
+                            <span className="text-white">{currentState.rotation}°</span>
+
                             <button
-                                onClick={() => setRotation(prev => (prev + 90) % 360)}
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'rotation',
+                                        (imageStates[activeIndex].rotation + 90) % 360
+                                    )
+                                }
                                 className="bg-gray-700 p-2 rounded hover:bg-gray-600 transition"
-                                aria-label="Rotate Clockwise"
                             >
                                 <RotateCw size={16} />
                             </button>
@@ -217,61 +273,73 @@ const Page = () => {
 
                         {/* Reset Button */}
                         <button
-                            onClick={() => {
-                                setZoom(100);
-                                setRotation(0);
-                            }}
+                            onClick={resetCurrentImage}
                             className="w-full cursor-pointer mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition"
                         >
                             Reset Analysis
                         </button>
+
                     </div>
 
                     {/* Image Viewer Container */}
                     <div className="col-span-6 bg-[#1E293B] rounded-xl p-4 flex justify-center items-center relative">
                         {pending ? (
-                            <p className="text-white text-center">Processing images... Please wait.</p>
+                            <div className="flex flex-col items-center justify-center h-full space-y-4">
+                                <Loader width={80} height={80} />
+                                <p className="text-white">X-Rays are processing... Please wait!</p>
+                            </div>
                         ) : results.length === 1 ? (
-                            <div className="w-full flex justify-center items-center h-96">
+                            <div className="w-full h-full flex justify-center items-center overflow-hidden">
                                 <img
-                                    src={`${process.env.NEXT_PUBLIC_SERVER_URL}${showAnalyzed ? results[0]?.file_path : results[0]?.image_url}`}
-                                    alt="Result"
-                                    className="max-w-100 h-auto rounded-xl object-contain shadow-lg transition-transform duration-300"
+                                    src={`${process.env.NEXT_PUBLIC_SERVER_URL}${showAnalyzed ? results[activeIndex]?.image_url : results[activeIndex]?.file_path}`}
+                                    alt="X-ray"
                                     style={{
-                                        transform: `scale(${zoom / 100}) rotate(${rotation}deg)`
+                                        transform: `scale(${currentState.zoom / 100}) rotate(${currentState.rotation}deg)`,
+                                        transition: 'transform 0.3s ease',
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
                                     }}
+                                    className="object-contain"
                                 />
                             </div>
                         ) : (
-                            <div className="flex overflow-x-auto gap-4 w-full h-96 pb-2">
+                            <Swiper
+                                modules={[Navigation]}
+                                navigation
+                                spaceBetween={20}
+                                slidesPerView={1}
+                                loop={false}
+                                className="w-full h-96"
+                                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                            >
                                 {results.map((result, index) => (
-                                    <div key={index} className="flex-shrink-0 flex justify-center items-center">
+                                    <SwiperSlide key={index} className="flex justify-center items-center">
                                         <img
                                             src={`${process.env.NEXT_PUBLIC_SERVER_URL}${showAnalyzed ? result?.file_path : result?.image_url}`}
                                             alt={`Result ${index}`}
-                                            className="h-auto rounded-xl object-contain shadow-md transition-transform duration-300"
+                                            className="h-auto max-h-full rounded-xl object-contain shadow-md transition-transform duration-300"
                                             style={{
-                                                transform: `scale(${zoom / 100}) rotate(${rotation}deg)`
+                                                transform: `scale(${imageStates[index]?.zoom / 100}) rotate(${imageStates[index]?.rotation}deg)`
                                             }}
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                         />
-                                    </div>
+                                    </SwiperSlide>
                                 ))}
-                            </div>
+                            </Swiper>
+
                         )}
                     </div>
+
 
                     {/* Detection Results */}
                     <div className="col-span-3 bg-[#1E293B] rounded-xl p-4 flex flex-col gap-4">
                         <h3 className="text-sm font-semibold">Detection Results</h3>
-                        {results?.[0]?.prediction_objs && (
+                        {results[activeIndex]?.prediction_objs?.length > 0 && (
                             <div className="space-y-2">
-                                {results[0].prediction_objs.map((label) => (
-                                    <div key={label} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg">
+                                {results[activeIndex].prediction_objs.map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg">
                                         {/* <div className={`w-4 h-4 rounded ${color}`}></div> */}
-                                        <span className="text-sm text-white">{label}</span>
+                                        <span className="text-sm text-white">{item}</span>
                                     </div>
                                 ))}
                             </div>
@@ -281,13 +349,13 @@ const Page = () => {
                             <div className="flex gap-2">
                                 <button
                                     className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
-                                    onClick={() => handleFeedback(results[0]?.analysis_id, "no")}
+                                    onClick={() => handleFeedback(results[activeIndex]?.analysis_id, "no")}
                                 >
                                     Incorrect Detection
                                 </button>
                                 <button
                                     className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
-                                    onClick={() => handleFeedback(results[0]?.analysis_id, "yes")}
+                                    onClick={() => handleFeedback(results[activeIndex]?.analysis_id, "yes")}
                                 >
                                     Missing Detection
                                 </button>
@@ -298,7 +366,7 @@ const Page = () => {
                 </div>
 
                 {/* Notes Section */}
-                <NotesEditor analysisId={results[0]?.analysis_id}/>
+                <NotesEditor analysisId={results[activeIndex]?.analysis_id} />
 
                 {/* Previous Analyses */}
                 {/* <div className="mt-4 bg-[#1E293B] p-4 rounded-xl text-sm text-gray-400">
