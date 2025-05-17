@@ -96,10 +96,12 @@ const XrayGrid = ({ patient_id = null }) => {
 
             if (response.status === 200) {
                 if (user_type === "doctor") {
-                    router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
+                    router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}`);
                     
+                }else if (user_type === "patient") {
+
+                    router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
                 }
-                router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}`);
             }
         } catch (error) {
             console.error("Error sending selected image IDs:", error);

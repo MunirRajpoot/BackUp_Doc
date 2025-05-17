@@ -1,13 +1,19 @@
 'use client';
 import { useMemo, useState, useEffect } from "react";
 import { Switch } from "@headlessui/react";
-import { RotateCcw, RotateCw, Minus, Plus } from "lucide-react";
+import { RotateCcw, RotateCw, Minus, Plus, X, Loader } from "lucide-react";
+import UploadXrayModal from "@/component/UploadXrayModel/UploadXrayModel";
 import { useSelector } from "react-redux";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from "axios";
-import UploadXrayModal from "@/component/UploadXrayModel/UploadXrayModel";
-import Carousel from "@/component/Carousel/Carousel.js"; // ✅ Carousel component
+import NotesEditor from "@/component/NotesEditor/NotesEditor";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { Navigation } from 'swiper/modules';
 
 const Page = () => {
     const router = useRouter();
@@ -16,17 +22,54 @@ const Page = () => {
     const { user_type } = userState;
 
     const [showAnalyzed, setShowAnalyzed] = useState(false);
-    const [zoom, setZoom] = useState(100);
-    const [rotation, setRotation] = useState(0);
     const [openModal, setOpenModal] = useState(false);
     const [results, setResults] = useState([]);
     const [pending, setPending] = useState(true);
-    const [pollingEnabled, setPollingEnabled] = useState(false);
 
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const [imageStates, setImageStates] = useState([]);
+    useEffect(() => {
+        if (results.length > 0) {
+            setImageStates(results.map(() => ({ zoom: 100, rotation: 0 })));
+        }
+    }, [results]);
+
+
+
+    // Example image array - replace with real data
+    const images = [
+        "/images/xray3.png",
+    ];
     const taskIds = useMemo(() => {
         const processParam = source.get('process');
         return processParam ? processParam.split(',') : [];
     }, [source]);
+
+    const [pollingEnabled, setPollingEnabled] = useState(false);
+
+    const updateImageState = (index, key, value) => {
+        setImageStates(prev => {
+            if (!prev[index]) return prev; // avoid crash
+            const updated = [...prev];
+            updated[index] = { ...updated[index], [key]: value };
+            return updated;
+        });
+    };
+
+
+    const resetCurrentImage = () => {
+        setImageStates(prev => {
+            const updated = [...prev];
+            if (!updated[activeIndex]) return prev;
+            updated[activeIndex] = { zoom: 100, rotation: 0 };
+            return updated;
+        });
+    };
+    const currentState = imageStates[activeIndex] || { zoom: 100, rotation: 0 };
+
+
+
 
     useEffect(() => {
         if (taskIds.length > 0) {
@@ -51,6 +94,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!data) return;
+        console.log("Data fetched:", data);
 
         const allDone = data.every(r =>
             (r.status === 200 && r.data.image_url) || r.status === 500
@@ -65,6 +109,49 @@ const Page = () => {
             setResults(filtered);
         }
     }, [data]);
+
+    const handleFeedback = async (analysis_id, correctionType) => {
+        try {
+            const authToken = Cookies.get("auth_token");
+
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/${analysis_id}/`,
+                { is_corrected: correctionType },
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+
+            toast.success('Your opinion has been submitted successfully');
+        } catch (err) {
+            console.error(err);
+            toast.error("Error submitting feedback");
+        }
+
+    };
+
+    const handleEmailSend = async (analysis_id) => {
+    try {
+        const authToken = Cookies.get("auth_token");
+        await axios.post(
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/email/${analysis_id}/`,
+            {}, // empty body
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+
+        toast.success('Email submitted successfully');
+    } catch (err) {
+        console.error(err);
+        toast.error("Error submitting Email");
+    }
+};
+
 
     return (
         <div className="flex text-white h-screen bg-[#0f172a] overflow-hidden">
@@ -83,6 +170,38 @@ const Page = () => {
                         >
                             Add Patient
                         </button>
+                        <button
+                            onClick={() => handleEmailSend(results[activeIndex]?.analysis_id)}
+                            className={`px-3 bg-green-700 py-2 rounded text-sm font-medium cursor-pointer`}
+                        >
+                            Email me
+                        </button>
+                        {images.length > 1 && (
+                            <div className="flex gap-2 mt-4 md:mt-0">
+
+                                <button
+                                    onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+                                    disabled={currentIndex === 0}
+                                    className={`px-3 py-1 rounded text-sm font-medium ${currentIndex === 0
+                                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                                        }`}
+                                >
+                                    ← Prev
+                                </button>
+
+                                <button
+                                    onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, images.length - 1))}
+                                    disabled={currentIndex === images.length - 1}
+                                    className={`px-3 py-1 rounded text-sm font-medium ${currentIndex === images.length - 1
+                                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                                        }`}
+                                >
+                                    Next →
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -109,69 +228,132 @@ const Page = () => {
 
                         {/* Zoom */}
                         <div className="flex items-center justify-center gap-4 mt-4">
-                            <button onClick={() => setZoom(prev => Math.max(10, prev - 10))} className="bg-gray-700 p-2 rounded hover:bg-gray-600">
+                            <button
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'zoom',
+                                        Math.max(10, imageStates[activeIndex].zoom - 10)
+                                    )
+                                }
+                                className="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 transition"
+                            >
                                 <Minus size={16} />
                             </button>
-                            <span className="text-white">{zoom}%</span>
-                            <button onClick={() => setZoom(prev => Math.min(300, prev + 10))} className="bg-gray-700 p-2 rounded hover:bg-gray-600">
+                            <span className="text-white">{currentState.zoom}%</span>
+                            <button
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'zoom',
+                                        Math.min(300, imageStates[activeIndex].zoom + 10)
+                                    )
+                                }
+                                className="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 transition"
+                            >
                                 <Plus size={16} />
                             </button>
                         </div>
 
                         {/* Rotation */}
                         <div className="flex items-center justify-center gap-4 mt-2">
-                            <button onClick={() => setRotation(prev => (prev - 90 + 360) % 360)} className="bg-gray-700 p-2 rounded hover:bg-gray-600">
+                            <button
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'rotation',
+                                        (imageStates[activeIndex].rotation - 90) % 360
+                                    )
+                                }
+                                className="bg-gray-700 p-2 rounded hover:bg-gray-600 transition"
+                            >
                                 <RotateCcw size={16} />
                             </button>
-                            <span className="text-white">{rotation}°</span>
-                            <button onClick={() => setRotation(prev => (prev + 90) % 360)} className="bg-gray-700 p-2 rounded hover:bg-gray-600">
+                            <span className="text-white">{currentState.rotation}°</span>
+
+                            <button
+                                onClick={() =>
+                                    updateImageState(
+                                        activeIndex,
+                                        'rotation',
+                                        (imageStates[activeIndex].rotation + 90) % 360
+                                    )
+                                }
+                                className="bg-gray-700 p-2 rounded hover:bg-gray-600 transition"
+                            >
                                 <RotateCw size={16} />
                             </button>
                         </div>
 
                         {/* Reset Button */}
                         <button
-                            onClick={() => {
-                                setZoom(100);
-                                setRotation(0);
-                            }}
-                            className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium"
+                            onClick={resetCurrentImage}
+                            className="w-full cursor-pointer mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition"
                         >
                             Reset Analysis
                         </button>
+
                     </div>
 
                     {/* X-ray Image Area */}
                     <div className="col-span-6 bg-[#1E293B] rounded-xl p-4 flex justify-center items-center relative">
                         {pending ? (
-                            <p className="text-white text-center">Processing images... Please wait.</p>
+                            <div className="flex flex-col items-center justify-center h-full space-y-4">
+                                <Loader width={80} height={80} />
+                                <p className="text-white">X-Rays are processing... Please wait!</p>
+                            </div>
                         ) : results.length === 1 ? (
-                            <div className="w-full flex justify-center items-center h-96">
+                            <div className="w-full h-full flex justify-center items-center overflow-hidden">
                                 <img
-                                    src={`${process.env.NEXT_PUBLIC_SERVER_URL}${showAnalyzed ? results[0]?.file_path : results[0]?.image_url}`}
+                                    src={`${process.env.NEXT_PUBLIC_SERVER_URL}${showAnalyzed ? results[activeIndex]?.image_url : results[activeIndex]?.file_path}`}
                                     alt="X-ray"
-                                    className="max-w-100 h-auto rounded-xl object-contain shadow-lg transition-transform duration-300"
-                                    style={{ transform: `scale(${zoom / 100}) rotate(${rotation}deg)` }}
-                                />  
+                                    style={{
+                                        transform: `scale(${currentState.zoom / 100}) rotate(${currentState.rotation}deg)`,
+                                        transition: 'transform 0.3s ease',
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                    }}
+                                    className="object-contain"
+                                />
                             </div>
                         ) : (
-                            <Carousel
-                                results={results}
-                                showAnalyzed={showAnalyzed}
-                                zoom={zoom}
-                                rotation={rotation}
-                            />
+                            <Swiper
+                                modules={[Navigation]}
+                                navigation
+                                spaceBetween={20}
+                                slidesPerView={1}
+                                loop={false}
+                                className="w-full h-96"
+                                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                            >
+                                {results.map((result, index) => (
+                                    <SwiperSlide key={index} className="flex justify-center items-center">
+                                        <img
+                                            src={`${process.env.NEXT_PUBLIC_SERVER_URL}${showAnalyzed ? result?.file_path : result?.image_url}`}
+                                            alt={`Result ${index}`}
+                                            className="h-auto max-h-full rounded-xl object-contain shadow-md transition-transform duration-300"
+                                            style={{
+                                                transform: `scale(${imageStates[index]?.zoom / 100}) rotate(${imageStates[index]?.rotation}deg)`
+                                            }}
+                                            loading="lazy"
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+
                         )}
                     </div>
 
-                    {/* Detection Output */}
+
+                    {/* Detection Results */}
                     <div className="col-span-3 bg-[#1E293B] rounded-xl p-4 flex flex-col gap-4">
                         <h3 className="text-sm font-semibold">Detection Results</h3>
-                        {results?.[0]?.prediction_objs && (
+                        {results[activeIndex]?.prediction_objs?.length > 0 && (
                             <div className="space-y-2">
-                                {results[0].prediction_objs.map((label, index) => (
-                                    <div key={index} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg">
-                                        <span className="text-sm text-white">{label}</span>
+                                {results[activeIndex].prediction_objs.map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg">
+                                        {/* <div className={`w-4 h-4 rounded ${color}`}></div> */}
+                                        <span className="text-sm text-white">{item}</span>
                                     </div>
                                 ))}
                             </div>
@@ -179,22 +361,31 @@ const Page = () => {
                         <div className="mt-4 p-3 bg-gray-800 rounded-lg">
                             <p className="text-xs mb-2">Help Us Refine Our AI</p>
                             <div className="flex gap-2">
-                                <button className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700">
+                                <button
+                                    className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
+                                    onClick={() => handleFeedback(results[activeIndex]?.analysis_id, "no")}
+                                >
                                     Incorrect Detection
                                 </button>
-                                <button className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700">
+                                <button
+                                    className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
+                                    onClick={() => handleFeedback(results[activeIndex]?.analysis_id, "yes")}
+                                >
                                     Missing Detection
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
-                {/* Notes */}
-                <div className="mt-6 bg-[#1E293B] p-4 rounded-xl">
-                    <h4 className="text-sm font-semibold mb-1">Notes</h4>
-                    <p className="text-sm text-gray-400">No notes added yet</p>
-                </div>
+                {/* Notes Section */}
+                <NotesEditor analysisId={results[activeIndex]?.analysis_id} />
+
+                {/* Previous Analyses */}
+                {/* <div className="mt-4 bg-[#1E293B] p-4 rounded-xl text-sm text-gray-400">
+                    Previous Analyses
+                </div> */}
             </div>
 
             {/* Upload Modal */}

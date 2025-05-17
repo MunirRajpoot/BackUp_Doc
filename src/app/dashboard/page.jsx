@@ -14,8 +14,6 @@ import { useRouter } from "next/navigation";
  */
 const DashboardPage = () => {
 
-  const router = useRouter();
-  const [isOnline, setIsOnline] = useState(false);
 
   // Retrieve the user state from Redux store
   const userState = useSelector((state) => state.user) || {};

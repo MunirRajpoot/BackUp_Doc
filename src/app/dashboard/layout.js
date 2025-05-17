@@ -16,6 +16,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { Activity, FileBarChart2, HomeIcon, User, Brain } from "lucide-react";
 import { useSelector } from "react-redux";
+import { ToastContainer, toast } from 'react-toastify';
+
+
 
 
 export default function DashboardLayout({ children }) {
@@ -34,7 +37,9 @@ export default function DashboardLayout({ children }) {
   ];
 
 
-  return (
+  return (<>
+    <ToastContainer />
+
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Sidebar */}
       <div className="group flex flex-col bg-[#1e2227] text-white transition-all duration-300 ease-in-out w-16 hover:w-54 z-10">
@@ -140,5 +145,6 @@ export default function DashboardLayout({ children }) {
         )}
       </AnimatePresence>
     </div>
+  </>
   );
 }
