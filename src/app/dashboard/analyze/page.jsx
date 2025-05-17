@@ -15,11 +15,11 @@ const Page = () => {
     const userState = useSelector((state) => state.user) || {};
     const { user_type } = userState;
 
-   
+
     const taskIds = source.get('process')?.split(',') || [];
     let patient = null;
     if (user_type === "doctor") {
-         patient = source.get('patient') || null;
+        patient = source.get('patient') || null;
     }
 
 
@@ -69,33 +69,35 @@ const Page = () => {
     );
 
     const renderPatientView = () => (
-        <div className="p-6 flex flex-col md:flex-row gap-6 pt-[100px]">
-            {/* Left: Results / Upload Section */}
-            <div className="flex-1 bg-white/10 rounded-2xl p-5 shadow-sm flex items-center justify-center">
+        <div className="p-6 flex flex-col md:flex-row gap-6 pt-[100px] text-white">
+            {/* Left: Results Section */}
+            <div className="flex-1 bg-white/10 rounded-2xl p-6 shadow-xl backdrop-blur-lg">
                 {pending ? (
-                    <p className="text-white text-center">Processing images... Please wait.</p>
+                    <div className="flex justify-center items-center h-96">
+                        <p className="text-white text-lg font-medium">Processing images... Please wait.</p>
+                    </div>
                 ) : results.length === 1 ? (
-                    <div className="w-full flex justify-center items-center h-96">
-                        <img
-                            src={`${process.env.NEXT_PUBLIC_SERVER_URL}${results[0].image_url}`}
-                            alt="Analyzed Result"
-                            className="max-w-100 h-auto rounded-xl object-contain shadow-lg"
-                        />
+                    <div className="w-full flex flex-col justify-center items-center space-y-4">
+                        <div className="max-w-sm md:max-w-md">
+                            <img
+                                src={`${process.env.NEXT_PUBLIC_SERVER_URL}${results[0].image_url}`}
+                                alt="Analyzed Result"
+                                className="w-full h-auto rounded-xl object-contain shadow-lg"
+                            />
+                        </div>
                     </div>
                 ) : (
-                    <div className="flex overflow-x-auto gap-4 w-full h-96 pb-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
                         {results.map((result, index) => (
                             <div
                                 key={index}
-                                className=" flex-shrink-0"
+                                className="w-[250px] bg-white/5 backdrop-blur-sm rounded-xl p-4 shadow-lg text-center"
                             >
                                 <img
                                     src={`${process.env.NEXT_PUBLIC_SERVER_URL}${result.image_url}`}
                                     alt={`Result ${index}`}
-                                    className="h-auto rounded-xl object-contain shadow-md"
-                                    width={400}
-                                    height={400}
-                                    loading='lazy'
+                                    className="w-full h-auto rounded-lg object-contain shadow-sm mb-3"
+                                    loading="lazy"
                                 />
                             </div>
                         ))}
@@ -104,21 +106,47 @@ const Page = () => {
             </div>
 
             {/* Right: Sidebar */}
-            <div className="w-full md:w-[350px] rounded-lg flex flex-col justify-between">
-                <div className='bg-white/10 rounded-2xl p-6 border shadow-sm'>
-                    <h2 className="text-lg font-semibold mb-4 text-white">
-                        Hi! <span className="font-bold">Usman Tahir</span>
-                    </h2>
+            <div className="w-full md:w-[350px] rounded-2xl shadow-xl bg-white/10 backdrop-blur-lg p-6 flex flex-col justify-between">
+                <div>
+                    <h2 className="text-xl font-semibold mb-3">Hi! <span className="font-bold">Usman Tahir</span></h2>
+                    <p className="text-sm text-gray-300 mb-6">Your AI results are ready. You can now download or share them.</p>
+                    <button className="bg-blue-600 text-white font-medium py-2 rounded-lg w-full hover:bg-blue-500 transition mb-4">
+                        Consult Dentist
+                    </button>
 
-                    <div className='my-9'>
-                        <button className="bg-blue-600 text-white font-medium py-2 rounded-lg w-full hover:bg-blue-500 transition cursor-pointer">
-                            Consult Dentist
-                        </button>
-                    </div>
+                    {/* Download and Share Buttons */}
+                    {results.length > 0 && (
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() =>
+                                    results.forEach(r =>
+                                        window.open(`${process.env.NEXT_PUBLIC_SERVER_URL}${r.image_url}`, '_blank')
+                                    )
+                                }
+                                className="bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md transition"
+                            >
+                                Download All
+                            </button>
+                            {typeof navigator.share !== 'undefined' && (
+                                <button
+                                    onClick={() =>
+                                        navigator.share({
+                                            title: 'X-ray Result',
+                                            url: `${process.env.NEXT_PUBLIC_SERVER_URL}${results[0].image_url}`,
+                                        })
+                                    }
+                                    className="bg-green-600 hover:bg-green-500 text-white py-2 rounded-md transition"
+                                >
+                                    Share First Result
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
+
 
     return user_type === "patient" ? renderPatientView() : renderDoctorView();
 };
