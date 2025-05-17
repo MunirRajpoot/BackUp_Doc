@@ -22,14 +22,11 @@ const Page = () => {
     const userState = useSelector((state) => state.user) || {};
     const { user_type } = userState;
     const [showAnalyzed, setShowAnalyzed] = useState(false);
-    const [zoom, setZoom] = useState(100);
     const [openModal, setOpenModal] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const [results, setResults] = useState([]);
     const [pending, setPending] = useState(true);
-
-    const [rotation, setRotation] = useState(0);   // Rotation (in degrees)
 
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -135,7 +132,28 @@ const Page = () => {
             console.error(err);
             toast.error("Error submitting feedback");
         }
+
     };
+
+    const handleEmailSend = async (analysis_id) => {
+    try {
+        const authToken = Cookies.get("auth_token");
+        await axios.post(
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/email/${analysis_id}/`,
+            {}, // empty body
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+
+        toast.success('Email submitted successfully');
+    } catch (err) {
+        console.error(err);
+        toast.error("Error submitting Email");
+    }
+};
 
 
     return (
@@ -157,6 +175,12 @@ const Page = () => {
                             className={`px-3 bg-blue-700 py-2 rounded text-sm font-medium cursor-pointer`}
                         >
                             Add Patient
+                        </button>
+                        <button
+                            onClick={() => handleEmailSend(results[activeIndex]?.analysis_id)}
+                            className={`px-3 bg-green-700 py-2 rounded text-sm font-medium cursor-pointer`}
+                        >
+                            Email me
                         </button>
                         {images.length > 1 && (
                             <div className="flex gap-2 mt-4 md:mt-0">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import SearchInput from '../SearchInput/SearchInput';
 
 
 const PatientSidebar = () => {
@@ -14,7 +15,7 @@ const PatientSidebar = () => {
 
 
     const fetchPatients = async () => {
-     
+
         const authToken = Cookies.get("auth_token");
         await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/patients/`, {
             method: 'GET',
@@ -86,28 +87,7 @@ const PatientSidebar = () => {
                 <p className="text-white text-lg font-semibold">BACKUPDOC</p>
             </div>
 
-            {/* Search Input */}
-            <div className="flex items-center bg-gray-800 border mt-4 border-white/20 rounded-md px-3 py-2 w-full mb-4">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-white/70 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"
-                    />
-                </svg>
-                <input
-                    type="text"
-                    placeholder="Search Patient..."
-                    className="bg-transparent text-white placeholder-white/60 focus:outline-none w-full"
-                />
-            </div>
+            <SearchInput onResults={setData}/>
 
 
             {/* Button to open modal */}
@@ -143,13 +123,13 @@ const PatientSidebar = () => {
                         onClick={() => handlePatientClick(patient._id)}
                     >
                         <div className="flex flex-col">
-                            <span className="text-white text-sm font-medium">{patient.first_name}{patient.last_name}</span>
+                            <span className="text-white text-sm font-medium">{patient.first_name} {patient.last_name}</span>
                             <span className="text-white/70 text-xs">
                                 Age: {patient.age} | Gender: {patient.gender}
                             </span>
                         </div>
                         <button className="text-red-400 hover:text-red-600 transition cursor-pointer"
-                        onClick={() => handlePatientDelete(patient._id)}
+                            onClick={() => handlePatientDelete(patient._id)}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
