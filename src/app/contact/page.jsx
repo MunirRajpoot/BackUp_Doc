@@ -4,10 +4,7 @@ import { useState } from 'react';
 import { IoIosSend } from "react-icons/io";
 import { AiFillCheckCircle } from "react-icons/ai";
 
-
 const page = () => {
-
-
     const [openIndex, setOpenIndex] = useState(null);
     // Form input state
     const [formData, setFormData] = useState({
@@ -20,11 +17,8 @@ const page = () => {
         message: "",
     });
 
-    // State for handling response messages
     const [statusMessage, setStatusMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Handle input value change
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({

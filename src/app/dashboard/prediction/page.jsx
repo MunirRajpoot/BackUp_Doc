@@ -1,12 +1,11 @@
 'use client';
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import { RotateCcw, RotateCw, Minus, Plus, X, Loader } from "lucide-react";
 import UploadXrayModal from "@/component/UploadXrayModel/UploadXrayModel";
 import { useSelector } from "react-redux";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from "react";
 import axios from "axios";
 import NotesEditor from "@/component/NotesEditor/NotesEditor";
 import Cookies from "js-cookie";
@@ -21,10 +20,9 @@ const Page = () => {
     const source = useSearchParams();
     const userState = useSelector((state) => state.user) || {};
     const { user_type } = userState;
+
     const [showAnalyzed, setShowAnalyzed] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-    const [currentIndex, setCurrentIndex] = useState(0);
-
     const [results, setResults] = useState([]);
     const [pending, setPending] = useState(true);
 
@@ -79,7 +77,6 @@ const Page = () => {
         }
     }, [taskIds]);
 
-
     const fetchResults = async () => {
         const responses = await Promise.all(taskIds.map(async (taskId) => {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/result/${taskId}`);
@@ -88,7 +85,7 @@ const Page = () => {
         return responses;
     };
 
-    const { data, isLoading } = useQuery({
+    const { data } = useQuery({
         queryKey: ['results', taskIds],
         queryFn: fetchResults,
         refetchInterval: pollingEnabled ? 3000 : false,
@@ -157,21 +154,18 @@ const Page = () => {
 
     return (
         <div className="flex text-white h-screen bg-[#0f172a] overflow-hidden">
-            {/* <PatientSidebar /> */}
-
             <div className="flex-1 bg-[#0B0F19] text-white px-6 py-8 overflow-y-auto">
-                {/* Top Info Bar */}
+
+                {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                     <div>
                         <h2 className="text-lg font-semibold">Usman Ali</h2>
                         <p className="text-sm text-gray-300">13 years · male · 18728977554</p>
                     </div>
-
-                    {/* Image Navigation Arrows */}
                     <div className="flex gap-2 mt-4 md:mt-0">
                         <button
                             onClick={() => router.push('/dashboard')}
-                            className={`px-3 bg-blue-700 py-2 rounded text-sm font-medium cursor-pointer`}
+                            className="px-3 bg-blue-700 py-2 rounded text-sm font-medium cursor-pointer"
                         >
                             Add Patient
                         </button>
@@ -208,24 +202,20 @@ const Page = () => {
                             </div>
                         )}
                     </div>
-
                 </div>
 
-                {/* Main Content */}
                 <div className="grid grid-cols-12 gap-6">
-                    {/* Controls */}
+                    {/* Sidebar Controls */}
                     <div className="col-span-3 bg-[#1E293B] rounded-xl p-4 space-y-4">
                         <div className="flex items-center justify-between">
                             <span>Show Original</span>
                             <Switch
                                 checked={showAnalyzed}
                                 onChange={setShowAnalyzed}
-                                className={`${showAnalyzed ? "bg-blue-600" : "bg-gray-600"
-                                    } relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer`}
+                                className={`${showAnalyzed ? "bg-blue-600" : "bg-gray-600"} relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer`}
                             >
                                 <span
-                                    className={`${showAnalyzed ? "translate-x-6" : "translate-x-1"
-                                        } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                                    className={`${showAnalyzed ? "translate-x-6" : "translate-x-1"} inline-block h-4 w-4 transform rounded-full bg-white transition`}
                                 />
                             </Switch>
                         </div>
@@ -235,7 +225,7 @@ const Page = () => {
                             <span className="text-xs text-gray-400">Soon</span>
                         </div>
 
-                        {/* Zoom Controls */}
+                        {/* Zoom */}
                         <div className="flex items-center justify-center gap-4 mt-4">
                             <button
                                 onClick={() =>
@@ -264,7 +254,7 @@ const Page = () => {
                             </button>
                         </div>
 
-                        {/* Rotation Controls */}
+                        {/* Rotation */}
                         <div className="flex items-center justify-center gap-4 mt-2">
                             <button
                                 onClick={() =>
@@ -304,7 +294,7 @@ const Page = () => {
 
                     </div>
 
-                    {/* Image Viewer Container */}
+                    {/* X-ray Image Area */}
                     <div className="col-span-6 bg-[#1E293B] rounded-xl p-4 flex justify-center items-center relative">
                         {pending ? (
                             <div className="flex flex-col items-center justify-center h-full space-y-4">
@@ -396,9 +386,11 @@ const Page = () => {
                     Previous Analyses
                 </div> */}
             </div>
+
+            {/* Upload Modal */}
             <UploadXrayModal isOpen={openModal} onClose={() => setOpenModal(false)} />
         </div>
-    )
-}
+    );
+};
 
-export default Page
+export default Page;
