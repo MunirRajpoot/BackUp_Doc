@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { FaComments } from "react-icons/fa";
 import { FaMapMarkerAlt, FaSearch, FaStar } from 'react-icons/fa';
@@ -9,6 +9,8 @@ import Image from "next/image";
 
 import CitySearch from "@/component/CitySearch/CitySearch";
 import ChatModal from "@/component/ChatModal/ChatModal";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const doctors = [
     {
@@ -60,7 +62,7 @@ const doctors = [
         image: "/images/doc-img.png",
         online: true,
     },
-   
+
 ];
 
 const onlineDoctors = [
@@ -105,6 +107,7 @@ export default function DoctorListPage() {
     const [activeItemx, setActiveItem] = useState('Faisalabad');
     const [chatOpen, setChatOpen] = useState(false);
     const [roomName, setRoomName] = useState(null);
+    const [doctorData, setDoctorData] = useState([]);
 
 
     const scrollRef = useRef();
@@ -176,9 +179,51 @@ export default function DoctorListPage() {
         setIsModalOpen(false);
     };
 
-    const handleCityClick = (city) => {
+    const handleCityClick = async (city) => {
         setActiveItem(city);
-    }
+        const authToken = Cookies.get("auth_token");
+
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/by-city?city=${city}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+
+            if (res.status === 200) {
+                setDoctorData(res.data); // ✅ correct usage
+            } else {
+                console.error("Failed to fetch filtered doctors:", res.status);
+            }
+        } catch (error) {
+            console.log("I'm here for error: ", error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            const authToken = Cookies.get("auth_token");
+
+            try {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/all-doctors`, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                });
+
+                if (res.status === 200) {
+                    setDoctorData(res.data);
+                } else {
+                    console.error("Failed to fetch doctors:", res.status);
+                }
+
+            } catch (error) {
+                console.error("Error fetching doctors:", error);
+            }
+        };
+
+        fetchDoctors();
+    }, []);
 
     return (
         <div className="min-h-screen py-10 px-4 mt-[100px]">
@@ -218,15 +263,16 @@ export default function DoctorListPage() {
                 </h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-25">
-                    {doctors.map((doctor) => (
+                    {doctorData.map((doctor) => (
                         <div
                             key={doctor.id}
                             className="bg-white/10 backdrop-blur-sm w-full max-w-[300px] mx-auto rounded-2xl shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl flex flex-col"
                         >
                             <div className="flex justify-center items-center w-full h-52 overflow-hidden bg-white">
                                 <img
-                                    src={doctor.image}
-                                    alt={doctor.name}
+                                    src={`${doctor.profile_url ? `${process.env.NEXT_PUBLIC_SERVER_URL}${doctor.profile_url}`:`/images/images.jpg`}`}
+                                    // src={`${process.env.NEXT_PUBLIC_SERVER_URL}${doctor.profile_url}`}
+                                    alt={doctor.first_name}
                                     className="h-full object-cover"
                                 />
                             </div>
@@ -234,14 +280,14 @@ export default function DoctorListPage() {
                             <div className="p-4 flex flex-col justify-between flex-1">
                                 <div>
                                     <div className="flex justify-between items-center mb-2">
-                                        <h2 className="text-lg font-semibold text-white">{doctor.name}</h2>
+                                        <h2 className="text-lg font-semibold text-white">{doctor.first_name} {doctor.last_name}</h2>
                                         {doctor.online && (
                                             <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded-full">
                                                 Online
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-sm text-blue-400 font-medium">{doctor.specialty}</p>
+                                    <p className="text-sm text-blue-400 font-medium">{doctor.specialization}</p>
                                 </div>
 
                                 <div className="flex justify-between gap-2 mt-4">
@@ -253,7 +299,7 @@ export default function DoctorListPage() {
                                     </button>
                                     <button
                                         className="flex items-center justify-center w-10 h-10 border border-blue-600 text-white rounded-full hover:bg-blue-500 transition cursor-pointer"
-                                        onClick={() => {setChatOpen(true); setRoomName(doctor.id)}}
+                                        onClick={() => { setChatOpen(true); setRoomName(doctor.id) }}
                                     >
                                         <FaComments />
                                     </button>

@@ -347,35 +347,54 @@ const Page = () => {
                     {/* Detection Results */}
                     <div className="col-span-3 bg-[#1E293B] rounded-xl p-4 flex flex-col gap-4">
                         <h3 className="text-sm font-semibold">Detection Results</h3>
-                        {results[activeIndex]?.prediction_objs?.length > 0 && (
-                            <div className="space-y-2">
-                                {results[activeIndex].prediction_objs.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg">
-                                        {/* <div className={`w-4 h-4 rounded ${color}`}></div> */}
-                                        <span className="text-sm text-white">{item}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        <div className="mt-4 p-3 bg-gray-800 rounded-lg">
-                            <p className="text-xs mb-2">Help Us Refine Our AI</p>
-                            <div className="flex gap-2">
-                                <button
-                                    className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
-                                    onClick={() => handleFeedback(results[activeIndex]?.analysis_id, "no")}
-                                >
-                                    Incorrect Detection
-                                </button>
-                                <button
-                                    className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
-                                    onClick={() => handleFeedback(results[activeIndex]?.analysis_id, "yes")}
-                                >
-                                    Missing Detection
-                                </button>
-                            </div>
-                        </div>
 
+                        {pending ? (
+                            <div className="flex justify-center items-center h-20">
+                                <Loader width={20} height={20} />
+                            </div>
+                        ) : (
+                            <>
+                                {results[activeIndex]?.prediction_objs?.length > 0 ? (
+                                    <div className="space-y-2">
+                                        {results[activeIndex].prediction_objs.map((item, i) => (
+                                            <div
+                                                key={i}
+                                                className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg"
+                                            >
+                                                {/* <div className={`w-4 h-4 rounded ${color}`}></div> */}
+                                                <span className="text-sm text-white">{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-300">No detections found.</p>
+                                )}
+
+                                <div className="mt-4 p-3 bg-gray-800 rounded-lg">
+                                    <p className="text-xs mb-2">Help Us Refine Our AI</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
+                                            onClick={() =>
+                                                handleFeedback(results[activeIndex]?.analysis_id, "no")
+                                            }
+                                        >
+                                            Incorrect Detection
+                                        </button>
+                                        <button
+                                            className="text-xs border border-gray-400 px-2 py-1 rounded hover:bg-gray-700"
+                                            onClick={() =>
+                                                handleFeedback(results[activeIndex]?.analysis_id, "yes")
+                                            }
+                                        >
+                                            Missing Detection
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
+
                 </div>
 
                 {/* Notes Section */}
