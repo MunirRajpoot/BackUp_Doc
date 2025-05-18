@@ -14,7 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { Activity, FileBarChart2, HomeIcon, User, Brain,CalendarCheck } from "lucide-react";
+import { Activity, FileBarChart2, HomeIcon, User, Brain, CalendarCheck } from "lucide-react";
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -33,8 +33,8 @@ export default function DashboardLayout({ children }) {
     { href: "/dashboard/analyze", icon: Brain, label: "Analyze" },               // Brain icon for analysis
     { href: "/dashboard/activity", icon: Activity, label: "Activity" },          // Activity icon
     { href: "/dashboard/chat", icon: SendIcon, label: "Chat" },                // User profile icon
+    { href: "/dashboard/appointment", icon: CalendarCheck, label: "Appointment" },               // User profile icon
     { href: "/dashboard/profile", icon: User, label: "Profile" },                // User profile icon
-   { href: "/dashboard/appointment", icon: CalendarCheck, label: "Appointment" },               // User profile icon
   ];
 
 

@@ -12,67 +12,6 @@ import ChatModal from "@/component/ChatModal/ChatModal";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const doctors = [
-    {
-        id: 1,
-        name: "Dr. Munir Rasool",
-        specialty: "Cardiologist",
-        image: "/images/munir.jpeg",
-        online: true,
-    },
-    {
-        id: 2,
-        name: "Dr. Ahmed Khan",
-        specialty: "Dermatologist",
-        image: "/images/naseer.png",
-        online: false,
-    },
-    {
-        id: 3,
-        name: "Dr. Emily Zhao",
-        specialty: "Pediatrician",
-        image: "/images/image 6.png",
-        online: true,
-    },
-    {
-        id: 4,
-        name: "Dr. Raj Mehta",
-        specialty: "Neurologist",
-        image: "/images/doc-img.png",
-        online: true,
-    },
-    {
-        id: 5,
-        name: "Dr. Lisa Kim",
-        specialty: "Gynecologist",
-        image: "/images/doc-img.png",
-        online: true,
-    },
-    {
-        id: 6,
-        name: "Dr. John Smith",
-        specialty: "Orthopedic Surgeon",
-        image: "/images/doc-img.png",
-        online: true,
-    },
-    {
-        id: 7,
-        name: "Dr. John Smith",
-        specialty: "Orthopedic Surgeon",
-        image: "/images/doc-img.png",
-        online: true,
-    },
-
-];
-
-const onlineDoctors = [
-    { id: 1, name: 'Dr. Ali', image: '/images/munir.jpeg', isOnline: true },
-    { id: 2, name: 'Dr. Sara', image: '/images/munir.jpeg', isOnline: true },
-    { id: 3, name: 'Dr. Ahmed', image: '/images/munir.jpeg', isOnline: true },
-    { id: 4, name: 'Dr. Fatima', image: '/images/munir.jpeg', isOnline: true },
-    { id: 5, name: 'Dr. Bilal', image: '/images/munir.jpeg', isOnline: true },
-    { id: 6, name: 'Dr. Hina', image: '/images/munir.jpeg', isOnline: true },
-];
 
 const steps = [
     {
@@ -108,6 +47,14 @@ export default function DoctorListPage() {
     const [chatOpen, setChatOpen] = useState(false);
     const [roomName, setRoomName] = useState(null);
     const [doctorData, setDoctorData] = useState([]);
+
+    const [appointmentForm, setappointmentForm] = useState({
+        full_name: "",
+        email: "",
+        date: "",
+        slot: "",  // fixed key name to match backend expectations
+
+    })
 
 
     const scrollRef = useRef();
@@ -225,6 +172,37 @@ export default function DoctorListPage() {
         fetchDoctors();
     }, []);
 
+    const handleBookAppointment = async (e) => {
+        e.preventDefault();
+
+        const auth_token = Cookies.get("auth_token");
+
+        try {
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/create/`,
+                {
+                    full_name: appointmentForm.full_name,
+                    email: appointmentForm.email,
+                    date: appointmentForm.date,
+                    slot: appointmentForm.slot,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${auth_token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            alert("Appointment booked successfully!");
+            closeModal(); // Close modal after success
+        } catch (error) {
+            console.error(error);
+            alert(error?.response?.data?.detail || "Failed to book appointment.");
+        }
+    };
+
+
     return (
         <div className="min-h-screen py-10 px-4 mt-[100px]">
 
@@ -270,7 +248,7 @@ export default function DoctorListPage() {
                         >
                             <div className="flex justify-center items-center w-full h-52 overflow-hidden bg-white">
                                 <img
-                                    src={`${doctor.profile_url ? `${process.env.NEXT_PUBLIC_SERVER_URL}${doctor.profile_url}`:`/images/images.jpg`}`}
+                                    src={`${doctor.profile_url ? `${process.env.NEXT_PUBLIC_SERVER_URL}${doctor.profile_url}` : `/images/images.jpg`}`}
                                     // src={`${process.env.NEXT_PUBLIC_SERVER_URL}${doctor.profile_url}`}
                                     alt={doctor.first_name}
                                     className="h-full object-cover"
@@ -411,15 +389,17 @@ export default function DoctorListPage() {
                         </button>
                         <h2 className="text-2xl font-bold mb-1 text-center text-blue-700">Book Appointment</h2>
                         <p className="text-center text-sm text-black mb-6">
-                            with <strong>{selectedDoctor.name}</strong> ({selectedDoctor.specialty})
+                            with <strong>{selectedDoctor.first_name} {selectedDoctor.last_name}</strong> ({selectedDoctor.specialization || 'No specialization'})
                         </p>
 
-                        <form className="space-y-4">
+                        <form className="space-y-4" onSubmit={handleBookAppointment}>
                             <div>
                                 <label className="block text-sm text-black mb-1">Full Name</label>
                                 <input
                                     type="text"
-                                    placeholder="Enter your name"
+                                    name="full_name"
+                                    value={appointmentForm.full_name}
+                                    onChange={(e) => setappointmentForm({ ...appointmentForm, full_name: e.target.value })}
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
                                 />
@@ -428,6 +408,9 @@ export default function DoctorListPage() {
                                 <label className="block text-sm text-black mb-1">Email</label>
                                 <input
                                     type="email"
+                                    name="email"
+                                    value={appointmentForm.email}
+                                    onChange={(e) => setappointmentForm({ ...appointmentForm, email: e.target.value })}
                                     placeholder="Enter your email"
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
@@ -437,6 +420,9 @@ export default function DoctorListPage() {
                                 <label className="block text-sm text-black mb-1">Appointment Date</label>
                                 <input
                                     type="date"
+                                    name="date"
+                                    value={appointmentForm.date}
+                                    onChange={(e) => setappointmentForm({ ...appointmentForm, date: e.target.value })}
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
                                     required
                                 />
@@ -444,14 +430,33 @@ export default function DoctorListPage() {
                             <div>
                                 <label className="block text-sm text-black mb-1">Time Slot</label>
                                 <select
+                                    name="slot"
+                                    value={appointmentForm.slote}
+                                    onChange={(e) => setappointmentForm({ ...appointmentForm, slot: e.target.value })}
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
                                     required
                                 >
-                                    <option className="text-black" value="">Select Time</option>
-                                    <option className="text-black">10:00 AM</option>
-                                    <option className="text-black">11:00 AM</option>
-                                    <option className="text-black">2:00 PM</option>
-                                    <option className="text-black">4:00 PM</option>
+                                    <option value="">Select Time</option>
+                                    {selectedDoctor.slotes.length > 0 ? (
+                                        selectedDoctor.slotes.map((slot) => {
+                                            // Format time e.g. "06:00:00" to "06:00 AM"
+                                            const formatTime = (timeStr) => {
+                                                const [hour, minute] = timeStr.split(':');
+                                                const h = parseInt(hour, 10);
+                                                const ampm = h >= 12 ? 'PM' : 'AM';
+                                                const hour12 = h % 12 === 0 ? 12 : h % 12;
+                                                return `${hour12}:${minute} ${ampm}`;
+                                            };
+
+                                            return (
+                                                <option key={slot.id} value={slot.id}>
+                                                    {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                                                </option>
+                                            );
+                                        })
+                                    ) : (
+                                        <option disabled>No slots available</option>
+                                    )}
                                 </select>
                             </div>
 
@@ -465,6 +470,7 @@ export default function DoctorListPage() {
                     </div>
                 </div>
             )}
+
             <ChatModal isChatOpen={chatOpen} onClose={() => setChatOpen(false)} roomName={roomName} />
         </div>
     );
