@@ -1,225 +1,151 @@
 "use client";
+
 import {
-    Bell,
-    LibraryBig,
-    Clipboard,
-    LayoutDashboard,
-    Waypoints,
-    UserRound,
-    Menu,
-    X,
+  LibraryBig,
+  LayoutDashboard,
+  Waypoints,
+  UserRound,
+  Clipboard,
+  FileBarChart2Icon,
+  UploadCloud,
+  SendIcon,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import AdminMenu from "@/component/AdminMenu/AdminMenu";
+import { Activity, FileBarChart2, HomeIcon, User, Brain, CalendarCheck } from "lucide-react";
 import { useSelector } from "react-redux";
-// import Link from "next/link";
+import { ToastContainer, toast } from 'react-toastify';
+
+
+
+
 export default function DashboardLayout({ children }) {
-    const pathname = usePathname();
-    //   const { isAdmin } = useSelector((state) => state.user);
-    const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const userState = useSelector((state) => state.user) || {};
+  const { user_type } = userState;
 
-    return (
-        <div className="flex h-screen">
-            {/* Sidebar */}
-            <div className="md:w-[11vw] bg-dark w-0 shadow-xl md:block hidden z-50">
-                <div className="h-[8vw] max-h-24 flex items-center">
-                    <Link href="/" style={{ display: "contents" }}>
-                        <Image
-                            src="/icons/logo.png"
-                            alt="Logo"
-                            width={140}
-                            height={80}
-                            className="m-auto 
-                                        w-12 h-8
-                                        md:w-16 md:h-10
-                                        lg:w-18 lg:h-10
-                                        xl:w-20 xl:h-12
-                                        2xl:w-24 2xl:h-14"
-                        />
-                    </Link>
-                </div>
+  const navItems = [
+    { href: "/", icon: HomeIcon, label: "home" },           // Dashboard icon
+    { href: "/dashboard", icon: LayoutDashboard, label: "Patients Management" },           // Dashboard icon
+    { href: "/dashboard/analyze", icon: Brain, label: "Analyze" },               // Brain icon for analysis
+    { href: "/dashboard/activity", icon: Activity, label: "Activity" },          // Activity icon
+    { href: "/dashboard/chat", icon: SendIcon, label: "Chat" },                // User profile icon
+    { href: "/dashboard/appointment", icon: CalendarCheck, label: "Appointment" },               // User profile icon
+    { href: "/dashboard/profile", icon: User, label: "Profile" },                // User profile icon
+  ];
 
 
-                <nav className="text-dark lg:!p-2 !p-1">
-                    <ul className="text-[#1976D2] p-0">
-                        <li>
-                            <Link
-                                href="/dashboard"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <LayoutDashboard
-                                    className={`${pathname === "/dashboard"
-                                        ? "text-white"
-                                        : "text-[#1976D2]"
-                                        } 
-                  2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4`}
-                                />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Dashboard
-                                </span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/dashboard/courses"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard/courses"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <LibraryBig className="2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4" />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Analyze
-                                </span>
-                            </Link>
-                        </li>
+  return (<>
+    <ToastContainer />
 
-                        <li>
-                            <Link
-                                href="/dashboard/activity"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard/activity"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <Waypoints className="2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4" />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Activity
-                                </span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/dashboard/profile"
-                                className={`flex items-center gap-2 my-2 lg:!p-2 !p-1 font-bold ${pathname === "/dashboard/profile"
-                                    ? "bg-[#1976D2] rounded text-white"
-                                    : ""
-                                    }`}
-                            >
-                                <UserRound className="2xl:!w-5 2xl:!h-5 xl:!w-4 xl:!h-4 lg:!w-3 lg:!h-3 md:!w-3 md:!h-3 !w-4 !h-4" />
-                                <span className="2xl:!text-[16px] xl:!text-[13px] lg:!text-[10px] md:!text-[9px] !text-[6px] !hidden md:!block">
-                                    Profile
-                                </span>
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
+    <div className="flex h-screen w-screen overflow-hidden">
+      {/* Sidebar */}
+      <div className="group flex flex-col bg-[#1e2227] text-white transition-all duration-300 ease-in-out w-16 hover:w-54 z-10">
+        <nav className="flex flex-col mt-4 space-y-2 px-2">
+          {navItems.map(({ href, icon: Icon, label }) => {
+            // Skip "Patient Management" for patients
+            if (user_type === "patient" && label === "Patients Management") {
+              label = "Upload X-Ray";
+              Icon = UploadCloud;
+            }
+            if (user_type === "patient" && label === "Chat") {
+              return null; // Skip "Chat" for patients
+            }
+            if (user_type === "doctor" && label === "Analyze") {
+              return null; // Skip "Chat" for patients
+            }
 
-            </div>
-
-            {/* Mobile Sidebar */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ x: "100%" }}
-                        animate={{ x: "0" }}
-                        exit={{ x: "100%" }}
-                        transition={{ type: "tween", duration: 0.3 }}
-                        className="fixed top-0  right-0 h-full w-[50vw] bg-white shadow-lg z-40 p-2"
-                    >
-
-                        <nav className="!mt-14 p-0">
-                            <ul className="p-0">
-                                {[
-                                    {
-                                        href: "/dashboard",
-                                        icon: LayoutDashboard,
-                                        label: "Dashboard",
-                                    },
-                                    {
-                                        href: "/dashboard/courses",
-                                        icon: LibraryBig,
-                                        label: "Courses",
-                                    },
-                                    {
-                                        href: "/dashboard/practice",
-                                        icon: Clipboard,
-                                        label: "Practice",
-                                    },
-                                    {
-                                        href: "/dashboard/activity",
-                                        icon: Waypoints,
-                                        label: "Activity",
-                                    },
-                                    {
-                                        href: "/dashboard/profile",
-                                        icon: UserRound,
-                                        label: "Profile",
-                                    },
-                                ].map(({ href, icon: Icon, label }, ind) => (
-                                    <li key={ind}>
-                                        <Link
-                                            href={href}
-                                            className={`flex items-center gap-3 !p-2.5 rounded-lg font-bold ${pathname === href
-                                                ? "bg-[#1976D2] text-white"
-                                                : "text-[#1976D2]"
-                                                }`}
-                                            onClick={() => setIsOpen(false)}
-                                        >
-                                            <Icon className="w-5 h-5" />
-                                            <span className="text-sm">{label}</span>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </nav>
-
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Main Content */}
-            <main className="flex-1 bg-gray-100 overflow-y-auto md:w-[89vw] w-full" style={{ color: "black" }}>
-                <nav className="fixed top-0 right-0 md:w-[89vw] w-full flex items-center justify-between !h-[6vw] max-h-24 shadow-md md:p-4 px-2 py-4 z-40" style={{ backgroundColor: "black" }}>
-                    <div>
-                        <Image
-                            src="/Images/logo.svg"
-                            alt="Logo"
-                            width={180}
-                            height={180}
-                            className="mx-auto 2xl:!w-40 2xl:!h-20 xl:!w-35 xl:!h-15 lg:!w-26 lg:!h-13 md:!w-22 md:!h-10 !w-19 !h-8 md:hidden block"
-                        />
-                    </div>
-                    <div className="md:flex items-center gap-2 hidden">
-                        {/* <Bell className="cursor-pointer 2xl:!w-8 2xl:!h-8 xl:!w-6 xl:!h-6 lg:!w-5 lg:!h-5 w-4 h-4" /> */}
-                        <Image
-                            src="/Images/dashUser.png"
-                            alt="Avatar"
-                            width={40}
-                            height={40}
-                            className="cursor-pointer 2xl:!w-10 2xl:!h-10 xl:!w-8 xl:!h-8 lg:!w-7 lg:!h-7 w-6 h-6"
-                        />
-                    </div>
-                    <div className="block md:hidden">
-                        {isOpen ? (
-                            <X
-                                onClick={() => setIsOpen(false)}
-                                className="cursor-pointer !text-gray-800"
-                            />
-                        ) : (
-                            <Menu
-                                onClick={() => setIsOpen(true)}
-                                className="cursor-pointer !text-gray-800"
-                            />
-                        )}
-                    </div>
-                </nav>
-                <div
-                    style={{ marginTop: "min(10vw, 140px)" }}
-                    className="xl:px-4 px-3 overflow-y-auto md:!pt-0 sm:!pt-6 !pt-10"
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-3 p-2 rounded-md transition-all duration-300 ease-in-out ${isActive
+                  ? "bg-[#1976D2] text-white"
+                  : "text-[#1976D2] hover:bg-[#2b3139]"
+                  }`}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span
+                  className="whitespace-nowrap opacity-0 translate-x-[-8px] group-hover:opacity-100 group-hover:translate-x-0 
+        transition-all duration-300 ease-in-out"
                 >
-                    {children}
+                  {label}
+                </span>
+              </Link>
+            );
+          })}
 
+        </nav>
+      </div>
 
-                </div>
-            </main>
-        </div>
-    );
+      {/* Main Content */}
+      <div className="flex-1 bg-dark text-white ">
+        {children}
+      </div>
+
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: "0" }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.3 }}
+            className="fixed top-0 right-0 h-full w-[50vw] bg-white shadow-lg z-40 p-2"
+          >
+            <nav className="!mt-14 p-0">
+              <ul className="p-0">
+                {[
+                  {
+                    href: "/dashboard",
+                    icon: LayoutDashboard,
+                    label: "Dashboard",
+                  },
+                  {
+                    href: "/dashboard/courses",
+                    icon: LibraryBig,
+                    label: "Courses",
+                  },
+                  {
+                    href: "/dashboard/practice",
+                    icon: Clipboard,
+                    label: "Practice",
+                  },
+                  {
+                    href: "/dashboard/activity",
+                    icon: Waypoints,
+                    label: "Activity",
+                  },
+                  {
+                    href: "/dashboard/profile",
+                    icon: UserRound,
+                    label: "Profile",
+                  },
+                ].map(({ href, icon: Icon, label }, ind) => (
+                  <li key={ind}>
+                    <Link
+                      href={href}
+                      className={`flex items-center gap-3 !p-2.5 rounded-lg font-bold ${pathname === href
+                        ? "bg-[#1976D2] text-white"
+                        : "text-[#1976D2]"
+                        }`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="text-sm">{label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  </>
+  );
 }

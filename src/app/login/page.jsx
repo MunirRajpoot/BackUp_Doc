@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slice/userSlice";
 
 const Page = () => {
   const router = useRouter();
@@ -13,29 +16,45 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Redux Dispatcher
+  const dispatch = useDispatch();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-     
+
         },
         body: JSON.stringify({ email, password }),
-        
+
       });
 
       const data = await response.json();
 
+
       if (!response.ok) {
         setErrorMsg(data.detail || 'Login failed. Please try again.');
       } else {
-        // Successful login
-        router.push('/'); // Redirect to your app’s dashboard
+
+        Cookies.set('auth_token', data.token, {
+          secure: true,
+          sameSite: 'Strict',
+          expires: 7,
+        });
+
+        // ✅ Update Redux state
+        dispatch(setUser({
+          user: data?.user,
+          user_type: data?.user_type || null,
+        }));
+
+        router.push(`/`);
       }
     } catch (error) {
       setErrorMsg('Something went wrong. Please try again later.');

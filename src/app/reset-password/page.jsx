@@ -39,7 +39,7 @@ const Page = () => {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/request-confirm`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/request-confirm`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import { Eye, EyeOff, User } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slice/userSlice";
 
 export default function RegisterPage() {
     const {
@@ -22,6 +25,9 @@ export default function RegisterPage() {
     const [passwordMatch, setPasswordMatch] = useState('');
     const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
+
+    // Redux Dispatcher
+    const dispatch = useDispatch();
 
     const password = watch('password');
     const confirm_password = watch('confirm_password');
@@ -55,8 +61,6 @@ export default function RegisterPage() {
 
     useEffect(() => {
         const m = searchParams.get('m');
-        console.log('m', m); // ✅ Logging email from URL
-
         if (m) {
             setEmail(m);
             setValue('email', m); // Set email in form data
@@ -66,10 +70,9 @@ export default function RegisterPage() {
     }, [password, confirm_password, searchParams, setValue]);
 
     const onSubmit = async (data) => {
-        console.log('Form Submitted:', data); // ✅ Logging form data
-
+    
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/register`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +86,20 @@ export default function RegisterPage() {
             }
 
             const result = await response.json();
-            router.push(`/?email=${encodeURIComponent(data.email || '')}`);
+          
+            Cookies.set('auth_token', result.token, {
+                secure: true,
+                sameSite: 'Strict',
+                expires: 7,
+            });
+
+            // ✅ Update Redux state
+            dispatch(setUser({
+                user: result?.user,
+                user_type: result?.user_type || null,
+            }));
+
+            router.push(`/`);
         } catch (error) {
             console.error('Registration error:', error.message);
         }
@@ -192,7 +208,7 @@ export default function RegisterPage() {
                                     validate: (value) =>
                                         value === password || 'Passwords do not match',
                                 })}
-                                
+
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black placeholder:text-gray-400"
                             />
                             <button
@@ -237,7 +253,7 @@ export default function RegisterPage() {
 
                     <button
                         type="submit"
-                        className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
+                        className="cursor-pointer w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
                     >
                         Sign Up
                     </button>

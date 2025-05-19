@@ -3,6 +3,7 @@
 import Navbar from "@/component/Navbar/Navbar"
 import "./globals.css";
 import ConditionalWrapper from "@/component/ConditionalWrapper/ConditionalWrapper";
+import { Providers } from "./provider";
 
 
 
@@ -16,10 +17,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ConditionalWrapper>
+        <Providers>
+          <ConditionalWrapper>
 
-          {children}
-        </ConditionalWrapper>
+            {children}
+          </ConditionalWrapper>
+        </Providers>
       </body>
     </html>
   );
