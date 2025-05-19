@@ -11,6 +11,7 @@ import CitySearch from "@/component/CitySearch/CitySearch";
 import ChatModal from "@/component/ChatModal/ChatModal";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast, ToastContainer } from "react-toastify";
 
 
 const steps = [
@@ -194,17 +195,17 @@ export default function DoctorListPage() {
                 }
             );
 
-            alert("Appointment booked successfully!");
             closeModal(); // Close modal after success
+            toast.success("Appointment request sent successfully!");
         } catch (error) {
-            console.error(error);
-            alert(error?.response?.data?.detail || "Failed to book appointment.");
+            toast.error(error?.response?.data?.detail || "Failed to book appointment.");
         }
     };
 
 
     return (
         <div className="min-h-screen py-10 px-4 mt-[100px]">
+            <ToastContainer />
 
             <div className="bg-gradient-to-r from-blue-500 to-blue-700 min-h-[300px] flex flex-col items-center justify-center px-4 py-10 space-y-8 rounded-xl shadow-lg">
 
@@ -273,14 +274,14 @@ export default function DoctorListPage() {
                                         className="flex-1 bg-blue-600 text-white py-1.5 text-sm rounded-lg hover:bg-blue-700 transition cursor-pointer"
                                         onClick={() => openModal(doctor)}
                                     >
-                                        Book
+                                        Request Appointment
                                     </button>
-                                    <button
+                                    {/*<button
                                         className="flex items-center justify-center w-10 h-10 border border-blue-600 text-white rounded-full hover:bg-blue-500 transition cursor-pointer"
                                         onClick={() => { setChatOpen(true); setRoomName(doctor.id) }}
                                     >
                                         <FaComments />
-                                    </button>
+                                    </button>*/}
                                 </div>
                             </div>
                         </div>
@@ -379,11 +380,11 @@ export default function DoctorListPage() {
 
             {/* Modal */}
             {isModalOpen && selectedDoctor && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
+                <div className="fixed inset-0 bg-black/85 bg-opacity-40 flex items-center justify-center z-50 px-4">
                     <div className="bg-white w-full max-w-md rounded-xl shadow-2xl p-6 relative animate-fade-in">
                         <button
                             onClick={closeModal}
-                            className="absolute top-2 right-3 text-gray-500 text-2xl hover:text-black"
+                            className="absolute cursor-pointer top-2 right-3 text-gray-500 text-2xl hover:text-black"
                         >
                             &times;
                         </button>
@@ -399,6 +400,7 @@ export default function DoctorListPage() {
                                     type="text"
                                     name="full_name"
                                     value={appointmentForm.full_name}
+                                    placeholder="Enter your full name"
                                     onChange={(e) => setappointmentForm({ ...appointmentForm, full_name: e.target.value })}
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
@@ -462,9 +464,9 @@ export default function DoctorListPage() {
 
                             <button
                                 type="submit"
-                                className="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+                                className="w-full bg-blue-600 cursor-pointer text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
                             >
-                                Confirm Appointment
+                                Send Request
                             </button>
                         </form>
                     </div>

@@ -26,9 +26,7 @@ const Page = () => {
     const [appointments, setAppointments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const appointmentsPerPage = 12;
-
-    useEffect(() => {
-        const fetchAppointments = async () => {
+const fetchAppointments = async () => {
             const auth_token = Cookies.get('auth_token');
             try {
                 const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/list/?page=${currentPage}`, {
@@ -45,6 +43,8 @@ const Page = () => {
             }
         };
 
+    useEffect(() => {
+        
         fetchAppointments();
     }, [user_type]);
 
@@ -89,33 +89,38 @@ const Page = () => {
 
 
     const handleUpdateStatus = async (appointmentId, newStatus) => {
+        const authToken = Cookies.get('auth_token');
+        const apiUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/update/${appointmentId}/`;
+
+        if (!authToken) {
+            toast.error('Authentication token is missing.');
+            return;
+        }
+
         try {
-            const auth_token = Cookies.get('auth_token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/update/${appointmentId}/`, {
+            const response = await fetch(apiUrl, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${auth_token}`, // replace with your token logic
+                    Authorization: `Bearer ${authToken}`,
                 },
                 body: JSON.stringify({ status: newStatus }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update appointment status.');
+                const errorData = await response.json();
+                toast.error(errorData.detail || 'Failed to update appointment status.');
+                return;
             }
 
-            const updatedAppointment = await response.json();
-
-
-            // Replace updated appointment in state
-            // setCurrentAppointments(prev =>
-            //     prev.map(app => (app.id === appointmentId ? updatedAppointment : app))
-            // );
+            toast.success('Appointment status updated successfully.');
+            fetchAppointments();
         } catch (error) {
-            console.error(error);
-            alert('Error updating appointment status.');
+            console.error('Update Status Error:', error);
+            toast.error('An unexpected error occurred while updating the status.');
         }
     };
+
 
 
     // Pagination logic
