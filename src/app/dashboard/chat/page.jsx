@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import userChat from '@/hooks/chathook';
 import { useSelector } from "react-redux";
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
 
 const ChatPage = () => {
     const userState = useSelector((state) => state.user) || {};
@@ -12,9 +15,10 @@ const ChatPage = () => {
     const [isNextMessageEnd, setIsNextMessageEnd] = useState(true);
     const [showChat, setShowChat] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(true); // assuming a toggle state
+    const [chatUsers, setChatUsers] = useState([]);
 
 
-    const roomName = 5; // add your actual room name
+    const roomName = 9; // add your actual room name
     const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat(false, roomName);
 
     const handleSend = () => {
@@ -67,6 +71,27 @@ const ChatPage = () => {
         }
     }, [data]);
 
+    const fetchChatUsers = async () => {
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/chat/users-list/`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('auth_token')}`
+                }
+            });
+            if (res.status === 200) {
+                setChatUsers(res.data);
+            } else {
+                console.error('Failed to fetch chat users:', res.status);
+            }
+        } catch (error) {
+            console.error('Error fetching chat users:', error);
+        }
+
+    }
+    useEffect(() => {
+        fetchChatUsers();
+    }, [])
+
 
     const handleChatbox = (roomName) => {
         console.log("Chatbox clicked", roomName);
@@ -98,20 +123,28 @@ const ChatPage = () => {
                         <h3 className="text-md font-semibold mb-3">Chats</h3>
                     </div>
                     <ul className="space-y-4">
-                        {['alice', 'bob', 'charlie'].map((user, index) => (
-                            <li key={index} className="flex items-center cursor-pointer hover:bg-gray-100 hover:text-black p-2" onClick={() => handleChatbox(index)}>
-                                <img
-                                    src={`https://i.pravatar.cc/40?img=${index + 1}`}
-                                    alt={user}
-                                    className="w-8 h-8 rounded-full"
-                                />
-                                <div className="ml-3">
-                                    <p className="font-medium capitalize">{user}</p>
-                                    <p className="text-sm text-gray-500">Last message...</p>
-                                </div>
-                            </li>
-                        ))}
+                        {chatUsers
+                            .sort((a, b) => b.isNew - a.isNew)
+                            .map((user) => (
+                                <li
+                                    key={user.user_id}
+                                    className="flex items-center cursor-pointer hover:bg-gray-100 hover:text-black p-2"
+                                    onClick={() => handleChatbox(user.user_id)}
+                                >
+                                    <img
+                                        src={`https://i.pravatar.cc/40?img=${user.imgId}`}
+                                        alt={user.name}
+                                        className="w-8 h-8 rounded-full"
+                                    />
+                                    <div className="ml-3">
+                                        <p className="font-medium capitalize">{user.name}</p>
+                                        <p className="text-sm text-gray-500">{user.lastMessage}</p>
+                                    </div>
+                                </li>
+                            ))}
+
                     </ul>
+
                 </div>
             </aside>
             {

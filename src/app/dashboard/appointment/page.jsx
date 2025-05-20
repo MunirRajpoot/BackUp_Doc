@@ -1,5 +1,6 @@
 'use client';
 
+import ChatModal from '@/component/ChatModal/ChatModal';
 import FeedbackModal from '@/component/FeedbackModal/FeedbackModal';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -13,6 +14,8 @@ const Page = () => {
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState('');
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+    const [chatOpen, setChatOpen] = useState(false);
+    const [roomName, setRoomName] = useState('');
 
     const openFeedbackForm = (appointmentId) => {
         setSelectedAppointmentId(appointmentId);
@@ -26,31 +29,31 @@ const Page = () => {
     const [appointments, setAppointments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const appointmentsPerPage = 12;
-const fetchAppointments = async () => {
-            const auth_token = Cookies.get('auth_token');
-            try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/list/?page=${currentPage}`, {
-                    headers: {
-                        Authorization: `Bearer ${auth_token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                setAppointments(res.data.results || []);
-                setCurrentPage(1); // reset page on new data
-            } catch (e) {
-                console.error('Error fetching appointments:', e);
-                toast.error('Failed to fetch appointments.');
-            }
-        };
+    const fetchAppointments = async () => {
+        const auth_token = Cookies.get('auth_token');
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/list/?page=${currentPage}`, {
+                headers: {
+                    Authorization: `Bearer ${auth_token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            setAppointments(res.data.results || []);
+            setCurrentPage(1); // reset page on new data
+        } catch (e) {
+            console.error('Error fetching appointments:', e);
+            toast.error('Failed to fetch appointments.');
+        }
+    };
 
     useEffect(() => {
-        
+
         fetchAppointments();
     }, [user_type]);
 
     function startChat(appointmentId) {
-        // Navigate to chat page or open chat modal
-        console.log("Chat started for:", appointmentId);
+        setChatOpen(true);
+        setRoomName(appointmentId);
     }
 
     const handleSubmitFeedback = async () => {
@@ -148,12 +151,25 @@ const fetchAppointments = async () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {currentAppointments.map((appointment) => {
                         const now = new Date();
-                        const startTime = appointment.slot?.start_time ? new Date(`${appointment.date}T${appointment.slot.start_time}`) : null;
-                        const endTime = appointment.slot?.end_time ? new Date(`${appointment.date}T${appointment.slot.end_time}`) : null;
+
+                        // ✅ Use local date parsing to avoid timezone issues
+                        const parseLocalTime = (dateStr, timeStr) => {
+                            const [year, month, day] = dateStr.split('-').map(Number);
+                            const [hour, minute] = timeStr.split(':').map(Number);
+                            return new Date(year, month - 1, day, hour, minute);
+                            
+                        };
+
+                        const startTime = appointment.slot?.start_time
+                            ? parseLocalTime(appointment.date, appointment.slot.start_time)
+                            : null;
+
+                        const endTime = appointment.slot?.end_time
+                            ? parseLocalTime(appointment.date, appointment.slot.end_time)
+                            : null;
 
                         const isChatTime = startTime && now >= startTime && endTime && now <= endTime;
                         const isPastAppointment = endTime && now > endTime;
-
 
                         return (
                             <div
@@ -226,7 +242,7 @@ const fetchAppointments = async () => {
                                             </button>
                                         ) : (
                                             <button
-                                                onClick={() => startChat(appointment.id)}
+                                                onClick={() => startChat(appointment.doctor.id)}
                                                 disabled={!isChatTime}
                                                 className={`px-4 py-2 rounded-md text-white transition ${isChatTime ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-500 cursor-not-allowed'}`}
                                             >
@@ -240,6 +256,7 @@ const fetchAppointments = async () => {
                     })}
                 </div>
             )}
+
 
             {/* Pagination Controls */}
             <nav className="flex justify-center mt-8 space-x-3">
@@ -288,6 +305,7 @@ const fetchAppointments = async () => {
                 feedback={feedback}
                 setFeedback={setFeedback}
             />
+            <ChatModal isChatOpen={chatOpen} onClose={() => setChatOpen(false)} roomName={roomName}/>
         </div>
     );
 };

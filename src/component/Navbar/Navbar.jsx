@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/redux/slice/userSlice";
 import { persistor } from "@/redux/store";
 import { useRouter } from "next/navigation";
-
+import { delAuthToken } from "@/app/cookie";
 
 
 const Navbar = () => {

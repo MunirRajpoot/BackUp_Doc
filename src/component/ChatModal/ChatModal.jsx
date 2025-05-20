@@ -16,7 +16,7 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     const handleSend = () => {
         if (message.trim() !== '') {
             // Send to server
-            sendMessage(message);
+            sendMessage(message, roomName);
 
             // Display locally
             setMessages([
@@ -39,7 +39,7 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
 
     useEffect(() => {
         if (isChatOpen) {
-            connectWebSocket(7);
+            connectWebSocket(roomName);
         } else {
             setMessages([]);
             disconnectWebSocket();

@@ -150,14 +150,9 @@ export default function DoctorListPage() {
 
     useEffect(() => {
         const fetchDoctors = async () => {
-            const authToken = Cookies.get("auth_token");
 
             try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/all-doctors`, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                });
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/all-doctors`);
 
                 if (res.status === 200) {
                     setDoctorData(res.data);
@@ -194,12 +189,39 @@ export default function DoctorListPage() {
                     },
                 }
             );
+            if (response.status === 401) {
+                toast.error("Unauthorized. Please log in again.");
+                return;
+            }
 
             closeModal(); // Close modal after success
             toast.success("Appointment request sent successfully!");
         } catch (error) {
-            toast.error(error?.response?.data?.detail || "Failed to book appointment.");
+
+            if (error?.response?.status === 401) {
+                toast.error(
+                    <div>
+                        Unauthorized. Please <a href="/" style={{ textDecoration: 'underline' }}>log in</a> again.
+                    </div>
+                );
+                return;
+            }
+
+
+            if (error?.response?.status === 400) {
+                toast.error("Something went wrong. Please try again later.");
+                return;
+            }
+            if (error?.response?.status === 403) {
+                toast.error("You are not allowed to book an appointment.");
+                return;
+            }
+            if (error?.response?.status === 500) {
+                toast.error("Internal server error. Please try again later.");
+                return;
+            }
         }
+
     };
 
 
@@ -378,7 +400,6 @@ export default function DoctorListPage() {
                 </div>
             </div>
 
-            {/* Modal */}
             {isModalOpen && selectedDoctor && (
                 <div className="fixed inset-0 bg-black/85 bg-opacity-40 flex items-center justify-center z-50 px-4">
                     <div className="bg-white w-full max-w-md rounded-xl shadow-2xl p-6 relative animate-fade-in">
@@ -392,8 +413,8 @@ export default function DoctorListPage() {
                         <p className="text-center text-sm text-black mb-6">
                             with <strong>{selectedDoctor.first_name} {selectedDoctor.last_name}</strong> ({selectedDoctor.specialization || 'No specialization'})
                         </p>
-
                         <form className="space-y-4" onSubmit={handleBookAppointment}>
+                            {/* Full Name */}
                             <div>
                                 <label className="block text-sm text-black mb-1">Full Name</label>
                                 <input
@@ -401,74 +422,114 @@ export default function DoctorListPage() {
                                     name="full_name"
                                     value={appointmentForm.full_name}
                                     placeholder="Enter your full name"
-                                    onChange={(e) => setappointmentForm({ ...appointmentForm, full_name: e.target.value })}
+                                    onChange={(e) =>
+                                        setappointmentForm({ ...appointmentForm, full_name: e.target.value })
+                                    }
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
                                 />
                             </div>
+
+                            {/* Email */}
                             <div>
                                 <label className="block text-sm text-black mb-1">Email</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={appointmentForm.email}
-                                    onChange={(e) => setappointmentForm({ ...appointmentForm, email: e.target.value })}
+                                    onChange={(e) =>
+                                        setappointmentForm({ ...appointmentForm, email: e.target.value })
+                                    }
                                     placeholder="Enter your email"
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 text-black"
                                     required
                                 />
                             </div>
+
+                            {/* Appointment Date */}
                             <div>
                                 <label className="block text-sm text-black mb-1">Appointment Date</label>
                                 <input
                                     type="date"
                                     name="date"
+                                    min={new Date().toISOString().split("T")[0]}
                                     value={appointmentForm.date}
-                                    onChange={(e) => setappointmentForm({ ...appointmentForm, date: e.target.value })}
+                                    onChange={(e) => {
+                                        const date = e.target.value;
+                                        const day = new Date(date)
+                                            .toLocaleDateString('en-US', { weekday: 'long' })
+                                            .toLowerCase(); // ✅ Normalize to lowercase
+                                        setappointmentForm({ ...appointmentForm, date, day });
+                                    }}
                                     className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm text-black mb-1">Time Slot</label>
-                                <select
-                                    name="slot"
-                                    value={appointmentForm.slote}
-                                    onChange={(e) => setappointmentForm({ ...appointmentForm, slot: e.target.value })}
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
-                                    required
-                                >
-                                    <option value="">Select Time</option>
-                                    {selectedDoctor.slotes.length > 0 ? (
-                                        selectedDoctor.slotes.map((slot) => {
-                                            // Format time e.g. "06:00:00" to "06:00 AM"
-                                            const formatTime = (timeStr) => {
-                                                const [hour, minute] = timeStr.split(':');
-                                                const h = parseInt(hour, 10);
-                                                const ampm = h >= 12 ? 'PM' : 'AM';
-                                                const hour12 = h % 12 === 0 ? 12 : h % 12;
-                                                return `${hour12}:${minute} ${ampm}`;
-                                            };
 
-                                            return (
-                                                <option key={slot.id} value={slot.id}>
-                                                    {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
-                                                </option>
-                                            );
-                                        })
-                                    ) : (
-                                        <option disabled>No slots available</option>
-                                    )}
-                                </select>
-                            </div>
+                            {/* Slots */}
+                            {appointmentForm.date && (
+                                <div>
+                                    <label className="block text-sm text-black mb-1">Select Slot</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedDoctor.slotes
+                                            .filter((slot) => slot.days === appointmentForm.day)
+                                            .map((slot) => {
+                                                const formatTime = (timeStr) => {
+                                                    const [hour, minute] = timeStr.split(':');
+                                                    const h = parseInt(hour, 10);
+                                                    const ampm = h >= 12 ? 'PM' : 'AM';
+                                                    const hour12 = h % 12 === 0 ? 12 : h % 12;
+                                                    return `${hour12}:${minute} ${ampm}`;
+                                                };
 
+                                                return (
+                                                    <button
+                                                        key={slot.id}
+                                                        type="button"
+                                                        disabled={slot.is_booked}
+                                                        onClick={() =>
+                                                            !slot.is_booked &&
+                                                            setappointmentForm({
+                                                                ...appointmentForm,
+                                                                slot: slot.id,
+                                                            })
+                                                        }
+                                                        className={`px-4 py-2 text-sm rounded-md font-medium transition ${slot.is_booked
+                                                            ? 'bg-red-500 text-white cursor-not-allowed'
+                                                            : appointmentForm.slot === slot.id
+                                                                ? 'bg-green-600 text-white'
+                                                                : 'bg-green-200 text-green-800 hover:bg-green-300'
+                                                            }`}
+                                                    >
+                                                        {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                                                    </button>
+                                                );
+                                            })}
+
+                                        {/* Message if no slots for selected day */}
+                                        {selectedDoctor.slotes.filter((slot) => slot.days === appointmentForm.day).length === 0 && (
+                                            <p className="text-gray-500 italic text-sm">
+                                                No slots available for selected day.
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Submit Button */}
                             <button
                                 type="submit"
-                                className="w-full bg-blue-600 cursor-pointer text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+                                disabled={!appointmentForm.slot}
+                                className={`w-full py-2 rounded-md font-semibold transition ${appointmentForm.slot
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                    }`}
                             >
                                 Send Request
                             </button>
                         </form>
+
+
                     </div>
                 </div>
             )}
