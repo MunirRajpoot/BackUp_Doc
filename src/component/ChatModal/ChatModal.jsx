@@ -3,35 +3,26 @@
 import React, { useEffect, useState } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import userChat from '@/hooks/chathook';
+import { useSelector } from 'react-redux';
+
 
 const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [isNextMessageEnd, setIsNextMessageEnd] = useState(true);
 
     const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat(false);
-
+    const userState = useSelector((state) => state.user) || {};
+    const { user_id } = userState;
 
     const handleSend = () => {
         if (message.trim() !== '') {
-            // Send to server
-            sendMessage(message);
-
-            // Display locally
-            setMessages([
-                ...messages,
-                {
-                    text: message,
-                    type: isNextMessageEnd ? 'end' : 'start',
-                },
-            ]);
-
-            setIsNextMessageEnd(!isNextMessageEnd);
+            sendMessage(message, roomName);
             setMessage('');
             setShowEmojiPicker(false);
         }
     };
+
 
     const handleEmojiClick = (emojiData) => {
         setMessage((prev) => prev + emojiData.emoji);
@@ -39,7 +30,7 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
 
     useEffect(() => {
         if (isChatOpen) {
-            connectWebSocket(7);
+            connectWebSocket(false, roomName);
         } else {
             setMessages([]);
             disconnectWebSocket();
@@ -47,16 +38,25 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     }, [isChatOpen]);
 
     useEffect(() => {
-        if (data) {
+        if (data?.type === "chat_message") {
             setMessages((prevMessages) => [
                 ...prevMessages,
                 {
                     text: data.message,
-                    type: 'start',
+                    type: data.sender_id === user_id ? 'end' : 'start',
                 },
             ]);
         }
+
+        if (data?.type === "chat_history") {
+            const history = data.messages.map((msg) => ({
+                text: msg.content,
+                type: msg.sender_id === user_id ? 'end' : 'start',
+            }));
+            setMessages(history);
+        }
     }, [data]);
+
 
     if (!isChatOpen) return null;
 

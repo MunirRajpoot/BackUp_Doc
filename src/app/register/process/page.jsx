@@ -97,6 +97,7 @@ export default function RegisterPage() {
             dispatch(setUser({
                 user: result?.user,
                 user_type: result?.user_type || null,
+                user_id: result?.user_id || null,
             }));
 
             router.push(`/`);

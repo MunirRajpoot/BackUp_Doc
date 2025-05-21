@@ -17,7 +17,7 @@ const Page = () => {
         setErrorMsg('');
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/account/reset-request`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/reset-request`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
