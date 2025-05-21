@@ -29,6 +29,8 @@ const Page = () => {
     const [appointments, setAppointments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const appointmentsPerPage = 12;
+
+
     const fetchAppointments = async () => {
         const auth_token = Cookies.get('auth_token');
         try {
@@ -76,8 +78,6 @@ const Page = () => {
                 toast.error('Failed to submit feedback. Please try again.');
                 return;
             }
-
-            const responseData = await response.json();
             toast.success('Feedback submitted successfully');
 
             // Optionally reset form state

@@ -52,6 +52,7 @@ const Page = () => {
         dispatch(setUser({
           user: data?.user,
           user_type: data?.user_type || null,
+          user_id: data?.user_id || null,
         }));
 
         router.push(`/`);

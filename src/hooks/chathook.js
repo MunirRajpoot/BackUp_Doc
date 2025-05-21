@@ -2,51 +2,36 @@
 import Cookies from 'js-cookie';
 import { useEffect, useRef, useState } from 'react';
 
-export default function userChat(autoConnect = false) {
+export default function userChat() {
     const socketRef = useRef(null);
     const [data, setData] = useState(null);
 
-    const connectWebSocket = (roomName) => {
-        if (socketRef.current) return;
+    const connectWebSocket = (connect = false, roomName) => {
+        console.log("Connecting to WebSocket...");
+        if (connect || socketRef.current) return;
+        console.log("Connecting to 2 WebSocket...");
 
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const authToken = Cookies.get("auth_token");
-        const query = authToken ? `?token=${authToken}` : '';
-        const socketUrl = `${protocol}://${process.env.NEXT_PUBLIC_WS_SERVER_URL}/ws/chat/${query}&roomName=${roomName}`;
 
-        const socket = new WebSocket(socketUrl);
-        socketRef.current = socket;
+        const wsUrl = `${protocol}://${process.env.NEXT_PUBLIC_WS_SERVER_URL}/ws/chat/?token=${authToken}&roomName=${roomName}`;
 
-        socket.onopen = (event) => {
-            
-        };
+        socketRef.current = new WebSocket(wsUrl);
 
-        socket.onmessage = (event) => {
+        socketRef.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            switch (data.type) {
-                case "chat_message":
-                    setData(data);
-                    break;
-                case "file":
-                    // handle file message
-                    break;
-                case "chat_history":
-                    setData(data.messages);
-                    break;
-                default:
-                    console.warn("Unknown message type:", data.type);
-            }
+            setData(data);
         };
 
-        socket.onclose = () => {
-            console.log('[WebSocket] Disconnected');
-            socketRef.current = null;
+        socketRef.current.onclose = () => {
+            console.log("WebSocket closed");
         };
 
-        socket.onerror = (error) => {
-            console.error('[WebSocket] Error:', error);
+        socketRef.current.onerror = (err) => {
+            console.error("WebSocket error:", err);
         };
     };
+
 
     const disconnectWebSocket = () => {
         if (socketRef.current) {

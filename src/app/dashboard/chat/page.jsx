@@ -19,7 +19,7 @@ const ChatPage = () => {
 
 
     const roomName = 9; // add your actual room name
-    const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat(false, roomName);
+    const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat();
 
     const handleSend = () => {
         if (message.trim() === '') return;
@@ -46,18 +46,7 @@ const ChatPage = () => {
         setMessage((prev) => prev + emojiData.emoji);
     };
 
-    useEffect(() => {
-        if (isChatOpen) {
-            connectWebSocket();
-        } else {
-            setMessages([]);
-            disconnectWebSocket();
-        }
-
-        return () => {
-            disconnectWebSocket();
-        };
-    }, [isChatOpen]);
+  
 
     useEffect(() => {
         if (data) {
@@ -95,7 +84,7 @@ const ChatPage = () => {
 
     const handleChatbox = (roomName) => {
         console.log("Chatbox clicked", roomName);
-        connectWebSocket(5);
+        connectWebSocket(false,roomName);
         setShowChat(true)
     }
 
