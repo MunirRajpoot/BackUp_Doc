@@ -8,37 +8,29 @@ import Cookies from 'js-cookie';
 
 const ChatPage = () => {
     const userState = useSelector((state) => state.user) || {};
-    const { user_type } = userState;
+    const { user_id } = userState;
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [isNextMessageEnd, setIsNextMessageEnd] = useState(true);
     const [showChat, setShowChat] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(true); // assuming a toggle state
     const [chatUsers, setChatUsers] = useState([]);
-
-
-    const roomName = 9; // add your actual room name
     const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat();
+    const [activeRoom, setActiveRoom] = useState(null);
+    const [roomMessages, setRoomMessages] = useState({}); // {roomId: [{text, sender}, ...]}
+
 
     const handleSend = () => {
         if (message.trim() === '') return;
 
-        // Send to server
-        sendMessage(message, roomName);
-
-        // Display locally
-        setMessages(prev => [
-            ...prev,
-            {
-                text: message,
-                sender: userState.user?.id, // Save sender ID
-            },
-        ]);
-
-
-        setIsNextMessageEnd(!isNextMessageEnd);
+        sendMessage(message, activeRoom);
         setMessage('');
+
+        setRoomMessages(prev => ({
+            ...prev,
+            [activeRoom]: [
+                ...(prev[activeRoom] || []),
+                { text: message, sender: user_id, isSender: true }
+            ]
+        }));
         setShowEmojiPicker(false);
     };
 
@@ -46,19 +38,26 @@ const ChatPage = () => {
         setMessage((prev) => prev + emojiData.emoji);
     };
 
-  
+
 
     useEffect(() => {
         if (data) {
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                    text: data.message,
-                    sender: data.sender, // Save sender ID
-                },
-            ]);
+            const isFromCurrentUser = data?.sender_id === user_id;
+
+            if (isFromCurrentUser) return; // Ignore own message broadcast
+
+            const roomId = data.room || activeRoom;
+            setRoomMessages(prev => ({
+                ...prev,
+                [roomId]: [
+                    ...(prev[roomId] || []),
+                    { text: data.message, sender: data.sender_id }
+                ]
+            }));
         }
     }, [data]);
+
+
 
     const fetchChatUsers = async () => {
         try {
@@ -81,12 +80,18 @@ const ChatPage = () => {
         fetchChatUsers();
     }, [])
 
+    useEffect(() => {
+        if (activeRoom) {
+            connectWebSocket(false, activeRoom);
+        }
+    }, [activeRoom]);
 
-    const handleChatbox = (roomName) => {
-        console.log("Chatbox clicked", roomName);
-        connectWebSocket(false,roomName);
-        setShowChat(true)
-    }
+    const handleChatbox = (nameID) => {
+        setActiveRoom(nameID);
+        connectWebSocket(false, nameID);
+        setShowChat(true);
+    };
+
 
     return (
         <div className="flex h-screen">
@@ -161,19 +166,21 @@ const ChatPage = () => {
                         </div>
 
                         {/* Chat Body */}
-                        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-dark">
-                            {messages.map((msg, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`max-w-xs md:max-w-sm lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${msg.type === 'end'
-                                        ? 'bg-blue-500 text-white self-end'
-                                        : 'bg-gray-200 text-gray-800 self-start'
-                                        }`}
-                                >
-                                    {msg.text}
-                                </div>
-                            ))}
-                        </div>
+                       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-dark scrollbar-none">
+    {(roomMessages[activeRoom] || []).map((msg, idx) => (
+        <div
+            key={idx}
+            className={`w-fit px-4 py-2 rounded-lg shadow-sm
+               ${msg.sender === user_id
+                    ? 'bg-blue-500 text-white self-end ml-auto'
+                    : 'bg-gray-200 text-gray-800 self-start mr-auto'
+                }`}
+        >
+            {msg.text}
+        </div>
+    ))}
+</div>
+
 
                         {/* Chat Input */}
                         <div className="border-t border-gray-500 px-4 py-3 bg-dark">

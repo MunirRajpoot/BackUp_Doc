@@ -31,12 +31,13 @@ const AddSlotModal = ({ isOpen, onClose, onSave }) => {
                     <select value={day} onChange={(e) => setDay(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md text-black">
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
-                        <option value="wednessday">Wednesday</option>
+                        <option value="wednesday">Wednesday</option>
                         <option value="thursday">Thursday</option>
                         <option value="friday">Friday</option>
                         <option value="saturday">Saturday</option>
                         <option value="sunday">Sunday</option>
                     </select>
+
                     <input
                         type="time"
                         value={startTime}

@@ -10,7 +10,6 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [isNextMessageEnd, setIsNextMessageEnd] = useState(true);
 
     const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat(false);
     const userState = useSelector((state) => state.user) || {};
