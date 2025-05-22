@@ -7,17 +7,16 @@ import { useRouter } from 'next/navigation';
 
 const Page = () => {
   const router = useRouter();
-  const [email, setEmail] = useState("");       // For email string
-  const [message, setMessage] = useState("");   // For message text
-  const [messageType, setMessageType] = useState(""); // "error", "info", etc.
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const [isSubmit, setIsSubmit] = useState(true);
-
+  const [selectedTab, setSelectedTab] = useState('Patient');
 
   const emailHandler = async (event) => {
     const inputEmail = event.target.value.trim();
-    setEmail(inputEmail); // Update input field value
+    setEmail(inputEmail);
 
-    // ✅ Email format validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(inputEmail)) {
       setMessage('❌ Invalid email address.');
@@ -39,12 +38,10 @@ const Page = () => {
       const data = await response.json();
 
       if (response.ok && !data.exists) {
-        // Email does NOT exist – allow signup
         setMessage(`✔️ ${data.message || 'Account is available.'}`);
         setMessageType('success');
         setIsSubmit(false);
       } else {
-        // Email exists – block signup
         setMessage(`⚠️ ${data.message || 'Email already exists.'}`);
         setMessageType('warning');
         setIsSubmit(true);
@@ -59,7 +56,9 @@ const Page = () => {
 
   const handleSubmit = () => {
     if (!isSubmit) {
-      router.push(`/register/process?m=${email}`); // redirect to next page
+      const role = selectedTab.toLowerCase();
+      const type = role === 'doctor' ? 'medical' : 'general';
+      router.push(`/register/process?m=${email}&role=${role}&type=${type}`);
     }
   };
 
@@ -67,7 +66,7 @@ const Page = () => {
     <section className="min-h-screen w-full flex justify-center items-center px-5 py-10">
       <div className="w-full max-w-4xl mx-auto shadow-lg rounded-2xl overflow-hidden">
         <div className="flex flex-col lg:flex-row">
-          {/* Left: Info */}
+          {/* Left Side */}
           <div className="bg-gradient-to-br from-[#022b68] to-[#003E99] text-white p-8 lg:p-12 lg:w-5/12 flex flex-col justify-between rounded-t-2xl lg:rounded-tr-none lg:rounded-l-2xl">
             <div>
               <h4 className="text-xl font-extrabold mb-5">Sign Up</h4>
@@ -86,9 +85,9 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Right: Form */}
+          {/* Right Side */}
           <div className="bg-white p-8 lg:p-12 lg:w-7/12 text-dark rounded-b-2xl lg:rounded-bl-none lg:rounded-r-2xl">
-            <div className="mb-6">
+            <div className="mb-4">
               <Image
                 src="/icons/backupdoc-logo.png"
                 alt="Nakiese Logo"
@@ -96,9 +95,29 @@ const Page = () => {
                 height={80}
                 className="mb-6"
               />
-              <h5 className="text-lg font-bold mb-5 text-black">Leave Everything for us!</h5>
+              <h5 className="text-lg font-bold mb-4 text-black">Leave Everything for us!</h5>
             </div>
 
+            {/* Enhanced Tab Switch */}
+            <div className="flex justify-start mb-4">
+              <div className="inline-flex bg-gray-100 p-1 rounded-full shadow-inner transition-all duration-300">
+                {['Doctor', 'Patient'].map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => setSelectedTab(role)}
+                    className={`relative px-6 py-2 text-sm font-semibold rounded-full cursor-pointer transition-all duration-300 transform
+                      ${selectedTab === role
+                        ? 'bg-[#0067FF] text-white shadow-lg scale-105'
+                        : 'text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Email Input */}
             <input
               type="email"
               placeholder="Enter your email"
@@ -107,26 +126,32 @@ const Page = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-md text-base mb-2 focus:outline-none focus:border-[#4b75a5] placeholder:text-gray-500 text-black"
             />
 
+            {/* Message Display */}
             {message && (
               <p
-                className={`text-sm mb-4 ${messageType === 'success'
-                  ? 'text-green-600'
-                  : messageType === 'error'
+                className={`text-sm mb-4 ${
+                  messageType === 'success'
+                    ? 'text-green-600'
+                    : messageType === 'error'
                     ? 'text-red-500'
                     : messageType === 'warning'
-                      ? 'text-yellow-600'
-                      : 'text-blue-500'
-                  }`}
+                    ? 'text-yellow-600'
+                    : 'text-blue-500'
+                }`}
               >
                 {message}
               </p>
             )}
 
+            {/* Submit Button */}
             <button
               onClick={handleSubmit}
               disabled={isSubmit}
-              className={`w-full cursor-pointer ${isSubmit ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0067FF] hover:bg-[#003E99]'
-                } text-white text-base font-medium py-3 rounded-md transition-colors`}
+              className={`w-full ${
+                isSubmit
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-[#0067FF] hover:bg-[#003E99]'
+              } text-white text-base font-medium py-3 rounded-md transition-colors`}
             >
               Sign Up
             </button>

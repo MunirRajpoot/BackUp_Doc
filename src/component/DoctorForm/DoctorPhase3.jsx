@@ -1,0 +1,119 @@
+// components/DoctorPhase3.jsx
+"use client";
+import { useState } from "react";
+
+const DoctorPhase3 = ({ onBack, onSubmit }) => {
+    const [formData, setFormData] = useState({
+        degree: null,
+        university: "",
+        specialization: "",
+        registration: ""
+    });
+    const [errors, setErrors] = useState({});
+
+    const handleChange = (e) => {
+        const { id, value, files } = e.target;
+        setFormData({
+            ...formData,
+            [id]: files ? files[0] : value
+        });
+    };
+
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.degree) newErrors.degree = "Degree PDF is required";
+        if (!formData.university) newErrors.university = "University name is required";
+        if (!formData.specialization) newErrors.specialization = "Specialization is required";
+        if (!formData.registration) newErrors.registration = "Medical registration number is required";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = () => {
+        if (validate()) {
+            onSubmit(formData);
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+            <div className="flex flex-col md:col-span-2">
+                <label htmlFor="degree" className="text-sm font-medium text-gray-700 mb-1">
+                    Degree PDF
+                </label>
+                <input
+                    id="degree"
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handleChange}
+                    className="w-full py-2 rounded-md focus:outline-none focus:border-blue-600 text-black file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                />
+                {errors.degree && <span className="text-red-500 text-sm mt-1">{errors.degree}</span>}
+            </div>
+
+            <div className="flex flex-col">
+                <label htmlFor="university" className="text-sm font-medium text-gray-700 mb-1">
+                    University
+                </label>
+                <input
+                    id="university"
+                    type="text"
+                    value={formData.university}
+                    onChange={handleChange}
+                    placeholder="University Name"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
+                />
+                {errors.university && <span className="text-red-500 text-sm mt-1">{errors.university}</span>}
+            </div>
+
+            <div className="flex flex-col">
+                <label htmlFor="specialization" className="text-sm font-medium text-gray-700 mb-1">
+                    Specialization
+                </label>
+                <input
+                    id="specialization"
+                    type="text"
+                    value={formData.specialization}
+                    onChange={handleChange}
+                    placeholder="Specialization"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
+                />
+                {errors.specialization && <span className="text-red-500 text-sm mt-1">{errors.specialization}</span>}
+            </div>
+
+            <div className="flex flex-col md:col-span-2">
+                <label htmlFor="registration" className="text-sm font-medium text-gray-700 mb-1">
+                    Doctor Registration Number
+                </label>
+                <input
+                    id="registration"
+                    type="text"
+                    value={formData.registration}
+                    onChange={handleChange}
+                    placeholder="Medical Registration Number"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
+                />
+                {errors.registration && <span className="text-red-500 text-sm mt-1">{errors.registration}</span>}
+            </div>
+
+            <div className="flex justify-between md:col-span-2 mt-4">
+                <button
+                    type="button"
+                    onClick={onBack}
+                    className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition cursor-pointer"
+                >
+                    Back
+                </button>
+                <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition cursor-pointer"
+                >
+                    Submit
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default DoctorPhase3;
