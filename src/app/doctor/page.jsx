@@ -12,6 +12,7 @@ import ChatModal from "@/component/ChatModal/ChatModal";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
+import { set } from "react-hook-form";
 
 
 const steps = [
@@ -48,6 +49,7 @@ export default function DoctorListPage() {
     const [chatOpen, setChatOpen] = useState(false);
     const [roomName, setRoomName] = useState(null);
     const [doctorData, setDoctorData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const [appointmentForm, setappointmentForm] = useState({
         full_name: "",
@@ -174,6 +176,7 @@ export default function DoctorListPage() {
         const auth_token = Cookies.get("auth_token");
 
         try {
+            setLoading(true)
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/appointments/create/`,
                 {
@@ -197,6 +200,7 @@ export default function DoctorListPage() {
             closeModal(); // Close modal after success
             toast.success("Appointment request sent successfully!");
         } catch (error) {
+            setLoading(false)
 
             if (error?.response?.status === 401) {
                 toast.error(
@@ -220,6 +224,9 @@ export default function DoctorListPage() {
                 toast.error("Internal server error. Please try again later.");
                 return;
             }
+        }finally{
+
+            setLoading(false)
         }
 
     };
@@ -520,12 +527,12 @@ export default function DoctorListPage() {
                             <button
                                 type="submit"
                                 disabled={!appointmentForm.slot}
-                                className={`w-full py-2 rounded-md font-semibold transition ${appointmentForm.slot
+                                className={`w-full py-2 cursor-pointer rounded-md font-semibold transition ${appointmentForm.slot
                                     ? 'bg-blue-600 text-white hover:bg-blue-700'
                                     : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                     }`}
                             >
-                                Send Request
+                                {loading ? "Sending Request":"Send Request"}
                             </button>
                         </form>
 

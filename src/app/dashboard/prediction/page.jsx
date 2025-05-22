@@ -22,13 +22,14 @@ const Page = () => {
     const { user_type } = userState;
 
     const [showAnalyzed, setShowAnalyzed] = useState(false);
+    const [patientData, setPatientData] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [results, setResults] = useState([]);
     const [pending, setPending] = useState(true);
-
     const [activeIndex, setActiveIndex] = useState(0);
-
     const [imageStates, setImageStates] = useState([]);
+
+
     useEffect(() => {
         if (results.length > 0) {
             setImageStates(results.map(() => ({ zoom: 100, rotation: 0 })));
@@ -79,7 +80,7 @@ const Page = () => {
 
     const fetchResults = async () => {
         const responses = await Promise.all(taskIds.map(async (taskId) => {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/result/${taskId}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/result/${taskId}/`);
             return { taskId, status: res.status, data: res.data };
         }));
         return responses;
@@ -131,12 +132,16 @@ const Page = () => {
 
     };
 
-    const handleEmailSend = async (analysis_id) => {
+    const handleEmailSend = async (analysis_id, recipientEmail = null) => {
+
+        console.log("Sending email to:", recipientEmail); 
         try {
             const authToken = Cookies.get("auth_token");
+            const payload = recipientEmail ? { email: recipientEmail } : {};
+
             await axios.post(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/email/${analysis_id}/`,
-                {}, // empty body
+                payload,
                 {
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -152,6 +157,25 @@ const Page = () => {
     };
 
 
+    const fetchPatientDetails = async () => {
+        const authToken = Cookies.get("auth_token");
+        const res = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/patient-detail/${source.get('patient')}/`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        if (res.status === 200) {
+            setPatientData(res.data);
+        }
+    }
+
+    useEffect(() => {
+        fetchPatientDetails()
+    }, [])
+
     return (
         <div className="flex text-white h-screen bg-[#0f172a] overflow-hidden">
             <div className="flex-1 bg-[#0B0F19] text-white px-6 py-8 overflow-y-auto">
@@ -159,8 +183,8 @@ const Page = () => {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                     <div>
-                        <h2 className="text-lg font-semibold">Usman Ali</h2>
-                        <p className="text-sm text-gray-300">13 years · male · 18728977554</p>
+                        <h2 className="text-lg font-semibold">{patientData.first_name} {patientData.last_name}</h2>
+                        <p className="text-sm text-gray-300">{patientData.age} years · male</p>
                     </div>
                     <div className="flex gap-2 mt-4 md:mt-0">
                         <button
@@ -171,10 +195,18 @@ const Page = () => {
                         </button>
                         <button
                             onClick={() => handleEmailSend(results[activeIndex]?.analysis_id)}
-                            className={`px-3 bg-green-700 py-2 rounded text-sm font-medium cursor-pointer`}
+                            className="px-3 bg-green-700 py-2 rounded text-sm font-medium cursor-pointer"
                         >
                             Email me
                         </button>
+
+                        <button
+                            onClick={() => handleEmailSend(results[activeIndex]?.analysis_id, patientData.patient_email)}
+                            className="px-3 bg-green-700 py-2 rounded text-sm font-medium cursor-pointer"
+                        >
+                            Email to Patient
+                        </button>
+
                         {images.length > 1 && (
                             <div className="flex gap-2 mt-4 md:mt-0">
 

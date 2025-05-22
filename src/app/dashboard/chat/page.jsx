@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import userChat from '@/hooks/chathook';
 import { useSelector } from "react-redux";
 import axios from 'axios';
@@ -7,9 +7,12 @@ import Cookies from 'js-cookie';
 
 
 const ChatPage = () => {
+    const messagesEndRef = useRef(null);
     const userState = useSelector((state) => state.user) || {};
     const { user_id } = userState;
     const [message, setMessage] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChat, setShowChat] = useState(false);
     const [chatUsers, setChatUsers] = useState([]);
@@ -41,18 +44,34 @@ const ChatPage = () => {
 
 
     useEffect(() => {
-        if (data) {
-            const isFromCurrentUser = data?.sender_id === user_id;
+        if (!data) return;
 
+        const roomId = data.room || activeRoom;
+
+        if (data.type === "chat_message") {
+            const isFromCurrentUser = data.sender_id === user_id;
             if (isFromCurrentUser) return; // Ignore own message broadcast
 
-            const roomId = data.room || activeRoom;
             setRoomMessages(prev => ({
                 ...prev,
                 [roomId]: [
                     ...(prev[roomId] || []),
                     { text: data.message, sender: data.sender_id }
                 ]
+            }));
+        }
+
+        if (data.type === "chat_history") {
+            // Map server messages to desired format
+            const historyMessages = data.messages.map(msg => ({
+                text: msg.content,
+                sender: msg.sender_id,
+                timestamp: msg.timestamp
+            }));
+
+            setRoomMessages(prev => ({
+                ...prev,
+                [roomId]: historyMessages
             }));
         }
     }, [data]);
@@ -86,11 +105,16 @@ const ChatPage = () => {
         }
     }, [activeRoom]);
 
-    const handleChatbox = (nameID) => {
-        setActiveRoom(nameID);
-        connectWebSocket(false, nameID);
+    const handleChatbox = (userId) => {
+        const user = chatUsers.find(u => u.user_id === userId);
+        setSelectedUser(user);
+        setActiveRoom(userId);
+        connectWebSocket(false, userId);
         setShowChat(true);
     };
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [activeRoom, roomMessages[activeRoom]?.length]);
 
 
     return (
@@ -153,7 +177,7 @@ const ChatPage = () => {
                                     className="w-10 h-10 rounded-full"
                                 />
                                 <div>
-                                    <p className="font-semibold text-white capitalize">Selected User</p>
+                                    <p className="font-semibold text-white capitalize">{selectedUser?.name}</p>
                                     <p className="text-xs text-gray-500">Online</p>
                                 </div>
                             </div>
@@ -166,20 +190,25 @@ const ChatPage = () => {
                         </div>
 
                         {/* Chat Body */}
-                       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-dark scrollbar-none">
-    {(roomMessages[activeRoom] || []).map((msg, idx) => (
-        <div
-            key={idx}
-            className={`w-fit px-4 py-2 rounded-lg shadow-sm
-               ${msg.sender === user_id
-                    ? 'bg-blue-500 text-white self-end ml-auto'
-                    : 'bg-gray-200 text-gray-800 self-start mr-auto'
-                }`}
-        >
-            {msg.text}
-        </div>
-    ))}
-</div>
+                        <div
+                            className="flex-1 overflow-y-scroll px-4 py-6 space-y-4 bg-dark" style={{ scrollbarWidth: "none" }}>
+                            {(roomMessages[activeRoom] || []).map((msg, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`w-fit px-4 py-2 rounded-lg shadow-sm
+                                        ${msg.sender === user_id
+                                            ? 'bg-blue-500 text-white self-end ml-auto'
+                                            : 'bg-gray-200 text-gray-800 self-start mr-auto'
+                                        }`}
+                                >
+                                    {msg.text}
+                                    <p className="text-xs">
+                                        {/* {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} */}
+                                    </p>
+                                </div>
+                            ))}
+                            <div ref={messagesEndRef} ></div>
+                        </div>
 
 
                         {/* Chat Input */}
@@ -206,6 +235,17 @@ const ChatPage = () => {
                                         </div>
                                     </div>
                                 )}
+                                {/* File Upload Button */}
+                                <label htmlFor="file-upload" className="cursor-pointer text-gray-500 hover:text-gray-700">
+                                    📎
+                                </label>
+                                <input
+                                    id="file-upload"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                                />
+
 
                                 {/* Text Input */}
                                 <input

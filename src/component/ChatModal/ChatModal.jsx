@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import userChat from '@/hooks/chathook';
 import { useSelector } from 'react-redux';
 
 
 const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
+    const messagesEndRef = useRef(null);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -57,6 +58,12 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
         }
     }, [data]);
 
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+        }
+    }, [data, messages]);
+
 
     if (!isChatOpen) return null;
 
@@ -78,7 +85,11 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
                 </div>
 
                 {/* Chat Area */}
-                <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50 rounded-md mt-3">
+                <div
+                    ref={messagesEndRef}
+                    className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50 rounded-md mt-3"
+                    style={{scrollbarWidth:"none"}}
+                >
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.type === 'end' ? 'justify-end' : 'justify-start'}`}>
                             <div
@@ -92,7 +103,6 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
                         </div>
                     ))}
                 </div>
-
                 {/* Emoji Picker */}
                 {showEmojiPicker && (
                     <div className="absolute bottom-20 right-4 z-50">
