@@ -108,7 +108,7 @@ const Page = () => {
             <div className="w-full lg:w-[350px] bg-white/10 rounded-2xl shadow-xl backdrop-blur-lg p-4 md:p-6 flex flex-col justify-between">
                 <div>
                     <h2 className="text-xl font-semibold mb-3">
-                        Hi! <span className="font-bold">Usman Tahir</span>
+                        Hi! <span className="font-bold">{userState.user.first_name} {userState.user.last_name}</span>
                     </h2>
                     <p className="text-sm text-gray-300 mb-6">
                         Your AI results are ready. You can now download or share them.

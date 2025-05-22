@@ -96,7 +96,7 @@ const XrayGrid = ({ patient_id = null }) => {
 
             if (response.status === 200) {
                 if (user_type === "doctor") {
-                    router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}`);
+                    router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}&patient=${stablePatientId}`);
                     
                 }else if (user_type === "patient") {
 
