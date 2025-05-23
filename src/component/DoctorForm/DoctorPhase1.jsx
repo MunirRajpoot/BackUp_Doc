@@ -41,7 +41,7 @@ const DoctorPhase1 = ({ onContinue }) => {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 py-4">
             <div className="flex flex-col">
                 <label htmlFor="firstName" className="text-sm font-medium text-gray-700 mb-1">First Name</label>
                 <input
