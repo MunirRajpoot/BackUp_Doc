@@ -120,7 +120,7 @@ export default function RegisterProcessPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center px-4 py-4">
             <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md">
                 <div className="flex flex-col items-center mb-4">
                     <div className="bg-blue-600 text-white p-3 rounded-full">
@@ -174,7 +174,7 @@ export default function RegisterProcessPage() {
                                     })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
                                 />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute top-2 right-3 text-gray-500">
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute top-3 right-3 cursor-pointer text-gray-500">
                                     {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
@@ -198,7 +198,7 @@ export default function RegisterProcessPage() {
                                     })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
                                 />
-                                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute top-2 right-3 text-gray-500">
+                                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute top-3 right-3 text-gray-500 cursor-pointer">
                                     {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
@@ -218,7 +218,7 @@ export default function RegisterProcessPage() {
                             {errors.terms && <p className="text-sm text-red-500 mt-1">{errors.terms.message}</p>}
                         </div>
 
-                        <button type="submit" className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition">
+                        <button type="submit" className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition cursor-pointer">
                             Sign Up
                         </button>
 

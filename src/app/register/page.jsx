@@ -71,7 +71,7 @@ const Page = () => {
             <div>
               <h4 className="text-xl font-extrabold mb-5">Sign Up</h4>
               <p className="text-base mb-6">
-                Nakiese is your portal to discover and enjoy Africa’s hidden treasures.
+                BackupDoc AI Dental Solution is your trusted partner in oral healthcare technology.
               </p>
             </div>
             <div className="bg-[#f5f5f5cf] text-black p-6 rounded-lg mt-8">
@@ -129,15 +129,14 @@ const Page = () => {
             {/* Message Display */}
             {message && (
               <p
-                className={`text-sm mb-4 ${
-                  messageType === 'success'
+                className={`text-sm mb-4 ${messageType === 'success'
                     ? 'text-green-600'
                     : messageType === 'error'
-                    ? 'text-red-500'
-                    : messageType === 'warning'
-                    ? 'text-yellow-600'
-                    : 'text-blue-500'
-                }`}
+                      ? 'text-red-500'
+                      : messageType === 'warning'
+                        ? 'text-yellow-600'
+                        : 'text-blue-500'
+                  }`}
               >
                 {message}
               </p>
@@ -147,11 +146,10 @@ const Page = () => {
             <button
               onClick={handleSubmit}
               disabled={isSubmit}
-              className={`w-full ${
-                isSubmit
+              className={`w-full ${isSubmit
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-[#0067FF] hover:bg-[#003E99]'
-              } text-white text-base font-medium py-3 rounded-md transition-colors`}
+                } text-white text-base font-medium py-3 rounded-md transition-colors cursor-pointer`}
             >
               Sign Up
             </button>
