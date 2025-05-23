@@ -11,7 +11,7 @@ const DoctorForm = ({ email = "" }) => {
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
-        email: email,
+        email: email.email,
         password: "",
         confirm_password: "",
         terms: false,
@@ -25,6 +25,7 @@ const DoctorForm = ({ email = "" }) => {
         med_reg_number: "",
         // Phase 3 fields
         specialization: "",
+        degree_pdf: null,
     });
 
     const updateFormData = (newData) => {

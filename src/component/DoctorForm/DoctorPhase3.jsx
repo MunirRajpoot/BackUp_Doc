@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 
-const DoctorPhase3 = ({ onContinue, onBack, formData, updateFormData, onSubmit }) => {
+const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
     const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
