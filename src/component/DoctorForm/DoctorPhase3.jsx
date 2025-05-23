@@ -19,7 +19,7 @@ const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
         const newErrors = {};
         console.log("Validating formData:", formData); // <-- Add this line
 
-        if (!formData.degree) newErrors.degree = "Degree PDF is required";
+        if (!formData.degree_pdf) newErrors.degree_pdf = "Degree PDF is required";
         // if (!formData.university) newErrors.university = "University name is required";
         if (!formData.specialization) newErrors.specialization = "Specialization is required";
         if (!formData.med_reg_number) newErrors.registration = "Medical registration number is required";
@@ -40,11 +40,11 @@ const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
             <div className="flex flex-col md:col-span-2">
-                <label htmlFor="degree" className="text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="degree_pdf" className="text-sm font-medium text-gray-700 mb-1">
                     Degree PDF
                 </label>
                 <input
-                    id="degree"
+                    id="degree_pdf"
                     type="file"
                     accept="application/pdf"
                     onChange={handleChange}

@@ -5,13 +5,14 @@ import DoctorPhase3 from './DoctorPhase3';
 import React, { useEffect, useState } from 'react';
 
 const DoctorForm = ({ email = "" }) => {
+    console.log("DoctorForm email:", email);
     const [currentPhase, setCurrentPhase] = useState(1);
 
     // Global form data
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
-        email: email.email,
+        email: email,
         password: "",
         confirm_password: "",
         terms: false,
