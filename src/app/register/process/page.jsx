@@ -16,8 +16,8 @@ export default function RegisterProcessPage() {
     const defaultEmail = searchParams.get('m') || '';
     const defaultRole = (searchParams.get('role') || 'patient').toLowerCase();
 
-    const [email, setEmail] = useState(defaultEmail);
-    const [role, setRole] = useState(defaultRole);
+    const [email, setEmail] = useState('');
+    const [role, setRole] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState('');
@@ -36,6 +36,15 @@ export default function RegisterProcessPage() {
 
     const password = watch('password');
     const confirm_password = watch('confirm_password');
+
+    useEffect(() => {
+        if (defaultEmail) {
+            setEmail(defaultEmail);
+        }
+        if (defaultRole) {
+            setRole(defaultRole);
+        }
+    }, [email, role])
 
     useEffect(() => {
         setValue('email', email);
@@ -123,7 +132,7 @@ export default function RegisterProcessPage() {
                 </div>
 
                 {role === 'doctor' ? (
-                    <DoctorForm />
+                    <DoctorForm email={email} />
                 ) : (
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" encType="multipart/form-data">
                         <input type="hidden" value={email} {...register('email')} />

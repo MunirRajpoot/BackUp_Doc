@@ -2,35 +2,37 @@
 "use client";
 import { useState } from "react";
 
-const DoctorPhase3 = ({ onBack, onSubmit }) => {
-    const [formData, setFormData] = useState({
-        degree: null,
-        university: "",
-        specialization: "",
-        registration: ""
-    });
+const DoctorPhase3 = ({ onContinue, onBack, formData, updateFormData, onSubmit }) => {
     const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
-        const { id, value, files } = e.target;
-        setFormData({
-            ...formData,
-            [id]: files ? files[0] : value
-        });
+        const { id, files, type, value } = e.target;
+        if (type === "file") {
+            updateFormData({ [id]: files[0] }); // Store the File object
+        } else {
+            updateFormData({ [id]: value });
+        }
     };
+
 
     const validate = () => {
         const newErrors = {};
+        console.log("Validating formData:", formData); // <-- Add this line
+
         if (!formData.degree) newErrors.degree = "Degree PDF is required";
-        if (!formData.university) newErrors.university = "University name is required";
+        // if (!formData.university) newErrors.university = "University name is required";
         if (!formData.specialization) newErrors.specialization = "Specialization is required";
-        if (!formData.registration) newErrors.registration = "Medical registration number is required";
+        if (!formData.med_reg_number) newErrors.registration = "Medical registration number is required";
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = () => {
+        console.log("I'm here")
         if (validate()) {
+
+            console.log("I'm here 2")
             onSubmit(formData);
         }
     };
@@ -51,22 +53,26 @@ const DoctorPhase3 = ({ onBack, onSubmit }) => {
                 {errors.degree && <span className="text-red-500 text-sm mt-1">{errors.degree}</span>}
             </div>
 
-            <div className="flex flex-col">
-                <label htmlFor="university" className="text-sm font-medium text-gray-700 mb-1">
-                    University
-                </label>
-                <input
-                    id="university"
-                    type="text"
-                    value={formData.university}
-                    onChange={handleChange}
-                    placeholder="University Name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
-                />
-                {errors.university && <span className="text-red-500 text-sm mt-1">{errors.university}</span>}
-            </div>
 
             <div className="flex flex-col">
+
+                <label htmlFor="med_reg_number" className="text-sm font-medium text-gray-700 mb-1">
+                    Doctor Registration Number
+                </label>
+                <input
+                    id="med_reg_number"
+                    type="text"
+                    value={formData.med_reg_number}
+                    onChange={handleChange}
+                    placeholder="Medical Registration Number"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
+                />
+                {errors.registration && <span className="text-red-500 text-sm mt-1">{errors.registration}</span>}
+
+
+            </div>
+
+            <div className="flex flex-col md:col-span-2">
                 <label htmlFor="specialization" className="text-sm font-medium text-gray-700 mb-1">
                     Specialization
                 </label>
@@ -79,21 +85,6 @@ const DoctorPhase3 = ({ onBack, onSubmit }) => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
                 />
                 {errors.specialization && <span className="text-red-500 text-sm mt-1">{errors.specialization}</span>}
-            </div>
-
-            <div className="flex flex-col md:col-span-2">
-                <label htmlFor="registration" className="text-sm font-medium text-gray-700 mb-1">
-                    Doctor Registration Number
-                </label>
-                <input
-                    id="registration"
-                    type="text"
-                    value={formData.registration}
-                    onChange={handleChange}
-                    placeholder="Medical Registration Number"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
-                />
-                {errors.registration && <span className="text-red-500 text-sm mt-1">{errors.registration}</span>}
             </div>
 
             <div className="flex justify-between md:col-span-2 mt-4">

@@ -2,36 +2,31 @@
 "use client";
 import React, { useState } from "react";
 
-const DoctorPhase2 = ({ onContinue, onBack }) => {
-    const [formData, setFormData] = useState({
-        country: "",
-        state: "",
-        city: "",
-        street: "",
-        zip: ""
-    });
-
+const DoctorPhase2 = ({ onBack, onContinue, formData, updateFormData }) => {
     const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setFormData({ ...formData, [id]: value });
+        updateFormData({ [id]: value });
     };
-
     const handleContinue = () => {
         const newErrors = {};
-        Object.keys(formData).forEach((key) => {
-            if (!formData[key]) {
-                newErrors[key] = `${key} is required`;
+        const requiredFields = ["country", "state", "city", "zip_code", "street_address"];
+
+        requiredFields.forEach((key) => {
+            if (!formData[key] || formData[key].trim() === '') {
+                newErrors[key] = `${key.replace(/_/g, ' ')} is required`;
             }
         });
 
         if (Object.keys(newErrors).length === 0) {
-            onContinue();
+            setErrors({});
+            onContinue(); // ✅ only called if no errors
         } else {
             setErrors(newErrors);
         }
     };
+
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
@@ -75,29 +70,29 @@ const DoctorPhase2 = ({ onContinue, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-                <label htmlFor="street" className="text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                <label htmlFor="zip_code" className="text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
                 <input
-                    id="street"
+                    id="zip_code"
                     type="text"
-                    value={formData.street}
-                    onChange={handleChange}
-                    placeholder="Street Address"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
-                />
-                {errors.street && <span className="text-red-500 text-sm">{errors.street}</span>}
-            </div>
-
-            <div className="flex flex-col md:col-span-2">
-                <label htmlFor="zip" className="text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                <input
-                    id="zip"
-                    type="text"
-                    value={formData.zip}
+                    value={formData.zip_code}
                     onChange={handleChange}
                     placeholder="ZIP Code"
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
                 />
-                {errors.zip && <span className="text-red-500 text-sm">{errors.zip}</span>}
+                {errors.zip_code && <span className="text-red-500 text-sm">{errors.zip_code}</span>}
+            </div>
+
+            <div className="flex flex-col md:col-span-2">
+                <label htmlFor="street_address" className="text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                <input
+                    id="street_address"
+                    type="text"
+                    value={formData.street_address}
+                    onChange={handleChange}
+                    placeholder="Street Address"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
+                />
+                {errors.street_address && <span className="text-red-500 text-sm">{errors.street_address}</span>}
             </div>
 
             <div className="flex justify-between md:col-span-2 mt-4">

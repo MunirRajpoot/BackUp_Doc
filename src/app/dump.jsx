@@ -217,3 +217,37 @@
                                     upload space
                                 </span>
                             </p>
+
+
+// try {
+        //     const response = await axios.post(
+        //         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/register`,
+        //         formData
+        //     );
+
+        //     if (response.status === 200 || response.status === 201) {
+        //         const result = response.data;
+
+        //         // Set authentication cookie
+        //         Cookies.set("auth_token", result.token, {
+        //             secure: true,
+        //             sameSite: "Strict",
+        //             expires: 7,
+        //         });
+
+        //         // Dispatch user to Redux store
+        //         dispatch(
+        //             setUser({
+        //                 user: result.user,
+        //                 user_type: result.user_type || null,
+        //                 user_id: result.user_id || null,
+        //             })
+        //         );
+
+        //         onContinue(); // Proceed to the next step
+        //     } else {
+        //         console.error("Registration failed:", response.data);
+        //     }
+        // } catch (error) {
+        //     console.error("Error during registration:", error);
+        // }
