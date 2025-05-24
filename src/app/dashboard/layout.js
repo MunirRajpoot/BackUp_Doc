@@ -17,6 +17,7 @@ import React, { useState } from "react";
 import { Activity, FileBarChart2, HomeIcon, User, Brain, CalendarCheck } from "lucide-react";
 import { useSelector } from "react-redux";
 import { ToastContainer } from 'react-toastify';
+import Alert from "@/component/Alert/Alert";
 
 
 
@@ -84,6 +85,13 @@ export default function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <div className="flex-1 bg-dark text-white ">
+        {
+          user_type === "doctor" && userState.user.is_verified === false ?
+
+            <Alert message="Verification is in progress. You cannot access features until it's complete." variant="warning" />
+
+            : ""
+        }
         {children}
       </div>
 

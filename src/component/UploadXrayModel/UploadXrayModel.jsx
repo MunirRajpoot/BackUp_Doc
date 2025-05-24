@@ -139,6 +139,7 @@ const UploadXrayModal = ({ isOpen, onClose, patient_id = null }) => {
                 Click or drag file to upload
               </p>
               <p className="text-xs text-gray-400 mt-1">Supports JPG, JPEG, PNG</p>
+              <small>Note: non xrays or irrelevant xray images will be skip</small>
               <input
                 ref={fileInputRef}
                 type="file"

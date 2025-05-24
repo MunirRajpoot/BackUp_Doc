@@ -7,9 +7,7 @@ export default function userChat() {
     const [data, setData] = useState(null);
 
     const connectWebSocket = (connect = false, roomName) => {
-        console.log("Connecting to WebSocket...");
         if (connect || socketRef.current) return;
-        console.log("Connecting to 2 WebSocket...");
 
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const authToken = Cookies.get("auth_token");
@@ -46,7 +44,7 @@ export default function userChat() {
             const payload = JSON.stringify({
                 type: 'chat_message',
                 message,
-                roomName,
+                to_user:roomName,
             });
             socketRef.current.send(payload);
         } else {

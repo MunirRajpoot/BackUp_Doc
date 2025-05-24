@@ -16,6 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Providers>
+          <ToastContainer position="top-right" autoClose={3000} />
           <ConditionalWrapper>
             {children}
           </ConditionalWrapper>

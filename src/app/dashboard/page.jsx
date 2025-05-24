@@ -154,6 +154,7 @@ const DashboardPage = () => {
                     Click or drag file to upload
                   </p>
                   <p className="text-xs text-gray-400 mt-1">Supports JPG, JPEG, PNG</p>
+                  <small>Note: non xrays or irrelevant xrays images will be skip!</small>
                   <input
                     ref={fileInputRef}
                     type="file"

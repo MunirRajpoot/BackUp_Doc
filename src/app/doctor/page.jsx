@@ -135,9 +135,6 @@ export default function DoctorListPage() {
 
         try {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/by-city?city=${city}`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
             });
 
             if (res.status === 200) {
