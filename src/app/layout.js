@@ -1,12 +1,10 @@
-
-
-import Navbar from "@/component/Navbar/Navbar"
+// app/layout.js
+import Navbar from "@/component/Navbar/Navbar";
 import "./globals.css";
 import ConditionalWrapper from "@/component/ConditionalWrapper/ConditionalWrapper";
 import { Providers } from "./provider";
-
-
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const metadata = {
   title: "Create Next App",
@@ -19,9 +17,9 @@ export default function RootLayout({ children }) {
       <body>
         <Providers>
           <ConditionalWrapper>
-
             {children}
           </ConditionalWrapper>
+          <ToastContainer position="top-right" autoClose={3000} />
         </Providers>
       </body>
     </html>

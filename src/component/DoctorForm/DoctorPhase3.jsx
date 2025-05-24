@@ -1,26 +1,23 @@
-// components/DoctorPhase3.jsx
 "use client";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
     const [errors, setErrors] = useState({});
 
+
     const handleChange = (e) => {
         const { id, files, type, value } = e.target;
         if (type === "file") {
-            updateFormData({ [id]: files[0] }); // Store the File object
+            updateFormData({ [id]: files[0] });
         } else {
             updateFormData({ [id]: value });
         }
     };
 
-
     const validate = () => {
         const newErrors = {};
-        console.log("Validating formData:", formData); // <-- Add this line
-
         if (!formData.degree_pdf) newErrors.degree_pdf = "Degree PDF is required";
-        // if (!formData.university) newErrors.university = "University name is required";
         if (!formData.specialization) newErrors.specialization = "Specialization is required";
         if (!formData.med_reg_number) newErrors.registration = "Medical registration number is required";
 
@@ -29,11 +26,9 @@ const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
     };
 
     const handleSubmit = () => {
-        console.log("I'm here")
         if (validate()) {
+            onSubmit(formData); // Save data (sync or async)
 
-            console.log("I'm here 2")
-            onSubmit(formData);
         }
     };
 
@@ -48,14 +43,12 @@ const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
                     type="file"
                     accept="application/pdf"
                     onChange={handleChange}
-                    className="w-full py-2 rounded-md focus:outline-none focus:border-blue-600 text-black file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                    className="w-full py-2 rounded-md focus:outline-none focus:border-blue-600 text-black file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
                 />
-                {errors.degree && <span className="text-red-500 text-sm mt-1">{errors.degree}</span>}
+                {errors.degree_pdf && <span className="text-red-500 text-sm mt-1">{errors.degree_pdf}</span>}
             </div>
 
-
             <div className="flex flex-col">
-
                 <label htmlFor="med_reg_number" className="text-sm font-medium text-gray-700 mb-1">
                     Doctor Registration Number
                 </label>
@@ -68,8 +61,6 @@ const DoctorPhase3 = ({ onBack, formData, updateFormData, onSubmit }) => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 text-black"
                 />
                 {errors.registration && <span className="text-red-500 text-sm mt-1">{errors.registration}</span>}
-
-
             </div>
 
             <div className="flex flex-col md:col-span-2">

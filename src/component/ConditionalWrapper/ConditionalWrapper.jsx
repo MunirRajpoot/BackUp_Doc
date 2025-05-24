@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
+import { ToastContainer, toast } from 'react-toastify';
+
 
 export default function ConditionalWrapper({ children }) {
   const pathname = usePathname();
@@ -27,6 +29,7 @@ export default function ConditionalWrapper({ children }) {
     <>
       <div className="flex flex-col min-h-screen">
         {showNavbar && <Navbar />}
+        {showNavbar && <ToastContainer />}
 
         <main className="flex-grow">
           {children}

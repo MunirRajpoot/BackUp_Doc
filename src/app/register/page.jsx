@@ -63,6 +63,7 @@ const Page = () => {
   };
 
   return (
+    
     <section className="min-h-screen w-full flex justify-center items-center px-5 py-10">
       <div className="w-full max-w-4xl mx-auto shadow-lg rounded-2xl overflow-hidden">
         <div className="flex flex-col lg:flex-row">

@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { Activity, FileBarChart2, HomeIcon, User, Brain, CalendarCheck } from "lucide-react";
 import { useSelector } from "react-redux";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 
 
