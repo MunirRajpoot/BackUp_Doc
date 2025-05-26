@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 const Footer = () => {
@@ -9,14 +10,14 @@ const Footer = () => {
                 <div>
                     <h2 className="text-2xl font-semibold mb-4">Menu</h2>
                     <ul className="text-sm flex flex-wrap gap-5">
-                        <li><a href="#" className="hover:underline">Home</a></li>
-                        <li><a href="#" className="hover:underline">About</a></li>
-                        <li><a href="#" className="hover:underline">Doctor</a></li>
-                        <li><a href="#" className="hover:underline">Contact Us</a></li>
+                        <li><Link href="/" className="hover:underline">Home</Link></li>
+                        <li><Link href="/about" className="hover:underline">About</Link></li>
+                        <li><Link href="/doctor" className="hover:underline">Doctor</Link></li>
+                        <li><Link href="/contact" className="hover:underline">Contact Us</Link></li>
                     </ul>
                     <ul className="text-sm flex flex-wrap gap-5 mt-5">
-                        <li><a href="#" className="hover:underline">Privacy Policy</a></li>
-                        <li><a href="#" className="hover:underline">Terms and Conditions</a></li>
+                        <li><Link href="privacy-policy" className="hover:underline">Privacy Policy</Link></li>
+                        <li><Link href="terms-conditions" className="hover:underline">Terms and Conditions</Link></li>
                     </ul>
                 </div>
 
@@ -42,7 +43,7 @@ const Footer = () => {
 
             {/* Bottom */}
             <div className="text-center text-xs text-gray-400">
-                &copy; 2025 Backupdoc. All rights reserved. <a href="#" className="underline">Privacy and terms</a>
+                &copy; 2025 Backupdoc. All rights reserved. <Link href="terms-conditions" className="underline">Terms and Conditions</Link>
             </div>
         </footer>
     )
