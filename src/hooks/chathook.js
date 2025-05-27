@@ -63,14 +63,12 @@ export default function userChat() {
         }
     };
     const sendTyping = (roomName) => {
-        console.log("Sending typing notification for room:", roomName);
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             const payload = JSON.stringify({
                 type: 'typing',
                 to_user: roomName,
             });
             socketRef.current.send(payload);
-            console.log("Typing notification sent for room:", roomName);
         } else {
             console.warn('WebSocket is not open. Mark read not sent for:', roomName);
         }
