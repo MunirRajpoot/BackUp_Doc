@@ -324,14 +324,14 @@ export default function DoctorListPage() {
                         {steps.map((step, index) => (
                             <div
                                 key={index}
-                                className="bg-gray-100 text-gray-800 rounded-2xl p-6 shadow-lg hover:scale-105 transition-transform duration-300 text-center"
+                                className="bg-white/10 text-gray-800 rounded-2xl p-6 shadow-lg hover:scale-105 transition-transform duration-300 text-center"
                             >
                                 <div className="bg-blue-600 w-14 h-14 flex items-center justify-center rounded-full mx-auto mb-4">
                                     {step.icon}
                                 </div>
-                                <p className="text-blue-600 font-semibold text-sm mb-2">{step.step}</p>
-                                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
-                                <p className="text-sm text-gray-700">{step.description}</p>
+                                <p className="text-blue-600 font-semibold text-lg mb-2">{step.step}</p>
+                                <h3 className="text-lg font-semibold mb-2 text-white">{step.title}</h3>
+                                <p className="text-sm text-gray-700 text-white">{step.description}</p>
                             </div>
                         ))}
                     </div>
