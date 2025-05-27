@@ -21,7 +21,7 @@ const Page = () => {
     const userState = useSelector((state) => state.user) || {};
     const { user_type } = userState;
 
-    const [showAnalyzed, setShowAnalyzed] = useState(false);
+    const [showAnalyzed, setShowAnalyzed] = useState(true);
     const [patientData, setPatientData] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [results, setResults] = useState([]);
@@ -134,7 +134,6 @@ const Page = () => {
 
     const handleEmailSend = async (analysis_id, recipientEmail = null) => {
 
-        console.log("Sending email to:", recipientEmail); 
         try {
             const authToken = Cookies.get("auth_token");
             const payload = recipientEmail ? { email: recipientEmail } : {};

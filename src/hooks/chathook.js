@@ -44,18 +44,61 @@ export default function userChat() {
             const payload = JSON.stringify({
                 type: 'chat_message',
                 message,
-                to_user:roomName,
+                to_user: roomName,
             });
             socketRef.current.send(payload);
         } else {
             console.warn('WebSocket is not open. Message not sent:', message);
         }
     };
+    const sendMarkRead = (roomName) => {
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            const payload = JSON.stringify({
+                type: 'mark_read',
+                to_user: roomName,
+            });
+            socketRef.current.send(payload);
+        } else {
+            console.warn('WebSocket is not open. Mark read not sent for:', roomName);
+        }
+    };
+    const sendTyping = (roomName) => {
+        console.log("Sending typing notification for room:", roomName);
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            const payload = JSON.stringify({
+                type: 'typing',
+                to_user: roomName,
+            });
+            socketRef.current.send(payload);
+            console.log("Typing notification sent for room:", roomName);
+        } else {
+            console.warn('WebSocket is not open. Mark read not sent for:', roomName);
+        }
+    };
+    const sendFile = (file, to_user) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result.split(",")[1]; // remove data:*/*;base64, prefix
+            socketRef.current.send(
+                JSON.stringify({
+                    type: "file",
+                    file_name: file.name,
+                    file_data: base64,
+                    file_type: file.type,
+                    to_user,
+                })
+            );
+        };
+        reader.readAsDataURL(file);
+    };
 
     return {
         data,
+        sendFile,
         connectWebSocket,
         disconnectWebSocket,
         sendMessage,
+        sendMarkRead,
+        sendTyping,
     };
 }

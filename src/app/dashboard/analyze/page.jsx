@@ -14,6 +14,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 const Page = () => {
     const router = useRouter();
@@ -26,7 +28,48 @@ const Page = () => {
 
     const [pollingEnabled, setPollingEnabled] = useState(taskIds.length > 0);
     const [results, setResults] = useState([]);
+    const [activeIndex, setActiveIndex] = useState(0);
     const [pending, setPending] = useState(true);
+
+    const [selectedLanguage, setSelectedLanguage] = useState('en');
+
+
+    const handleGenerateReport = async (analysis_id) => {
+        try {
+            const authToken = Cookies.get("auth_token");
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/report/`,
+                {
+                    analysis_id: analysis_id || results[activeIndex]?.analysis_id,
+                    lang: selectedLanguage,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+
+            
+            const result = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}${response.data.file}`);
+            const blob = await result.blob();
+            const objectURL = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = objectURL;
+            link.download = 'report.pdf';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            URL.revokeObjectURL(objectURL);
+
+        } catch (error) {
+            console.error("Failed to generate report:", error);
+            alert("Failed to generate report. Please try again.");
+        }
+    };
 
     const fetchResults = async () => {
         const responses = await Promise.all(taskIds.map(async (taskId) => {
@@ -57,6 +100,54 @@ const Page = () => {
             setResults(filtered);
         }
     }, [data]);
+    const downloadFile = async (url, filename) => {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const objectURL = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = objectURL;
+            link.download = filename || 'image.jpg';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            URL.revokeObjectURL(objectURL);
+        } catch (error) {
+            console.error('Download failed:', error);
+        }
+    };
+
+    const handleDownload = () => {
+        results.forEach((r, index) => {
+            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}${r.image_url}`;
+            const filename = `image_${index + 1}${r.image_url.split('.').pop() ? '.' + r.image_url.split('.').pop() : '.jpg'}`;
+            downloadFile(url, filename);
+        });
+    };
+    const handleFeedback = async (analysis_id, correctionType) => {
+        try {
+            const authToken = Cookies.get("auth_token");
+
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/engine/analysis/${analysis_id}/`,
+                { is_corrected: correctionType },
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+
+            toast.success('Your opinion has been submitted successfully');
+        } catch (err) {
+            console.error(err);
+            toast.error("Error submitting feedback");
+        }
+
+    };
+
 
     const renderDoctorView = () => (
         <div className="flex text-white h-screen bg-[#0f172a]">
@@ -86,6 +177,7 @@ const Page = () => {
                                 spaceBetween={20}
                                 slidesPerView={1}
                                 loop={false}
+                                onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
                                 className="w-full"
                             >
                                 {results.map((result, index) => (
@@ -99,6 +191,7 @@ const Page = () => {
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
+
                         )}
                     </div>
                 </div>
@@ -111,7 +204,7 @@ const Page = () => {
                         Hi! <span className="font-bold">{userState.user.first_name} {userState.user.last_name}</span>
                     </h2>
                     <p className="text-sm text-gray-300 mb-6">
-                        Your AI results are ready. You can now download or share them.
+                        Your AI results are ready. You can now download, genrate report or share them.
                     </p>
 
                     <Link href="/doctor">
@@ -122,18 +215,15 @@ const Page = () => {
                     </Link>
 
                     {results.length > 0 && (
-                        <div className="flex flex-col gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button
-                                onClick={() =>
-                                    results.forEach(r =>
-                                        window.open(`${process.env.NEXT_PUBLIC_SERVER_URL}${r.image_url}`, '_blank')
-                                    )
-                                }
-                                className="bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md transition flex items-center justify-center gap-2"
+                                onClick={handleDownload}
+                                className="bg-blue-600 text-sm hover:bg-blue-500 text-white py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
                             >
                                 <FaDownload />
-                                Download
+                                Download {results.length > 1 ? 'All' : ''}
                             </button>
+
 
                             {typeof navigator.share !== 'undefined' && (
                                 <button
@@ -150,7 +240,56 @@ const Page = () => {
                                 </button>
                             )}
                         </div>
+
                     )}
+                    <div className="mt-4 p-4 bg-gray-800 rounded-lg">
+                        <p className="text-sm text-white mb-3">Get your report in your preferred language</p>
+
+                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                            <select
+                                value={selectedLanguage}
+                                onChange={(e) => setSelectedLanguage(e.target.value)}
+                                className="bg-gray-700 text-white text-sm px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="English">English</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="German">German</option>
+                                <option value="Urdu">Urdu</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Arabic">Arabic</option>
+                            </select>
+
+                            <button
+                                onClick={()=>handleGenerateReport(results[activeIndex]?.analysis_id)}
+                                className="bg-blue-600 cursor-pointer hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-md transition"
+                            >
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-gray-800 rounded-lg">
+                        <p className="text-xs mb-2">Help Us Refine Our AI</p>
+                        <div className="flex gap-2">
+                            <button
+                                className="text-xs border border-gray-400 px-2 py-1 cursor-pointer rounded hover:bg-gray-700"
+                                onClick={() =>
+                                    handleFeedback(results[activeIndex]?.analysis_id, "no")
+                                }
+                            >
+                                Incorrect Detection
+                            </button>
+                            <button
+                                className="text-xs border border-gray-400 px-2 py-1 cursor-pointer rounded hover:bg-gray-700"
+                                onClick={() =>
+                                    handleFeedback(results[activeIndex]?.analysis_id, "yes")
+                                }
+                            >
+                                Missing Detection
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

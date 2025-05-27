@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { FaTrashAlt } from 'react-icons/fa'; 
 
 // The XrayGrid component displays paginated X-ray images with the ability to upload new ones
 const XrayGrid = ({ patient_id = null }) => {
@@ -97,8 +98,8 @@ const XrayGrid = ({ patient_id = null }) => {
             if (response.status === 200) {
                 if (user_type === "doctor") {
                     router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}&patient=${stablePatientId}`);
-                    
-                }else if (user_type === "patient") {
+
+                } else if (user_type === "patient") {
 
                     router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
                 }
@@ -107,6 +108,29 @@ const XrayGrid = ({ patient_id = null }) => {
             console.error("Error sending selected image IDs:", error);
         }
     };
+    const handleXrayDelete = (x_ray) => {
+            const authToken = Cookies.get("auth_token");
+            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/xray-del/${x_ray}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                },
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to delete xray");
+    
+                    // If there's no content (204), don't try to parse JSON
+                    if (res.status === 204) return;
+                    return res.json();
+                })
+                .then(() => {
+                    
+                    fetchPatientsXrays(currentPage);
+                })
+                .catch(error => {
+                    console.error("Error deleting xray:", error);
+                });
+        };
 
 
     return (
@@ -132,7 +156,7 @@ const XrayGrid = ({ patient_id = null }) => {
             </div>
 
             {/* X-ray Display Grid Section */}
-            <div className="bg-[#111827] rounded-2xl h-auto  w-full mb-6 p-2">
+            <div className="bg-[#111827] rounded-2xl h-auto w-full mb-6 p-2">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     {currentXrays.map((img, idx) => (
                         <div
@@ -150,13 +174,21 @@ const XrayGrid = ({ patient_id = null }) => {
                                 }
                             />
 
+                            {/* Delete icon at top-right */}
+                            <button
+                                onClick={() => handleXrayDelete(img._id)} // define this function
+                                className="absolute top-2 cursor-pointer right-2 text-red-500 bg-gray-900 bg-opacity-60 hover:bg-opacity-80 p-1 rounded-full"
+                                title="Delete"
+                            >
+                                <FaTrashAlt className="w-4 h-4" />
+                            </button>
 
                             {/* Display the X-ray image */}
                             <img
                                 src={`${process.env.NEXT_PUBLIC_SERVER_URL}${img.image}`}
                                 alt={`X-ray ${idx + 1}`}
                                 className="w-full h-32 object-cover"
-                                loading='lazy'
+                                loading="lazy"
                             />
                         </div>
                     ))}

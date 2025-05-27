@@ -12,30 +12,53 @@ const ChatPage = () => {
     const { user_id } = userState;
     const [message, setMessage] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChat, setShowChat] = useState(false);
     const [chatUsers, setChatUsers] = useState([]);
-    const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat();
+    const { connectWebSocket, disconnectWebSocket, sendMarkRead, sendTyping, sendFile, data, sendMessage } = userChat();
     const [activeRoom, setActiveRoom] = useState(null);
     const [roomMessages, setRoomMessages] = useState({}); // {roomId: [{text, sender}, ...]}
 
-
     const handleSend = () => {
-        if (message.trim() === '') return;
+        if (!message.trim() && selectedFiles.length === 0) return;
 
-        sendMessage(message, activeRoom);
+        // Send text
+        if (message.trim()) {
+            sendMessage(message, activeRoom);
+            setRoomMessages(prev => ({
+                ...prev,
+                [activeRoom]: [
+                    ...(prev[activeRoom] || []),
+                    { text: message, sender: user_id, isSender: true }
+                ]
+            }));
+        }
+
+        // Send files
+        selectedFiles.forEach(file => {
+            sendFile(file, activeRoom); // Your own function
+            setRoomMessages(prev => ({
+                ...prev,
+                [activeRoom]: [
+                    ...(prev[activeRoom] || []),
+                    {
+                        text: `📎 ${file.name}`,
+                        fileType: file.type,
+                        fileURL: URL.createObjectURL(file),
+                        sender: user_id,
+                        isSender: true
+                    }
+                ]
+            }));
+        });
+
+        // Reset
         setMessage('');
-
-        setRoomMessages(prev => ({
-            ...prev,
-            [activeRoom]: [
-                ...(prev[activeRoom] || []),
-                { text: message, sender: user_id, isSender: true }
-            ]
-        }));
+        setSelectedFiles([]);
         setShowEmojiPicker(false);
     };
+
 
     const handleEmojiClick = (emojiData) => {
         setMessage((prev) => prev + emojiData.emoji);
@@ -60,20 +83,67 @@ const ChatPage = () => {
                 ]
             }));
         }
+        if (data?.type === "file") {
+            const isFromCurrentUser = data.from_user === user_id;
+            if (isFromCurrentUser) return; // Ignore own file broadcast
+
+            // Infer file type (optional enhancement)
+            const extension = data.file_url.split('.').pop().toLowerCase();
+            let fileType = "";
+            if (["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(extension)) {
+                fileType = "image/" + extension;
+            } else if (["mp4", "webm", "ogg"].includes(extension)) {
+                fileType = "video/" + extension;
+            } else {
+                fileType = "application/octet-stream"; // fallback for other files
+            }
+
+            setRoomMessages(prev => ({
+                ...prev,
+                [roomId]: [
+                    ...(prev[roomId] || []),
+                    {
+                        fileURL: data.file_url,
+                        fileType: fileType,
+                        sender: data.from_user,
+                        text: data.original_filename || '', // Optional filename/text
+                    },
+                ]
+            }));
+        }
+
 
         if (data.type === "chat_history") {
-            // Map server messages to desired format
-            const historyMessages = data.messages.map(msg => ({
-                text: msg.content,
-                sender: msg.sender_id,
-                timestamp: msg.timestamp
-            }));
+            const historyMessages = data.messages.map(msg => {
+                const hasFile = msg.file_url !== null && msg.file_url !== "";
+                let fileType = null;
+
+                if (hasFile) {
+                    const extension = msg.file_url.split('.').pop().toLowerCase();
+                    if (["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(extension)) {
+                        fileType = "image/" + extension;
+                    } else if (["mp4", "webm", "ogg"].includes(extension)) {
+                        fileType = "video/" + extension;
+                    } else {
+                        fileType = "application/octet-stream";
+                    }
+                }
+
+                return {
+                    text: msg.content || "", // Keep empty string if no content
+                    sender: msg.sender_id,
+                    timestamp: msg.timestamp,
+                    fileURL: hasFile ? msg.file_url : null,
+                    fileType: hasFile ? fileType : null,
+                };
+            });
 
             setRoomMessages(prev => ({
                 ...prev,
                 [roomId]: historyMessages
             }));
         }
+
     }, [data]);
 
 
@@ -111,10 +181,24 @@ const ChatPage = () => {
         setActiveRoom(userId);
         connectWebSocket(false, userId);
         setShowChat(true);
+        sendMarkRead(userId); // Mark the chat as read when opening
     };
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeRoom, roomMessages[activeRoom]?.length]);
+
+    const handleSendFile = (e) => {
+        const files = Array.from(e.target.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+    };
+    const handleTyping = (roomName) => {
+        console.log("Typing in room:", roomName);
+   
+        connectWebSocket(true, roomName);
+        sendTyping(roomName);
+        
+    };
+
 
 
     return (
@@ -192,27 +276,139 @@ const ChatPage = () => {
                         {/* Chat Body */}
                         <div
                             className="flex-1 overflow-y-scroll px-4 py-6 space-y-4 bg-dark" style={{ scrollbarWidth: "none" }}>
-                            {(roomMessages[activeRoom] || []).map((msg, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`w-fit px-4 py-2 rounded-lg shadow-sm
-                                        ${msg.sender === user_id
-                                            ? 'bg-blue-500 text-white self-end ml-auto'
-                                            : 'bg-gray-200 text-gray-800 self-start mr-auto'
-                                        }`}
-                                >
-                                    {msg.text}
-                                    <p className="text-xs">
-                                        {/* {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} */}
-                                    </p>
-                                </div>
-                            ))}
+                            {(roomMessages[activeRoom] || []).map((msg, idx) => {
+                                const isSender = msg.sender === user_id;
+                                const alignment = isSender ? 'self-end ml-auto' : 'self-start mr-auto';
+                                const bubbleBase = isSender ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800';
+
+                                /* ---------- 1. NORMALISE ---------- */
+                                const fileURL = msg.fileURL || msg.file_url || '';
+                                const fileName = fileURL.split('/').pop().split('?')[0];   // ⇦ safe even with ?token=
+
+                                /* ---------- 2. DERIVE TYPE ---------- */
+                                const isImage = msg.fileType?.startsWith('image/')
+                                    || /\.(jpe?g|png|gif|webp|avif)$/i.test(fileName);
+
+                                const isVideo = msg.fileType?.startsWith('video/')
+                                    || /\.(mp4|mov|webm)$/i.test(fileName);
+
+                                const isDoc = /\.(pdf|docx?|xlsx?|pptx?|txt?)$/i.test(fileName);
+
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`w-fit max-w-[75%] px-4 py-2 rounded-lg shadow-md ${bubbleBase} ${alignment} my-1`}
+                                    >
+                                        {/* ---------- FILE BUBBLES ---------- */}
+                                        {fileURL && (
+                                            <>
+                                                {isImage && (
+                                                    <div className="flex items-center gap-4 p-3 bg-gray-100 rounded-lg shadow-md max-w-xs">
+                                                        {/* image icon */}
+                                                        <svg className="w-10 h-10 text-blue-500" >
+                                                            <path d="M3 5a2 2" />
+                                                        </svg>
+
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-medium text-gray-800 truncate">
+                                                                {fileName.length > 20 ? `${fileName.slice(0, 20)}...` : fileName}
+                                                            </p>
+                                                            <a
+                                                                href={!isSender ? `${process.env.NEXT_PUBLIC_SERVER_URL}${fileURL}` : fileURL}
+                                                                download={fileName}
+                                                                className="inline-block mt-1 text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded transition"
+                                                            >
+                                                                Download
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {isVideo && (
+                                                    <video
+                                                        src={!isSender ? `${process.env.NEXT_PUBLIC_SERVER_URL}${fileURL}` : fileURL}
+                                                        controls
+                                                        className="rounded max-h-60"
+                                                    />
+                                                )}
+
+                                                {isDoc && (
+                                                    <div className="flex items-center gap-4 p-3 bg-gray-100 rounded-lg shadow-md max-w-xs">
+                                                        {/* document icon */}
+                                                        <svg className="w-10 h-10 text-gray-600">
+                                                            <path d="M9 12h6" />
+                                                        </svg>
+
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-medium text-gray-800 truncate">
+                                                                {fileName.length > 20 ? `${fileName.slice(0, 20)}...` : fileName}
+                                                            </p>
+                                                            <a
+                                                                href={`${process.env.NEXT_PUBLIC_SERVER_URL}${fileURL}`}
+                                                                download={fileName}
+                                                                className="inline-block mt-1 text-sm text-white bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition"
+                                                            >
+                                                                Download
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {/* ---------- TEXT MESSAGE ---------- */}
+                                        {msg.text && <p className={fileURL ? 'mt-1' : ''}>{msg.text}</p>}
+                                    </div>
+                                );
+                            })}
+
                             <div ref={messagesEndRef} ></div>
                         </div>
 
 
                         {/* Chat Input */}
                         <div className="border-t border-gray-500 px-4 py-3 bg-dark">
+                            {selectedFiles.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {selectedFiles.map((file, index) => {
+                                        const fileURL = URL.createObjectURL(file);
+                                        const type = file.type;
+
+                                        return (
+                                            <div key={index} className="relative w-28 h-28 border rounded overflow-hidden">
+                                                {/* Remove Button */}
+                                                <button
+                                                    onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== index))}
+                                                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center z-10"
+                                                >
+                                                    ×
+                                                </button>
+
+                                                {/* Image Preview */}
+                                                {type.startsWith("image/") && (
+                                                    <img src={fileURL} alt="preview" className="w-full h-full object-cover" />
+                                                )}
+
+                                                {/* Video Preview */}
+                                                {type.startsWith("video/") && (
+                                                    <video className="w-full h-full object-cover" controls>
+                                                        <source src={fileURL} type={file.type} />
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                )}
+
+                                                {/* Document or Other */}
+                                                {!type.startsWith("image/") && !type.startsWith("video/") && (
+                                                    <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white text-center text-sm p-2">
+                                                        📄 {file.name.length > 10 ? file.name.slice(0, 10) + "..." : file.name}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
                             <div className="flex items-center space-x-3 relative">
                                 {/* Emoji Picker Toggle */}
                                 <button
@@ -236,15 +432,17 @@ const ChatPage = () => {
                                     </div>
                                 )}
                                 {/* File Upload Button */}
-                                <label htmlFor="file-upload" className="cursor-pointer text-gray-500 hover:text-gray-700">
-                                    📎
-                                </label>
                                 <input
-                                    id="file-upload"
                                     type="file"
+                                    id="fileInput"
+                                    multiple
+                                    onChange={handleSendFile}
                                     className="hidden"
-                                    onChange={(e) => setSelectedFile(e.target.files[0])}
                                 />
+                                <label htmlFor="fileInput" className="cursor-pointer text-gray-600 hover:text-gray-200">
+                                    📎 Attach
+                                </label>
+
 
 
                                 {/* Text Input */}
@@ -253,9 +451,13 @@ const ChatPage = () => {
                                     className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Type your message..."
                                     value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
+                                    onChange={(e) => {
+                                        setMessage(e.target.value);
+                                        handleTyping(activeRoom);
+                                    }}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                 />
+
 
                                 {/* Send Button */}
                                 <button
@@ -296,13 +498,13 @@ const ChatPage = () => {
                                 Select a user from the sidebar to start chatting or click below to begin.
                             </p>
 
-                            {/* CTA Button */}
+                            {/* CTA Button
                             <button
                                 onClick={() => setShowChat(true)}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-full shadow-md transition duration-200"
                             >
                                 Start Chat
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 )
