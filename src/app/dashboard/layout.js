@@ -58,6 +58,9 @@ export default function DashboardLayout({ children }) {
             if (user_type === "doctor" && label === "Analyze") {
               return null; // Skip "Chat" for patients
             }
+            if (user_type === "patient" && label === "Analyze") {
+              return null; // Skip "Chat" for patients
+            }
 
             const isActive = pathname === href;
             return (

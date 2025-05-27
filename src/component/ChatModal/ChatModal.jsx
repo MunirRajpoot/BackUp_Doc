@@ -11,17 +11,40 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
-    const { connectWebSocket, disconnectWebSocket, data, sendMessage } = userChat(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const { connectWebSocket, disconnectWebSocket, data, sendFile, sendMessage } = userChat(false);
     const userState = useSelector((state) => state.user) || {};
     const { user_id } = userState;
 
     const handleSend = () => {
-        if (message.trim() !== '') {
-            sendMessage(message, roomName);
-            setMessage('');
-            setShowEmojiPicker(false);
+        const trimmedMessage = message.trim();
+
+        const hasMessage = trimmedMessage !== '';
+        const hasFiles = selectedFiles.length > 0;
+
+        if (!hasMessage && !hasFiles) return;
+
+        // Send message if it exists
+        if (hasMessage) {
+            sendMessage(trimmedMessage, roomName);
         }
+
+        // Send files if they exist
+        if (hasFiles) {
+            setIsUploading(true);
+            Promise.all(
+                selectedFiles.map(file => sendFile(file, roomName))
+            ).finally(() => {
+                setIsUploading(false);
+            });
+        }
+
+
+        // Clear input and close emoji picker
+        setMessage('');
+        setSelectedFiles([]);
+        setShowEmojiPicker(false);
     };
 
 
@@ -39,6 +62,16 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     }, [isChatOpen]);
 
     useEffect(() => {
+
+        if (data?.type === "file") {
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                {
+                    file_url: data.file_url,
+                    type: data.from_user === user_id ? 'end' : 'start',
+                },
+            ]);
+        }
         if (data?.type === "chat_message") {
             setMessages((prevMessages) => [
                 ...prevMessages,
@@ -50,12 +83,22 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
         }
 
         if (data?.type === "chat_history") {
-            const history = data.messages.map((msg) => ({
-                text: msg.content,
-                type: msg.sender_id === user_id ? 'end' : 'start',
-            }));
+            const history = data.messages.map((msg) => {
+                if (msg.file_url) {
+                    return {
+                        file_url: msg.file_url,
+                        type: msg.sender_id === user_id ? 'end' : 'start',
+                    };
+                } else {
+                    return {
+                        text: msg.content,
+                        type: msg.sender_id === user_id ? 'end' : 'start',
+                    };
+                }
+            });
             setMessages(history);
         }
+
     }, [data]);
 
     useEffect(() => {
@@ -63,6 +106,11 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
             messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
         }
     }, [data, messages]);
+
+    const handleSendFile = (e) => {
+        const files = Array.from(e.target.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+    };
 
 
     if (!isChatOpen) return null;
@@ -88,20 +136,53 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
                 <div
                     ref={messagesEndRef}
                     className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50 rounded-md mt-3"
-                    style={{scrollbarWidth:"none"}}
+                    style={{ scrollbarWidth: "none" }}
                 >
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.type === 'end' ? 'justify-end' : 'justify-start'}`}>
-                            <div
-                                className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm ${msg.type === 'end'
-                                    ? 'bg-blue-600 text-white rounded-br-none'
-                                    : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                                    }`}
-                            >
-                                {msg.text}
+                            <div className="max-w-[70%]">
+                                {msg.file_url ? (
+                                    <div
+                                        className={`p-3 rounded-2xl shadow-sm ${msg.type === 'end'
+                                            ? 'bg-blue-600 text-white rounded-br-none'
+                                            : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-xl">📎</div>
+                                            <div className="flex-1 text-sm truncate">
+                                                <a
+                                                    href={msg.file_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="underline hover:text-blue-300"
+                                                >
+                                                    {decodeURIComponent(msg.file_url.split('/').pop())}
+                                                </a>
+                                            </div>
+                                            <a
+                                                href={`${process.env.NEXT_PUBLIC_SERVER_URL}${msg.file_url}`}
+                                                download
+                                                className="ml-2 text-xs bg-white text-black rounded px-2 py-1 hover:bg-gray-100"
+                                            >
+                                                Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className={`px-4 py-2 rounded-2xl text-sm ${msg.type === 'end'
+                                            ? 'bg-blue-600 text-white rounded-br-none'
+                                            : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                                            }`}
+                                    >
+                                        {msg.text}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
+
                 </div>
                 {/* Emoji Picker */}
                 {showEmojiPicker && (
@@ -119,6 +200,63 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
                     >
                         😊
                     </button>
+                    {/* File Upload Button */}
+                    <input
+                        type="file"
+                        id="fileInput"
+                        multiple
+                        onChange={handleSendFile}
+                        className="hidden"
+                    />
+                    <div className="relative group w-10 h-10 overflow-visible">
+                        {/* Hidden file input */}
+                        <input
+                            id="fileInput"
+                            type="file"
+                            multiple
+                            onChange={handleSendFile}
+                            className="hidden"
+                        />
+
+                        <label
+                            htmlFor="fileInput"
+                            className="w-full h-full rounded-full border-2 border-gray-400 flex items-center justify-center text-gray-600 group-hover:text-white transition-colors duration-300 relative overflow-hidden bg-white"
+                        >
+                            {/* Spinner during upload */}
+                            {isUploading && (
+                                <svg
+                                    className="absolute w-full h-full animate-spin-slow z-0"
+                                    viewBox="0 0 100 100"
+                                >
+                                    <circle
+                                        cx="50"
+                                        cy="50"
+                                        r="45"
+                                        stroke="#3b82f6"
+                                        strokeWidth="8"
+                                        fill="none"
+                                        strokeDasharray="283"
+                                        strokeDashoffset="75"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            )}
+
+                            {/* 📎 icon on hover */}
+                            <span className="opacity-50 group-hover:opacity-100 transition-opacity duration-300 z-10 text-xl">
+                                📎
+                            </span>
+
+                            {/* Badge aligned better */}
+                            {selectedFiles.length > 0 && !isUploading && (
+                                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] w-3 h-3 flex items-center justify-center rounded-full z-20 shadow-sm leading-none">
+                                    {selectedFiles.length}
+                                </span>
+                            )}
+                        </label>
+                    </div>
+
+
                     <input
                         type="text"
                         placeholder="Type your message..."

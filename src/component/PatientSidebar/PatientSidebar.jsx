@@ -6,12 +6,16 @@ import Image from "next/image";
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import SearchInput from '../SearchInput/SearchInput';
+import { FaPen } from 'react-icons/fa';
+import PatientUpdateModel from '../PatientUpdateModel/PatientUpdateModel';
 
 
 const PatientSidebar = () => {
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
     const [data, setData] = useState([]);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [patientId, setPatientId] = useState('');
 
 
     const fetchPatients = async () => {
@@ -70,6 +74,10 @@ const PatientSidebar = () => {
         router.push(`/dashboard/analyze?patient=${patientId}`);
     }
 
+    const handleUpdateModelClick = (patientId) =>{
+        setShowUpdateModal(true)
+        setPatientId(patientId)
+    }
     return (
         <div
             className="bg-[#1E1E2F] h-screen text-white p-3 pt-6 w-full md:w-[18rem]"
@@ -128,6 +136,11 @@ const PatientSidebar = () => {
                                 Age: {patient.age} | Gender: {patient.gender}
                             </span>
                         </div>
+                        <button className="text-green-400 hover:text-green-600 transition cursor-pointer"
+                            onClick={() => handleUpdateModelClick(patient._id)}
+                        >
+                            <FaPen className="h-3 w-3"/>
+                        </button>
                         <button className="text-red-400 hover:text-red-600 transition cursor-pointer"
                             onClick={() => handlePatientDelete(patient._id)}
                         >
@@ -152,6 +165,7 @@ const PatientSidebar = () => {
 
 
             <PatientModal showModal={showModal} setShowModal={setShowModal} fetchPatients={fetchPatients} />
+            <PatientUpdateModel showModal={showUpdateModal} setShowModal={setShowUpdateModal} patientId={patientId} fetchPatients={fetchPatients} />
         </div>
     )
 }
