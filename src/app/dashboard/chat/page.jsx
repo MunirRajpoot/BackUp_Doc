@@ -15,6 +15,7 @@ const ChatPage = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChat, setShowChat] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
     const [chatUsers, setChatUsers] = useState([]);
     const { connectWebSocket, disconnectWebSocket, sendMarkRead, sendTyping, sendFile, data, sendMessage } = userChat();
     const [activeRoom, setActiveRoom] = useState(null);
@@ -70,6 +71,22 @@ const ChatPage = () => {
         if (!data) return;
 
         const roomId = data.room || activeRoom;
+
+        if (data?.type === "typing") {
+            const isFromCurrentUser = data.from_user_id === user_id;
+            if (isFromCurrentUser) return;
+
+            setIsTyping(true);
+
+            // Reset the timer if another typing event is received within the delay
+            if (window.typingTimeout) {
+                clearTimeout(window.typingTimeout);
+            }
+
+            window.typingTimeout = setTimeout(() => {
+                setIsTyping(false);
+            }, 2000); // Show "Typing..." for 2 seconds
+        }
 
         if (data.type === "chat_message") {
             const isFromCurrentUser = data.sender_id === user_id;
@@ -192,11 +209,9 @@ const ChatPage = () => {
         setSelectedFiles(prev => [...prev, ...files]);
     };
     const handleTyping = (roomName) => {
-        console.log("Typing in room:", roomName);
-   
         connectWebSocket(true, roomName);
         sendTyping(roomName);
-        
+
     };
 
 
@@ -262,7 +277,7 @@ const ChatPage = () => {
                                 />
                                 <div>
                                     <p className="font-semibold text-white capitalize">{selectedUser?.name}</p>
-                                    <p className="text-xs text-gray-500">Online</p>
+                                    {isTyping ? <div className='text-sm' style={{ fontStyle: 'italic', color: 'gray' }}>Typing...</div> : null}
                                 </div>
                             </div>
                             <button

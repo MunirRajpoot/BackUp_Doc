@@ -13,7 +13,8 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const { connectWebSocket, disconnectWebSocket, data, sendFile, sendMessage } = userChat(false);
+    const [isTyping, setIsTyping] = useState(false);
+    const { connectWebSocket, sendTyping, disconnectWebSocket, data, sendFile, sendMessage } = userChat(false);
     const userState = useSelector((state) => state.user) || {};
     const { user_id } = userState;
 
@@ -62,6 +63,21 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
     }, [isChatOpen]);
 
     useEffect(() => {
+        if (data?.type === "typing") {
+            const isFromCurrentUser = data.from_user_id === user_id;
+            if (isFromCurrentUser) return;
+
+            setIsTyping(true);
+
+            // Reset the timer if another typing event is received within the delay
+            if (window.typingTimeout) {
+                clearTimeout(window.typingTimeout);
+            }
+
+            window.typingTimeout = setTimeout(() => {
+                setIsTyping(false);
+            }, 2000); // Show "Typing..." for 2 seconds
+        }
 
         if (data?.type === "file") {
             setMessages((prevMessages) => [
@@ -112,6 +128,12 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
         setSelectedFiles(prev => [...prev, ...files]);
     };
 
+    const handleTyping = (roomName) => {
+        connectWebSocket(true, roomName);
+        sendTyping(roomName);
+
+    };
+
 
     if (!isChatOpen) return null;
 
@@ -123,7 +145,11 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
             >
                 {/* Header */}
                 <div className="flex justify-between items-center border-b pb-3">
-                    <h2 className="text-lg font-bold text-gray-800">Live Chat</h2>
+                    <div>
+                        <h2 className="text-lg font-bold text-gray-800">Live Chat</h2>
+                        {isTyping ? <div className='text-sm' style={{ fontStyle: 'italic', color: 'gray' }}>Typing...</div> : null}
+
+                    </div>
                     <button
                         onClick={onClose}
                         className="text-2xl text-gray-500 hover:text-gray-800"
@@ -262,7 +288,10 @@ const ChatModal = ({ isChatOpen = false, onClose, roomName }) => {
                         placeholder="Type your message..."
                         className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-black"
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => {
+                            setMessage(e.target.value);
+                            handleTyping(roomName);
+                        }}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     />
                     <button
