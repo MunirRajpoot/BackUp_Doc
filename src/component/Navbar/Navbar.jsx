@@ -136,7 +136,7 @@ const Navbar = () => {
                   handleLogout();
                   setMenuOpen(false);
                 }}
-                className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition"
+                className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition cursor-pointer"
               >
                 Logout
               </button>
@@ -145,7 +145,7 @@ const Navbar = () => {
                   router.push("/dashboard");
                   setMenuOpen(false);
                 }}
-                className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform"
+                className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform cursor-pointer"
               >
                 Dashboard
               </button>
@@ -155,7 +155,7 @@ const Navbar = () => {
               <Link href="/login">
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition w-full"
+                  className="border border-white text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0067FF] transition w-full cursor-pointer"
                 >
                   Sign In
                 </button>
@@ -163,7 +163,7 @@ const Navbar = () => {
               <Link href="/register">
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform w-full"
+                  className="bg-[#0067FF] text-white px-4 py-2 rounded-md text-sm font-medium hover:scale-105 transition-transform w-full cursor-pointer"
                 >
                   Sign Up
                 </button>

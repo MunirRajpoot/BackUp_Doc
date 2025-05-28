@@ -206,7 +206,13 @@ const ProfilePage = () => {
 
     return (
         <div className="h-screen overflow-y-auto flex justify-center items-start p-2 pt-[60px]">
-            <div className={`w-full  ${user_type === 'doctor' ? "max-w-5xl" : "max-w-2/5"} rounded-xl shadow-md p-6 bg-white mb-6`}>
+            <div
+                className={`w-full bg-white rounded-xl shadow-md mb-6 px-4 py-6 
+      ${user_type === 'doctor'
+                        ? 'max-w-5xl'
+                        : 'max-w-full sm:max-w-[90%] md:max-w-[70%] lg:max-w-[45%]'} 
+    `}
+            >
                 <h2 className="text-gray-800 text-2xl font-semibold text-center mb-4">
                     Profile Settings
                 </h2>
@@ -387,8 +393,9 @@ const ProfilePage = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className='flex items-center justify-center flex-col'>
-                        <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-xl font-bold relative mb-3">
+                    <div className="flex items-center justify-center flex-col">
+                        {/* Profile Image Section */}
+                        <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-xl font-bold relative mb-4">
                             {profileImage ? (
                                 <img src={profileImage} alt="Profile Preview" className="w-full h-full object-cover object-center" />
                             ) : userState.user?.profile_url ? (
@@ -398,7 +405,7 @@ const ProfilePage = () => {
                             )}
                             <button
                                 onClick={handleImageClick}
-                                className="absolute bottom-2 z-50 right-2 w-6 h-6 bg-blue-600 text-white text-sm rounded-full border-2 border-white hover:bg-blue-700 cursor-pointer"
+                                className="absolute bottom-2 right-2 w-6 h-6 bg-blue-600 text-white text-sm rounded-full border-2 border-white hover:bg-blue-700 cursor-pointer"
                                 title="Upload Profile Picture"
                             >
                                 +
@@ -412,63 +419,65 @@ const ProfilePage = () => {
                             />
                         </div>
 
-                        <form className="space-y-6" onSubmit={handleSubmit}>
+                        {/* Form Section */}
+                        <form className="space-y-6 w-full" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">First Name</label>
                                     <input
                                         type="text"
                                         name="first_name"
                                         value={formData.first_name}
                                         onChange={handleChange}
                                         placeholder={userState.user?.first_name || "Enter your First name"}
-                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
+                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Last Name</label>
                                     <input
                                         type="text"
                                         name="last_name"
                                         value={formData.last_name}
                                         onChange={handleChange}
                                         placeholder={userState.user?.last_name || "Enter your Last name"}
-                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
+                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Email Address</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="Enter your email address"
-                                    className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                 />
                             </div>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">State</label>
                                     <input
                                         type="text"
                                         name="state"
                                         value={formData.state}
                                         onChange={handleChange}
                                         placeholder="Enter your state"
-                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
+                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">City</label>
                                     <select
                                         name="city"
                                         value={formData.city}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-blue-400 focus:outline-none text-gray-700"
+                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                     >
                                         <option value="">Select City</option>
                                         {['Faisalabad', 'Lahore', 'Bahawalpur', 'Sindh', 'Multan'].map((item, index) => (
@@ -476,38 +485,39 @@ const ProfilePage = () => {
                                         ))}
                                     </select>
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Street Address</label>
                                     <input
                                         type="text"
                                         name="street_address"
                                         value={formData.street_address}
                                         onChange={handleChange}
                                         placeholder="Enter your street address"
-                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
+                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
+                                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Zip Code</label>
                                     <input
                                         type="text"
                                         name="zip_code"
                                         value={formData.zip_code}
                                         onChange={handleChange}
                                         placeholder="Enter your zip code"
-                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 focus:ring-blue-400 focus:outline-none"
+                                        className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm sm:text-base text-gray-700 focus:ring-blue-400 focus:outline-none"
                                     />
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full mt-4 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200 ease-in-out"
+                                className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200 text-sm sm:text-base cursor-pointer"
                             >
                                 Save Changes
                             </button>
                         </form>
-
                     </div>
                 )}
             </div>

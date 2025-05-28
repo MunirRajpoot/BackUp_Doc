@@ -5,10 +5,9 @@ import { useEffect, useState } from 'react';
 import { Eye, EyeOff, User } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slice/userSlice";
-// import DoctorPhase1 from '@/component/DoctorForm/DoctorPhase1';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/redux/slice/userSlice';
 import DoctorForm from '@/component/DoctorForm/DoctorForm';
 
 export default function RegisterProcessPage() {
@@ -22,6 +21,7 @@ export default function RegisterProcessPage() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState('');
     const [passwordMatch, setPasswordMatch] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const {
         register,
@@ -38,13 +38,9 @@ export default function RegisterProcessPage() {
     const confirm_password = watch('confirm_password');
 
     useEffect(() => {
-        if (defaultEmail) {
-            setEmail(defaultEmail);
-        }
-        if (defaultRole) {
-            setRole(defaultRole);
-        }
-    }, [email, role])
+        if (defaultEmail) setEmail(defaultEmail);
+        if (defaultRole) setRole(defaultRole);
+    }, [defaultEmail, defaultRole]);
 
     useEffect(() => {
         setValue('email', email);
@@ -81,12 +77,12 @@ export default function RegisterProcessPage() {
     };
 
     const onSubmit = async (data) => {
+        setLoading(true);
         try {
             const formData = new FormData();
             Object.entries(data).forEach(([key, value]) => {
                 formData.append(key, value);
             });
-
             formData.append('role', role);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/register`, {
@@ -113,9 +109,11 @@ export default function RegisterProcessPage() {
                 user_id: result?.user_id || null,
             }));
 
-            router.push(`/`);
+            router.push('/dashboard');
         } catch (error) {
             console.error('Registration error:', error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -126,7 +124,7 @@ export default function RegisterProcessPage() {
                     <div className="bg-blue-600 text-white p-3 rounded-full">
                         <User size={32} />
                     </div>
-                    <h2 className="text-2xl text-black font-semibold mt-2 capitalize">
+                    <h2 className="text-xl sm:text-2xl text-black font-semibold mt-2 capitalize">
                         Register as {role}
                     </h2>
                 </div>
@@ -218,8 +216,23 @@ export default function RegisterProcessPage() {
                             {errors.terms && <p className="text-sm text-red-500 mt-1">{errors.terms.message}</p>}
                         </div>
 
-                        <button type="submit" className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition cursor-pointer">
-                            Sign Up
+                        {/* Sign Up Button with Spinner */}
+                        <button
+                            type="submit"
+                            className="w-full py-2 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition cursor-pointer flex justify-center items-center"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                                    </svg>
+                                    Signing up...
+                                </>
+                            ) : (
+                                'Sign Up'
+                            )}
                         </button>
 
                         <p className="text-center text-sm text-blue-600 hover:underline cursor-pointer mt-2">

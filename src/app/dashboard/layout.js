@@ -45,7 +45,7 @@ export default function DashboardLayout({ children }) {
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Sidebar */}
       <div className="group flex flex-col bg-[#1e2227] text-white transition-all duration-300 ease-in-out w-16 hover:w-54 z-10">
-        <nav className="flex flex-col mt-4 space-y-2 px-2">
+        <nav className="flex flex-col mt-4 space-y-2 px-2" style={{marginTop: "4.5rem"}}>
           {navItems.map(({ href, icon: Icon, label }) => {
             // Skip "Patient Management" for patients
             if (user_type === "patient" && label === "Patients Management") {

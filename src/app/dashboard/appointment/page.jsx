@@ -137,16 +137,16 @@ const Page = () => {
             <ToastContainer position="top-right" autoClose={2000} />
 
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#111827] border border-blue-600 p-6 rounded-2xl shadow-lg mb-6">
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-base font-bold md:text-2xl">
                     {userState.user ? `${userState.user.first_name} ${userState.user.last_name}` : 'Test User'}
                 </h1>
-                <h2 className="text-lg font-medium mt-2 md:mt-0">
+                <h2 className="text-sm font-medium mt-2 md:mt-0 md:text-lg">
                     {user_type === 'doctor' ? 'Doctor View: All Appointments' : 'Patient View: Your Appointments'}
                 </h2>
             </header>
 
             {currentAppointments.length === 0 ? (
-                <p className="text-gray-400">No appointments available.</p>
+                <p className="text-gray-400 text-sm font-medium md:text-lg">No appointments available.</p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {currentAppointments.map((appointment) => {
@@ -157,7 +157,7 @@ const Page = () => {
                             const [year, month, day] = dateStr.split('-').map(Number);
                             const [hour, minute] = timeStr.split(':').map(Number);
                             return new Date(year, month - 1, day, hour, minute);
-                            
+
                         };
 
                         const startTime = appointment.slot?.start_time
@@ -305,7 +305,7 @@ const Page = () => {
                 feedback={feedback}
                 setFeedback={setFeedback}
             />
-            <ChatModal isChatOpen={chatOpen} onClose={() => setChatOpen(false)} roomName={roomName}/>
+            <ChatModal isChatOpen={chatOpen} onClose={() => setChatOpen(false)} roomName={roomName} />
         </div>
     );
 };

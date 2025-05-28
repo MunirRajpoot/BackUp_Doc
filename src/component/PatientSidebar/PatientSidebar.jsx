@@ -99,7 +99,7 @@ const PatientSidebar = () => {
 
 
             {/* Button to open modal */}
-            <div className="mb-4 w-full mb-5">
+            <div className="w-full mb-5">
                 <button
                     type="button"
                     onClick={() => setShowModal(true)}

@@ -7,7 +7,8 @@ import { useSelector } from "react-redux";
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { FaTrashAlt } from 'react-icons/fa'; 
+import { FaTrashAlt } from 'react-icons/fa';
+import { FaSpinner } from 'react-icons/fa';
 
 // The XrayGrid component displays paginated X-ray images with the ability to upload new ones
 const XrayGrid = ({ patient_id = null }) => {
@@ -17,6 +18,8 @@ const XrayGrid = ({ patient_id = null }) => {
     const [openModal, setOpenModal] = useState(false); // Controls the upload modal
     const [data, setData] = useState([]); // Stores X-ray image data
     const [selectedImages, setSelectedImages] = useState([]);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
 
     // Retrieve the user state from Redux store
     const userState = useSelector((state) => state.user) || {};
@@ -74,14 +77,15 @@ const XrayGrid = ({ patient_id = null }) => {
 
     // Send selected image IDs to the /annotate/ endpoint
     const handleAnalyze = async () => {
-        if (selectedImages.length === 0) return;
+        if (selectedImages.length === 0 || isAnalyzing) return;
 
         try {
+            setIsAnalyzing(true); // start spinner
             const authToken = Cookies.get("auth_token");
             const formData = new FormData();
 
             selectedImages.forEach(id => {
-                formData.append('image_ids', id); // Django expects a list of keys named 'image_ids'
+                formData.append('image_ids', id);
             });
 
             const response = await axios.post(
@@ -98,39 +102,40 @@ const XrayGrid = ({ patient_id = null }) => {
             if (response.status === 200) {
                 if (user_type === "doctor") {
                     router.push(`/dashboard/prediction/?process=${response.data?.process_id.join(",")}&patient=${stablePatientId}`);
-
                 } else if (user_type === "patient") {
-
                     router.push(`/dashboard/analyze/?process=${response.data?.process_id.join(",")}`);
                 }
             }
         } catch (error) {
             console.error("Error sending selected image IDs:", error);
+        } finally {
+            setIsAnalyzing(false); // stop spinner
         }
     };
+
     const handleXrayDelete = (x_ray) => {
-            const authToken = Cookies.get("auth_token");
-            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/xray-del/${x_ray}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                },
+        const authToken = Cookies.get("auth_token");
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/xray/xray-del/${x_ray}/`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+            },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to delete xray");
+
+                // If there's no content (204), don't try to parse JSON
+                if (res.status === 204) return;
+                return res.json();
             })
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to delete xray");
-    
-                    // If there's no content (204), don't try to parse JSON
-                    if (res.status === 204) return;
-                    return res.json();
-                })
-                .then(() => {
-                    
-                    fetchPatientsXrays(currentPage);
-                })
-                .catch(error => {
-                    console.error("Error deleting xray:", error);
-                });
-        };
+            .then(() => {
+
+                fetchPatientsXrays(currentPage);
+            })
+            .catch(error => {
+                console.error("Error deleting xray:", error);
+            });
+    };
 
 
     return (
@@ -248,15 +253,22 @@ const XrayGrid = ({ patient_id = null }) => {
 
                 {/* Analyze Button */}
                 <button
-                    className={`px-4 py-2 cursor-pointer rounded-xl font-semibold ${selectedImages.length === 0
-                        ? "bg-gray-500 text-white cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    className={`px-4 py-2 cursor-pointer rounded-xl font-semibold flex items-center justify-center gap-2 ${selectedImages.length === 0 || isAnalyzing
+                            ? "bg-gray-500 text-white cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-700 text-white"
                         }`}
-                    disabled={selectedImages.length === 0}
-                    onClick={handleAnalyze} // ✅ FIXED
+                    disabled={selectedImages.length === 0 || isAnalyzing}
+                    onClick={handleAnalyze}
                 >
-                    Analyze
+                    {isAnalyzing ? (
+                        <>
+                            <FaSpinner className="animate-spin" /> Analyzing...
+                        </>
+                    ) : (
+                        "Analyze"
+                    )}
                 </button>
+
 
             </div>
 
